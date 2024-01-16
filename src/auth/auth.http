@@ -4,16 +4,26 @@ POST http://localhost:3000/auth/login
 Content-Type: application/json
 
 {
-    "email": "jungle1@a.com",
+    "username": "realman",
     "password": "qwer"
 }
 
 ###
-POST http://localhost:3000/auth/signup
+POST http://localhost:3000/auth/register
 Content-Type: application/json
 
 {
-    "email": "jungle1@a.com",
+    "username": "realman",
     "password": "qwer",
-    "username": "REALMAN"
+    "email": "test@test.com"
+}
+
+###
+PATCH http://localhost:3000/auth/password
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NWE2ODIyMGFmZTMyZmM1MWU4ODM1NTQiLCJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJpYXQiOjE3MDU0MTExMzYsImV4cCI6MTcwNTQxMjAzNn0.bGWTu6PEIzm_aWVb9GSq_A0t4xBHO2x30-8XOfXIVpA
+
+{
+    "oldPassword": "qwer",
+    "newPassword": "1234"
 }

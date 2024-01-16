@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, ForbiddenException } from '@nestjs/common';
+import { BadRequestException, Injectable, ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { User } from 'src/users/schema/user.schema';
 import { UserMongoRepository } from 'src/users/users.repository';
@@ -6,6 +6,7 @@ import * as argon2 from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AuthDto } from './dto/auth.dto';
+import { UpdateAuthDto } from './dto/update-auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -16,13 +17,13 @@ export class AuthService {
   ) {}
   
   // 회원가입
-  async signUp(createUserDto: CreateUserDto): Promise<any> {
+  async register(createUserDto: CreateUserDto): Promise<any> {
     // Check if username and email exists
     if (!createUserDto.username) {
-      throw new BadRequestException('Username is required');
+      throw new BadRequestException('username is required');
     }
 
-    const userExists = await this.userMongoRepository.findByEmail(createUserDto.email);
+    const userExists = await this.userMongoRepository.findByUsername(createUserDto.username);
     if (userExists) {
       throw new BadRequestException('User already exists');
     }
@@ -36,7 +37,7 @@ export class AuthService {
     });
 
     // 저장된 비밀번호 확인
-    const savedUser = await this.userMongoRepository.findByEmail(newUser.email);
+    const savedUser = await this.userMongoRepository.findByUsername(newUser.username);
     console.log("Saved hashed password:", savedUser.password);
     const tokens = await this.getTokens(newUser._id, newUser.email);
     await this.updateRefreshToken(newUser._id, tokens.refreshToken);
@@ -45,9 +46,9 @@ export class AuthService {
 
 
   // 로그인
-	async signIn(data: AuthDto) {
+	async logIn(data: AuthDto) {
     // Check if user exists
-    const user = await this.userMongoRepository.findByEmail(data.email);
+    const user = await this.userMongoRepository.findByUsername(data.username);
     if (!user) throw new BadRequestException('User does not exist');
     const passwordMatches = await argon2.verify(user.password, data.password);
     if (!passwordMatches)
@@ -71,6 +72,25 @@ export class AuthService {
 
   hashData(data: string) {
     return argon2.hash(data);
+  }
+
+  async changePassword(userId: string, updateAuthDto: UpdateAuthDto) {
+    const user = await this.userMongoRepository.getUser(userId);
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    const checkOldpassword = await argon2.verify(
+      user.password,
+      updateAuthDto.oldPassword,
+    );
+    if (!checkOldpassword) {
+      throw new UnauthorizedException('현재 비밀번호가 맞지 않습니다.');
+    }
+    
+    const hashedPassword = await this.hashData(updateAuthDto.newPassword);
+    await this.userMongoRepository.updateUser(userId, { password: hashedPassword });
+    return { message: 'Password changed successfully' };
   }
 
   async updateRefreshToken(userId: string, refreshToken: string) {
@@ -109,7 +129,7 @@ export class AuthService {
   }
 
   async refreshTokens(userId: string, refreshToken: string) {
-    const user = await this.userMongoRepository.findByEmail(userId);
+    const user = await this.userMongoRepository.findById(userId);
     if (!user || !user.refreshToken)
       throw new ForbiddenException('Access Denied');
     const refreshTokenMatches = await argon2.verify(

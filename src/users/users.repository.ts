@@ -18,9 +18,9 @@ export class UserMongoRepository {
     }
   }
 
-  async getUser(email: string): Promise<User> {
+  async getUser(_id: string): Promise<User> {
     try {
-      return await this.userModel.findOne({ email }).exec();
+      return await this.userModel.findById(_id).exec();
     } catch(error) {
       throw new Error(`Error fetching user: ${error.message}`);
     }
@@ -37,20 +37,27 @@ export class UserMongoRepository {
     }
   }
 
-
-  async deleteUser(email: string): Promise<any> {
+  async deleteUser(_id: string): Promise<any> {
     try {
-      return await this.userModel.deleteOne({ email }).exec();
+      return await this.userModel.findByIdAndDelete(_id).exec();
     } catch(error) {
       throw new Error(`Error deleting user: ${error.message}`);
     }
   }
 
-  async findByEmail(email: string): Promise<User> {
+  async findById(_id: string): Promise<User> {
     try {
-      return await this.userModel.findOne({ email }).exec();
+      return await this.userModel.findById(_id).exec();
     } catch(error) {
       throw new Error(`Error finding user by email: ${error.message}`);
+    }
+  }
+
+  async findByUsername(username: string): Promise<User> {
+    try {
+      return await this.userModel.findOne({username}).exec();
+    } catch(error) {
+      throw new Error(`Error finding user by username: ${error.message}`);
     }
   }
 
