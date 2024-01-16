@@ -1,0 +1,19 @@
+###
+
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+    "email": "jungle1@a.com",
+    "password": "qwer"
+}
+
+###
+POST http://localhost:3000/auth/signup
+Content-Type: application/json
+
+{
+    "email": "jungle1@a.com",
+    "password": "qwer",
+    "username": "REALMAN"
+}

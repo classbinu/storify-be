@@ -1,0 +1,37 @@
+### 
+POST http://localhost:3000/users/create
+Content-Type: application/json
+
+{
+    "username": "REAL MAN2000",
+    "password": "1",
+    "email": "REALMAN2000@test.com"
+}
+
+### 
+GET http://localhost:3000/users/findone/jungle1@a.com
+
+### 
+PUT http://localhost:3000/users/update/659e1b3a4f520cbf9150bb91
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NTllNGIwNWJmYzk2Yzc4MTYxY2NiNjEiLCJlbWFpbCI6Imp1bmdsZTFAYS5jb20iLCJpYXQiOjE3MDQ4NzI3MTIsImV4cCI6MTcwNDg3MzYxMn0.OwtVSWIcLySwF_t8VoJLb_6ZlJbgFdB_WZEvD43yKJ4
+
+{
+    "email": "jungle1@a.com",
+    "username": "Real",
+    "password": "qwer"
+}
+
+### 
+DELETE http://localhost:3000/users/delete/jungle1@a.com
+Authorization: Bearer 
+
+### 
+POST http://localhost:3000/users/create
+Content-Type: application/json
+
+{
+    "username": "REAL MAN 4",
+    "password": "1",
+    "email": "REALMAN4@test.com"
+}
