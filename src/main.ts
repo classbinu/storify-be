@@ -9,10 +9,12 @@ import { swaggerConfig } from './swagger.config';
 dotenv.config();
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    cors: true,
+  });
 
-  const document = SwaggerModule.createDocument(app, swaggerConfig);
   app.setGlobalPrefix('api');
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('/docs', app, document);
 
   await app.listen(3000);
