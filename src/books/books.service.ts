@@ -1,26 +1,44 @@
-import { Injectable } from '@nestjs/common';
-import { CreateBookDto } from './dto/create-book.dto';
-import { UpdateBookDto } from './dto/update-book.dto';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+// import { CreateBookDto } from './dto/create-book.dto';
+// import { UpdateBookDto } from './dto/update-book.dto';
+import { BookMongoRepository } from './books.repository';
+import { Book } from './schema/book.schema';
 
 @Injectable()
 export class BooksService {
-  create(createBookDto: CreateBookDto) {
+  constructor(private readonly bookRepository: BookMongoRepository) {}
+
+  async createBook() {
     return 'This action adds a new book';
   }
 
-  findAll() {
-    return `This action returns all books`;
+  async findAllBooks(): Promise<Book[]> {
+    return this.bookRepository.findAllBooks();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} book`;
+  async findBookById(id: string): Promise<Book> {
+    return this.bookRepository.findBookById(id);
   }
 
-  update(id: number, updateBookDto: UpdateBookDto) {
-    return `This action updates a #${id} book`;
+  async findByUserId(userId: string): Promise<Book[]> {
+    return this.bookRepository.findByUserId(userId);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} book`;
+  async findBooksByCategory(category: string): Promise<Book[]> {
+    return this.bookRepository.findByCategory(category);
+  }
+
+  async findBooksByTag(tag: string): Promise<Book[]> {
+    return this.bookRepository.findByTag(tag);
+  }
+
+  async deleteBook(id: string, userId: string): Promise<Book> {
+    const book = await this.bookRepository.findBookById(id);
+
+    if (book.userId.toString() !== userId) {
+      throw new UnauthorizedException();
+    }
+
+    return this.bookRepository.deleteBook(id);
   }
 }
