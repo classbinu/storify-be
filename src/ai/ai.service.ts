@@ -3,7 +3,7 @@ import { ChatPromptTemplate } from '@langchain/core/prompts';
 import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
 import { LangchainDto } from './dto/langchain.dto';
-import { StableDiffusionDto } from './dto/stableDiffusion.dto';
+import { StableDiffusionDto } from './dto/stableDiffusion2.dto';
 
 @Injectable()
 export class AiService {
