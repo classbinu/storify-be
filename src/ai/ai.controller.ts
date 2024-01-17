@@ -2,7 +2,7 @@ import { AiService } from './ai.service';
 import { ApiTags } from '@nestjs/swagger';
 import { Body, Controller, Post } from '@nestjs/common';
 import { LangchainDto } from './dto/langchain.dto';
-import { StableDiffusionDto } from './dto/stableDiffusion2.dto';
+import { StableDiffusionDto } from './dto/stableDiffusion.dto';
 
 @ApiTags('Ai')
 @Controller('ai')
