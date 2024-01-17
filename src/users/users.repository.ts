@@ -13,16 +13,32 @@ export class UserMongoRepository {
     try {
       const newUser = new this.userModel(user);
       return await newUser.save();
-    } catch(error) {
+    } catch (error) {
       throw new Error(`Error creating user: ${error.message}`);
     }
   }
 
-  async getUser(_id: string): Promise<User> {
+  async findById(id: string): Promise<User> {
     try {
-      return await this.userModel.findById(_id).exec();
-    } catch(error) {
+      return await this.userModel.findById(id).exec();
+    } catch (error) {
       throw new Error(`Error fetching user: ${error.message}`);
+    }
+  }
+
+  async findByUsername(username: string): Promise<User> {
+    try {
+      return await this.userModel.findOne({ username }).exec();
+    } catch (error) {
+      throw new Error(`Error finding user by username: ${error.message}`);
+    }
+  }
+
+  async findAll(): Promise<User[]> {
+    try {
+      return await this.userModel.find().exec();
+    } catch (error) {
+      throw new Error(`Error fetching all users: ${error.message}`);
     }
   }
 
@@ -31,8 +47,10 @@ export class UserMongoRepository {
       if (updateUserDto.refreshToken === null) {
         delete updateUserDto.refreshToken;
       }
-      return await this.userModel.findByIdAndUpdate(id, updateUserDto, { new: true }).exec();
-    } catch(error) {
+      return await this.userModel
+        .findByIdAndUpdate(id, updateUserDto, { new: true })
+        .exec();
+    } catch (error) {
       throw new Error(`Error updating user: ${error.message}`);
     }
   }
@@ -40,24 +58,8 @@ export class UserMongoRepository {
   async deleteUser(_id: string): Promise<any> {
     try {
       return await this.userModel.findByIdAndDelete(_id).exec();
-    } catch(error) {
+    } catch (error) {
       throw new Error(`Error deleting user: ${error.message}`);
-    }
-  }
-
-  async findById(_id: string): Promise<User> {
-    try {
-      return await this.userModel.findById(_id).exec();
-    } catch(error) {
-      throw new Error(`Error finding user by email: ${error.message}`);
-    }
-  }
-
-  async findByUsername(username: string): Promise<User> {
-    try {
-      return await this.userModel.findOne({username}).exec();
-    } catch(error) {
-      throw new Error(`Error finding user by username: ${error.message}`);
     }
   }
 
@@ -70,16 +72,8 @@ export class UserMongoRepository {
       });
 
       return await newUser.save();
-    } catch(error) {
+    } catch (error) {
       throw new Error(`Error saving user: ${error.message}`);
-    }
-  }
-
-  async findAll(): Promise<User[]> {
-    try {
-      return await this.userModel.find().exec();
-    } catch(error) {
-      throw new Error(`Error fetching all users: ${error.message}`);
     }
   }
 }

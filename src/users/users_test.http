@@ -1,0 +1,27 @@
+### 
+POST http://localhost:3000/users/create
+Content-Type: application/json
+
+{
+    "username": "REAL MAN2000",
+    "password": "1",
+    "email": "REALMAN2000@test.com"
+}
+
+### 
+GET http://localhost:3000/users/65a7310bda4e19b6941cdd48
+
+### 
+PATCH  http://localhost:3000/users/65a7310bda4e19b6941cdd48
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NWE3MzEwYmRhNGUxOWI2OTQxY2RkNDgiLCJlbWFpbCI6InRlc3QxQHRlc3QxLmNvbSIsImlhdCI6MTcwNTQ1NjI0OCwiZXhwIjoxNzA1NTQyNjQ4fQ.Wa0VxJj0NaShwMn4v8ZVVbvW0sD5cydjNrqRypJnI94
+
+{
+    "username": "jinhwan",
+    "password": "qwer",
+    "email": "test2@test1.com"
+}
+
+### 
+DELETE http://localhost:3000/users/65a7310bda4e19b6941cdd48
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NWE3MzEwYmRhNGUxOWI2OTQxY2RkNDgiLCJlbWFpbCI6InRlc3QxQHRlc3QxLmNvbSIsImlhdCI6MTcwNTQ1NjI0OCwiZXhwIjoxNzA1NTQyNjQ4fQ.Wa0VxJj0NaShwMn4v8ZVVbvW0sD5cydjNrqRypJnI94

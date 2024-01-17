@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, ForbiddenException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  ForbiddenException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { User } from 'src/users/schema/user.schema';
 import { UserMongoRepository } from 'src/users/users.repository';
@@ -15,7 +20,7 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
   ) {}
-  
+
   // 회원가입
   async register(createUserDto: CreateUserDto): Promise<any> {
     // Check if username and email exists
@@ -23,59 +28,62 @@ export class AuthService {
       throw new BadRequestException('username is required');
     }
 
-    const userExists = await this.userMongoRepository.findByUsername(createUserDto.username);
+    const userExists = await this.userMongoRepository.findByUsername(
+      createUserDto.username,
+    );
     if (userExists) {
       throw new BadRequestException('User already exists');
     }
 
     // Hash password
     const hash = await this.hashData(createUserDto.password);
-    console.log("Hashed password:", hash);
+    console.log('Hashed password:', hash);
     const newUser = await this.userMongoRepository.createUser({
       ...createUserDto,
       password: hash,
     });
 
     // 저장된 비밀번호 확인
-    const savedUser = await this.userMongoRepository.findByUsername(newUser.username);
-    console.log("Saved hashed password:", savedUser.password);
-    const tokens = await this.getTokens(newUser._id, newUser.email);
-    await this.updateRefreshToken(newUser._id, tokens.refreshToken);
+    const savedUser = await this.userMongoRepository.findByUsername(
+      newUser.username,
+    );
+    console.log('Saved hashed password:', savedUser.password);
+    const tokens = await this.getTokens(newUser.id, newUser.email);
+    await this.updateRefreshToken(newUser.id, tokens.refreshToken);
     return tokens;
   }
 
-
   // 로그인
-	async logIn(data: AuthDto) {
+  async logIn(data: AuthDto) {
     // Check if user exists
     const user = await this.userMongoRepository.findByUsername(data.username);
     if (!user) throw new BadRequestException('User does not exist');
     const passwordMatches = await argon2.verify(user.password, data.password);
     if (!passwordMatches)
       throw new BadRequestException('Password is incorrect');
-    const tokens = await this.getTokens(user._id, user.email);
-    await this.updateRefreshToken(user._id, tokens.refreshToken);
+    const tokens = await this.getTokens(user.id, user.email);
+    await this.updateRefreshToken(user.id, tokens.refreshToken);
     return tokens;
   }
 
-  async findUserById(userId: string): Promise<User> {
+  async findUserById(id: string): Promise<User> {
     try {
-      return await this.userMongoRepository.getUser(userId);
-    } catch(error) {
+      return await this.userMongoRepository.findById(id);
+    } catch (error) {
       throw new Error(`Error fetching user: ${error.message}`);
     }
   }
 
-	async logout(userId: string) {
-    return this.userMongoRepository.updateUser(userId, { refreshToken: null });
+  async logout(id: string) {
+    return this.userMongoRepository.updateUser(id, { refreshToken: null });
   }
 
   hashData(data: string) {
     return argon2.hash(data);
   }
 
-  async changePassword(userId: string, updateAuthDto: UpdateAuthDto) {
-    const user = await this.userMongoRepository.getUser(userId);
+  async changePassword(id: string, updateAuthDto: UpdateAuthDto) {
+    const user = await this.userMongoRepository.findById(id);
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
@@ -87,58 +95,67 @@ export class AuthService {
     if (!checkOldpassword) {
       throw new UnauthorizedException('현재 비밀번호가 맞지 않습니다.');
     }
-    
+
     const hashedPassword = await this.hashData(updateAuthDto.newPassword);
-    await this.userMongoRepository.updateUser(userId, { password: hashedPassword });
+    await this.userMongoRepository.updateUser(id, {
+      password: hashedPassword,
+    });
     return { message: 'Password changed successfully' };
   }
 
-  async updateRefreshToken(userId: string, refreshToken: string) {
+  async updateRefreshToken(id: string, refreshToken: string) {
     const hashedRefreshToken = await this.hashData(refreshToken);
-    await this.userMongoRepository.updateUser(userId, {
-    refreshToken: hashedRefreshToken,
+    await this.userMongoRepository.updateUser(id, {
+      refreshToken: hashedRefreshToken,
     });
   }
 
-  async getTokens(userId: string, email: string) {
+  async getTokens(id: string, email: string) {
     const [accessToken, refreshToken] = await Promise.all([
-    this.jwtService.signAsync({
-      sub: userId,
-      email,
-      },
-      {
-      secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
-      expiresIn: '15m',
-      },
-    ),
-    this.jwtService.signAsync({
-      sub: userId,
-      email,
-      },
-      {
-      secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
-      expiresIn: '7d',
-      },
-    ),
+      this.jwtService.signAsync(
+        {
+          sub: id,
+          email,
+        },
+        {
+          secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
+          expiresIn: '1d',
+        },
+      ),
+      this.jwtService.signAsync(
+        {
+          sub: id,
+          email,
+        },
+        {
+          secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+          expiresIn: '7d',
+        },
+      ),
     ]);
 
     return {
-    accessToken,
-    refreshToken,
+      accessToken,
+      refreshToken,
     };
   }
 
-  async refreshTokens(userId: string, refreshToken: string) {
-    const user = await this.userMongoRepository.findById(userId);
-    if (!user || !user.refreshToken)
+  async refreshTokens(id: string, refreshToken: string) {
+    const user = await this.userMongoRepository.findById(id);
+    if (!user || !user.refreshToken) {
       throw new ForbiddenException('Access Denied');
+    }
+
     const refreshTokenMatches = await argon2.verify(
       user.refreshToken,
       refreshToken,
     );
-    if (!refreshTokenMatches) throw new ForbiddenException('Access Denied');
-    const tokens = await this.getTokens(user._id, user.email);
-    await this.updateRefreshToken(user._id, tokens.refreshToken);
+    if (!refreshTokenMatches) {
+      throw new ForbiddenException('Access Denied');
+    }
+
+    const tokens = await this.getTokens(user.id, user.email);
+    await this.updateRefreshToken(user.id, tokens.refreshToken);
     return tokens;
   }
 }

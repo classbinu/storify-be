@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Delete,
+  Body,
+  Param,
+  UseGuards,
+  Patch,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -12,8 +21,8 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return this.usersService.create(createUserDto);
+  createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
+    return this.usersService.createUser(createUserDto);
   }
 
   @Get()
@@ -21,20 +30,23 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  @Get('findOne/:email')
-  findOne(@Param('email') email: string): Promise<User> {
-    return this.usersService.findOne(email);
+  @Get(':id')
+  findById(@Param('id') id: string): Promise<User> {
+    return this.usersService.findById(id);
   }
 
   @UseGuards(AccessTokenGuard)
-  @Put('update/:email')
-  update(@Param('email') email: string, @Body() updateUserDto: UpdateUserDto): Promise<User> {
-    return this.usersService.update(email, updateUserDto);
+  @Patch(':id')
+  updateUser(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ): Promise<User> {
+    return this.usersService.updateUser(id, updateUserDto);
   }
 
   @UseGuards(AccessTokenGuard)
-  @Delete('delete/:email')
-  remove(@Param('email') email: string): Promise<any> {
-    return this.usersService.remove(email);
+  @Delete(':id')
+  deleteUser(@Param('id') id: string): Promise<any> {
+    return this.usersService.deleteUser(id);
   }
 }
