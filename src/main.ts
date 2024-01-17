@@ -1,9 +1,10 @@
-import { NestFactory } from '@nestjs/core';
+import * as dotenv from 'dotenv';
+
 import { AppModule } from './app.module';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { NestFactory } from '@nestjs/core';
 import { SwaggerModule } from '@nestjs/swagger';
 import { swaggerConfig } from './swagger.config';
-import { NestExpressApplication } from '@nestjs/platform-express';
-import * as dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -11,7 +12,8 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('api-docs', app, document);
+  app.setGlobalPrefix('api');
+  SwaggerModule.setup('/docs', app, document);
 
   await app.listen(3000);
 }
