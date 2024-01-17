@@ -6,6 +6,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './users/schema/user.schema';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { BooksModule } from './books/books.module';
+import { StoriesModule } from './stories/stories.module';
+import { AiModule } from './ai/ai.module';
 
 @Module({
   imports: [
@@ -24,6 +27,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     }),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     AuthModule,
+    BooksModule,
+    StoriesModule,
+    AiModule,
   ],
   controllers: [AppController],
   providers: [AppService],
