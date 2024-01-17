@@ -3,7 +3,7 @@ import { ChatPromptTemplate } from '@langchain/core/prompts';
 import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
 import { LangchainDto } from './dto/langchain.dto';
-import { StableDiffusionDto } from './dto/stablediffusion.dto';
+import { StableDiffusionDto } from './dto/stableDiffusion.dto';
 
 @Injectable()
 export class AiService {
@@ -91,7 +91,9 @@ export class AiService {
       headers,
       body: JSON.stringify(payload),
     });
-    const result = await res.blob();
-    return result;
+    const arrayBuffer = await res.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const base64 = buffer.toString('base64');
+    return base64;
   }
 }
