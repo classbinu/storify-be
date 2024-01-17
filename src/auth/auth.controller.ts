@@ -5,10 +5,8 @@ import {
   Post,
   Req,
   UseGuards,
-  Res,
   Patch,
 } from '@nestjs/common';
-import { Response } from 'express';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { AuthDto } from './dto/auth.dto';
@@ -23,7 +21,7 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('register')
-  async register(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
+  async register(@Body() createUserDto: CreateUserDto) {
     return await this.authService.register(createUserDto);
   }
 
