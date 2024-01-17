@@ -8,7 +8,7 @@ import { User } from './schema/user.schema';
 export class UsersService {
   constructor(private userRepository: UserMongoRepository) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async createUser(createUserDto: CreateUserDto): Promise<User> {
     return this.userRepository.createUser(createUserDto);
   }
 
@@ -16,15 +16,15 @@ export class UsersService {
     return this.userRepository.findAll();
   }
 
-  async findOne(email: string): Promise<User> {
-    return this.userRepository.getUser(email);
+  async findById(id: string): Promise<User> {
+    return this.userRepository.findById(id);
   }
 
-  async update(email: string, updateUserDto: UpdateUserDto): Promise<User> {
-    return this.userRepository.updateUser(email, updateUserDto);
+  async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+    return this.userRepository.updateUser(id, updateUserDto);
   }
 
-  async remove(email: string): Promise<any> {
-    return this.userRepository.deleteUser(email);
+  async deleteUser(id: string): Promise<any> {
+    return this.userRepository.deleteUser(id);
   }
 }

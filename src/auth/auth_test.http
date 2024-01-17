@@ -4,7 +4,7 @@ POST http://localhost:3000/auth/login
 Content-Type: application/json
 
 {
-    "username": "realman",
+    "username": "jinhwan",
     "password": "qwer"
 }
 
@@ -13,15 +13,15 @@ POST http://localhost:3000/auth/register
 Content-Type: application/json
 
 {
-    "username": "realman",
+    "username": "jinhwan",
     "password": "qwer",
-    "email": "test@test.com"
+    "email": "test1@test1.com"
 }
 
 ###
 PATCH http://localhost:3000/auth/password
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NWE2ODIyMGFmZTMyZmM1MWU4ODM1NTQiLCJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJpYXQiOjE3MDU0MTExMzYsImV4cCI6MTcwNTQxMjAzNn0.bGWTu6PEIzm_aWVb9GSq_A0t4xBHO2x30-8XOfXIVpA
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NWE3MzEwYmRhNGUxOWI2OTQxY2RkNDgiLCJlbWFpbCI6InRlc3QxQHRlc3QxLmNvbSIsImlhdCI6MTcwNTQ1NjI0OCwiZXhwIjoxNzA1NTQyNjQ4fQ.Wa0VxJj0NaShwMn4v8ZVVbvW0sD5cydjNrqRypJnI94
 
 {
     "oldPassword": "qwer",
