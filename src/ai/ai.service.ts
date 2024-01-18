@@ -9,18 +9,31 @@ import { StableDiffusionDto } from './dto/stableDiffusion.dto';
 export class AiService {
   constructor(private configService: ConfigService) {}
 
+  async uploadImageToS3(blob: Blob, index: number): Promise<any> {
+    console.log(blob);
+    console.log(index);
+    return index;
+  }
+
   async langchain(langchainDto: LangchainDto): Promise<any> {
     const chatModel = new ChatOpenAI({
       openAIApiKey: this.configService.get<string>('OPENAI_API_KEY'),
       modelName: 'gpt-3.5-turbo-1106',
+      // modelName: 'gpt-4',
       temperature: 0.9,
     });
 
     const userMessage = langchainDto.message;
     const systemMessage = `
-      당신은 동화작가입니다. 
-      당신이 생성하는 동화는 '기승전결'의 4문단으로 구성됩니다.
-      폭력적이거나 성적인 내용이라면 다른 응답은 하지 않고 false를 반환합니다.
+    #role
+    You are a children's story writer.
+
+    # directive
+    Creates a fairy tale based on user input.
+
+    # Constraints
+    1. The fairy tale must be created with at least 400 characters.
+    1. The fairy tale is created with at least four paragraphs separated by blank lines.
     `;
     const prompt = ChatPromptTemplate.fromMessages([
       ['system', systemMessage],
@@ -32,7 +45,26 @@ export class AiService {
       input: userMessage,
     });
 
+    const storyText = res.content.toString();
+    const storyArray = storyText.split('\n\n');
+    this.createStorybook(storyArray);
     return res.content;
+  }
+
+  async createStorybook(storyArray) {
+    const negativePrompts =
+      'bad art, ugly, deformed, watermark, duplicated, ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, extra limbs, disfigured, body out of frame, blurry, bad anatomy, blurred, grainy, signature, cut off, draft';
+
+    const promises = storyArray.map((item, index) => {
+      return this.stableDiffusion({
+        prompts: item,
+        negativePrompts,
+      }).then((blob) => {
+        this.uploadImageToS3(blob, index);
+      });
+    });
+
+    const results = await Promise.all(promises);
   }
 
   async stableDiffusion(stabldDiffusionDto: StableDiffusionDto): Promise<any> {
@@ -54,7 +86,7 @@ export class AiService {
       },
     };
 
-    const theme = 'cartoon';
+    const theme = 'storybook';
     const prompts = stabldDiffusionDto.prompts;
     const negativePrompts = stabldDiffusionDto.negativePrompts;
 
@@ -91,9 +123,6 @@ export class AiService {
       headers,
       body: JSON.stringify(payload),
     });
-    const arrayBuffer = await res.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-    const base64 = buffer.toString('base64');
-    return base64;
+    return res.blob();
   }
 }
