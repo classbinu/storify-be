@@ -11,7 +11,9 @@ import { StoriesService } from './stories.service';
 import { CreateStoryDto } from './dto/create-story.dto';
 import { UpdateStoryDto } from './dto/update-story.dto';
 import { Story } from './schema/story.schema';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Stories')
 @Controller('stories')
 export class StoriesController {
   constructor(private storiesService: StoriesService) {}

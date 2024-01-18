@@ -1,0 +1,13 @@
+@host = http://localhost:3000/api
+
+###
+
+POST {{host}}/books/image HTTP/1.1
+Content-Type: multipart/form-data; boundary=MyBoundary
+
+--MyBoundary
+Content-Disposition: form-data; name="file"; filename="test.png"
+Content-Type: image/png
+
+<C:\Users\4641q\OneDrive\바탕 화면\krafton\sdasda-6gwUiQ.png>
+--MyBoundary--
