@@ -4,6 +4,7 @@ import { ChatPromptTemplate } from '@langchain/core/prompts';
 import { ConfigService } from '@nestjs/config';
 import { CreateBookDto } from 'src/books/dto/create-book.dto';
 import { Injectable } from '@nestjs/common';
+import { JsonOutputFunctionsParser } from 'langchain/output_parsers';
 import { LangchainDto } from './dto/langchain.dto';
 import { StableDiffusionDto } from './dto/stableDiffusion.dto';
 import { StoragesService } from 'src/storages/storages.service';
@@ -21,7 +22,7 @@ export class AiService {
       openAIApiKey: this.configService.get<string>('OPENAI_API_KEY'),
       modelName: 'gpt-3.5-turbo-1106',
       // modelName: 'gpt-4',
-      temperature: 0.9,
+      temperature: 0,
     });
 
     const userMessage = langchainDto.message;
@@ -30,12 +31,12 @@ export class AiService {
     You are a children's story writer.
 
     # directive
-    Creates a fairy tale based on user input.
+    Creates a story based on user input.
 
     # Constraints
-    1. In English.
-    1. The fairy tale must be created with at least 400 characters.
-    1. The fairy tale is created with at least four paragraphs separated by blank lines.
+    1. In Korean.
+    1. The story must be created with at least 400 characters.
+    1. The story is created with at least four paragraphs separated by blank lines.
     `;
     const prompt = ChatPromptTemplate.fromMessages([
       ['system', systemMessage],
@@ -49,17 +50,56 @@ export class AiService {
 
     const storyText = res.content.toString();
     const storyArray = storyText.split('\n\n');
-    this.createStorybook(storyArray);
+    console.log(storyArray);
+
+    // 삽화 프롬프트 생성
+    const userMessage2 = storyArray;
+    const systemMessage2 = `
+    # directive
+    1. In English
+    1. Create ${storyArray.length} image creation prompts to go with this story. 
+    1. Each prompt consists of at least 10 words. Like "[lovely girl, cozy, happy, under the tree, sunshie]"
+    1. Each prompt is returned in the form of an array, and the array has ${storyArray.length} elements.
+    1. It is returned in a form that can only be converted to an array.
+    1. People's names are not used and only objective situations are described.
+    1. Characters such as must start with '[' and end with ']'.
+    `;
+
+    const prompt2 = ChatPromptTemplate.fromMessages([
+      ['system', systemMessage2],
+      ['user', '{input}'],
+    ]);
+
+    const chain2 = prompt2.pipe(chatModel);
+    const res2 = await chain2.invoke({
+      input: storyText,
+    });
+
+    // const imageText = res2.content.toString();
+    // const imageArray = imageText.split('\n\n');
+    const storyArray2 = res2.content.toString();
+
+    const startIndex = storyArray2.indexOf('[');
+    const endIndex = storyArray2.lastIndexOf(']');
+
+    const arrayString = storyArray2.substring(startIndex, endIndex + 1);
+    console.log(arrayString);
+    console.log('===');
+
+    const imagePromprts = JSON.parse(arrayString);
+    console.log(imagePromprts);
+
+    this.createStorybook(storyArray, imagePromprts);
     return res.content;
   }
 
   // 책을 만드는 함수
-  async createStorybook(storyArray) {
+  async createStorybook(storyArray, imagePromprts) {
     const negativePrompts =
       'bad art, ugly, deformed, watermark, duplicated, ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, extra limbs, disfigured, body out of frame, blurry, bad anatomy, blurred, grainy, signature, cut off, draft';
 
     // 삽화 생성 병렬 요청
-    const promises = storyArray.map((prompts: string, index: number) => {
+    const promises = imagePromprts.map((prompts: string, index: number) => {
       return this.stableDiffusion({
         prompts,
         negativePrompts,
@@ -93,7 +133,7 @@ export class AiService {
     console.log(createBookDto);
 
     // book 데이터 생성 코드 필요
-    return await this.booksService.createBook();
+    // return await this.booksService.createBook();
   }
 
   async stableDiffusion(stabldDiffusionDto: StableDiffusionDto): Promise<any> {
@@ -115,7 +155,7 @@ export class AiService {
       },
     };
 
-    const theme = 'storybook';
+    const theme = 'cartoon';
     const prompts = stabldDiffusionDto.prompts;
     const negativePrompts = stabldDiffusionDto.negativePrompts;
 
@@ -130,7 +170,8 @@ export class AiService {
     };
 
     const payload = {
-      inputs: `${TRIGGER_WORDS} ${prompts}, ${LORA}`,
+      inputs: `${TRIGGER_WORDS} best quality, ${prompts}, ${LORA}`,
+      // inputs: prompts,
       parameters: {
         negative_prompt: negativePrompts,
         min_length: false,
