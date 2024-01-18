@@ -4,16 +4,14 @@ import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
 import { LangchainDto } from './dto/langchain.dto';
 import { StableDiffusionDto } from './dto/stableDiffusion.dto';
+import { StoragesService } from 'src/storages/storages.service';
 
 @Injectable()
 export class AiService {
-  constructor(private configService: ConfigService) {}
-
-  async uploadImageToS3(blob: Blob, index: number): Promise<any> {
-    console.log(blob);
-    console.log(index);
-    return index;
-  }
+  constructor(
+    private configService: ConfigService,
+    private readonly storagesService: StoragesService,
+  ) {}
 
   async langchain(langchainDto: LangchainDto): Promise<any> {
     const chatModel = new ChatOpenAI({
@@ -32,6 +30,7 @@ export class AiService {
     Creates a fairy tale based on user input.
 
     # Constraints
+    1. In English.
     1. The fairy tale must be created with at least 400 characters.
     1. The fairy tale is created with at least four paragraphs separated by blank lines.
     `;
@@ -59,12 +58,13 @@ export class AiService {
       return this.stableDiffusion({
         prompts: item,
         negativePrompts,
-      }).then((blob) => {
-        this.uploadImageToS3(blob, index);
+      }).then(async () => {
+        // 업로드 코드
       });
     });
 
     const results = await Promise.all(promises);
+    console.log(results);
   }
 
   async stableDiffusion(stabldDiffusionDto: StableDiffusionDto): Promise<any> {
@@ -123,6 +123,7 @@ export class AiService {
       headers,
       body: JSON.stringify(payload),
     });
-    return res.blob();
+    console.log(res);
+    return res;
   }
 }
