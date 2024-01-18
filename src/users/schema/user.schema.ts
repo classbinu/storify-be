@@ -1,7 +1,5 @@
 import * as argon2 from 'argon2';
-
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-
 import { Document } from 'mongoose';
 
 export type UserDocument = User & Document;
@@ -18,6 +16,9 @@ export class User {
 
   @Prop({ required: true, unique: true })
   email: string;
+
+  @Prop({ required: true })
+  status: string;
 
   @Prop({ default: Date.now })
   createdAt: Date = new Date();

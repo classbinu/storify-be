@@ -1,34 +1,48 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { StoriesService } from './stories.service';
 import { CreateStoryDto } from './dto/create-story.dto';
 import { UpdateStoryDto } from './dto/update-story.dto';
+import { Story } from './schema/story.schema';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Stories')
 @Controller('stories')
 export class StoriesController {
-  constructor(private readonly storiesService: StoriesService) {}
+  constructor(private storiesService: StoriesService) {}
 
   @Post()
-  create(@Body() createStoryDto: CreateStoryDto) {
-    return this.storiesService.create(createStoryDto);
+  createStory(@Body() createStoryDto: CreateStoryDto): Promise<Story> {
+    return this.storiesService.createStory(createStoryDto);
   }
 
   @Get()
-  findAll() {
-    return this.storiesService.findAll();
+  findAllStory(): Promise<Story[]> {
+    return this.storiesService.findAllStroy();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.storiesService.findOne(+id);
+  findStoryById(@Param('id') id: string): Promise<Story> {
+    return this.storiesService.findStoryById(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateStoryDto: UpdateStoryDto) {
-    return this.storiesService.update(+id, updateStoryDto);
+  updateStory(
+    @Param('id') id: string,
+    @Body() updateStoryDto: UpdateStoryDto,
+  ): Promise<Story> {
+    return this.storiesService.updateStory(id, updateStoryDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.storiesService.remove(+id);
+  deleteStory(@Param('id') id: string): Promise<Story> {
+    return this.storiesService.deleteStory(id);
   }
 }

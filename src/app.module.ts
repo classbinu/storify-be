@@ -9,6 +9,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BooksModule } from './books/books.module';
 import { StoriesModule } from './stories/stories.module';
 import { AiModule } from './ai/ai.module';
+import { StoragesModule } from './storages/storages.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { AiModule } from './ai/ai.module';
     BooksModule,
     StoriesModule,
     AiModule,
+    StoragesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

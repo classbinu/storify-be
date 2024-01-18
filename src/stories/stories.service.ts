@@ -1,26 +1,33 @@
 import { Injectable } from '@nestjs/common';
 import { CreateStoryDto } from './dto/create-story.dto';
 import { UpdateStoryDto } from './dto/update-story.dto';
+import { StoryMongoRepository } from './stories.repository';
+import { Story } from './schema/story.schema';
 
 @Injectable()
 export class StoriesService {
-  create(createStoryDto: CreateStoryDto) {
-    return 'This action adds a new story';
+  constructor(private storyRepository: StoryMongoRepository) {}
+
+  async createStory(createStoryDto: CreateStoryDto): Promise<Story> {
+    return this.storyRepository.createStory(createStoryDto);
   }
 
-  findAll() {
-    return `This action returns all stories`;
+  async findAllStroy(): Promise<Story[]> {
+    return this.storyRepository.findAllStroy();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} story`;
+  async findStoryById(id: string): Promise<Story> {
+    return this.storyRepository.findStoryById(id);
   }
 
-  update(id: number, updateStoryDto: UpdateStoryDto) {
-    return `This action updates a #${id} story`;
+  async updateStory(
+    id: string,
+    updateStoryDto: UpdateStoryDto,
+  ): Promise<Story> {
+    return this.storyRepository.updateStory(id, updateStoryDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} story`;
+  async deleteStory(id: string): Promise<Story> {
+    return this.storyRepository.deleteStory(id);
   }
 }
