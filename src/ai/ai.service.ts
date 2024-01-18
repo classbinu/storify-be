@@ -2,7 +2,7 @@ import { BooksService } from 'src/books/books.service';
 import { ChatOpenAI } from '@langchain/openai';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
 import { ConfigService } from '@nestjs/config';
-import { CreateBookDto } from 'src/books/dto/create-book.dto';
+import { CreateBookDto, BodyDto } from 'src/books/dto/create-book.dto';
 import { Injectable } from '@nestjs/common';
 import { LangchainDto } from './dto/langchain.dto';
 import { StableDiffusionDto } from './dto/stableDiffusion.dto';
@@ -49,8 +49,10 @@ export class AiService {
 
     const storyText = res.content.toString();
     const storyArray = storyText.split('\n\n');
-    this.createStorybook(storyArray);
-    return res.content;
+    // this.createStorybook(storyArray);
+    // return res.content;
+    const book = await this.createStorybook(storyArray);
+    return book;
   }
 
   // 책을 만드는 함수
@@ -77,23 +79,32 @@ export class AiService {
     const results = await Promise.all(promises);
 
     // book body 생성
-    const bookBody = {};
-    results.forEach((url, index) => {
-      bookBody[index + 1] = bookBody[index + 1] || {};
+    // const bookBody = {};
+    // results.forEach((url, index) => {
+    //   bookBody[index + 1] = bookBody[index + 1] || {};
 
-      bookBody[index + 1]['imgUrl'] = url;
-      bookBody[index + 1]['text'] = storyArray[index];
+    //   bookBody[index + 1]['imgUrl'] = url;
+    //   bookBody[index + 1]['text'] = storyArray[index];
+    // });
+
+    // book body 생성
+    let bookBody: BodyDto[] = [];
+    results.forEach((url, index) => {
+      bookBody.push({
+        imageUrl: url,
+        text: storyArray[index],
+        imagePrompt: ['임시 이미지 프롬프트'],
+        ttsUrl: '임시 TTS URL',
+      });
     });
 
-    const createBookDto = {
+    const createBookDto: CreateBookDto = {
       title: '테스트',
       body: bookBody,
     };
 
-    console.log(createBookDto);
-
     // book 데이터 생성 코드 필요
-    return await this.booksService.createBook();
+    return await this.booksService.createBook(createBookDto);
   }
 
   async stableDiffusion(stabldDiffusionDto: StableDiffusionDto): Promise<any> {

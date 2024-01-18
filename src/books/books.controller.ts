@@ -2,7 +2,7 @@ import {
   Controller,
   Get,
   Post,
-  // Body,
+  Body,
   // Patch,
   Param,
   Delete,
@@ -17,7 +17,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes, ApiOperation } from '@nestjs/swagger';
 import { BooksService } from './books.service';
 import { Book } from './schema/book.schema';
-// import { CreateBookDto } from './dto/create-book.dto';
+import { CreateBookDto } from './dto/create-book.dto';
 // import { UpdateBookDto } from './dto/update-book.dto';
 import { ImageUploadDto } from './dto/image-upload.dto';
 // import { AuthGuard } from '@nestjs/passport';
@@ -29,10 +29,10 @@ import { ApiTags } from '@nestjs/swagger';
 export class BooksController {
   constructor(private readonly booksService: BooksService) {}
 
-  // @Post()
-  // create(@Body() createBookDto: CreateBookDto) {
-  //   return this.booksService.create(createBookDto);
-  // }
+  @Post()
+  async createBook(@Body() createBookDto: CreateBookDto): Promise<Book> {
+    return this.booksService.createBook(createBookDto);
+  }
 
   @ApiOperation({ summary: '게시글 작성, 수정 시 이미지 업로드' })
   @ApiConsumes('multipart/form-data')
