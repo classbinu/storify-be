@@ -1,6 +1,8 @@
+import { BooksService } from 'src/books/books.service';
 import { ChatOpenAI } from '@langchain/openai';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
 import { ConfigService } from '@nestjs/config';
+import { CreateBookDto } from 'src/books/dto/create-book.dto';
 import { Injectable } from '@nestjs/common';
 import { LangchainDto } from './dto/langchain.dto';
 import { StableDiffusionDto } from './dto/stableDiffusion.dto';
@@ -11,6 +13,7 @@ export class AiService {
   constructor(
     private configService: ConfigService,
     private readonly storagesService: StoragesService,
+    private readonly booksService: BooksService,
   ) {}
 
   async langchain(langchainDto: LangchainDto): Promise<any> {
@@ -50,21 +53,47 @@ export class AiService {
     return res.content;
   }
 
+  // 책을 만드는 함수
   async createStorybook(storyArray) {
     const negativePrompts =
       'bad art, ugly, deformed, watermark, duplicated, ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, extra limbs, disfigured, body out of frame, blurry, bad anatomy, blurred, grainy, signature, cut off, draft';
 
-    const promises = storyArray.map((item, index) => {
+    // 삽화 생성 병렬 요청
+    const promises = storyArray.map((prompts: string, index: number) => {
       return this.stableDiffusion({
-        prompts: item,
+        prompts,
         negativePrompts,
-      }).then(async () => {
-        // 업로드 코드
+      }).then(async (buffer) => {
+        const result = await this.storagesService.bufferUploadToS3(
+          `storybook-${Date.now()}-${index}.png`,
+          buffer,
+          'png',
+        );
+        return result;
       });
     });
 
+    // s3 업로드 결과가 배열에 순서대로 담김
     const results = await Promise.all(promises);
-    console.log(results);
+
+    // book body 생성
+    const bookBody = {};
+    results.forEach((url, index) => {
+      bookBody[index + 1] = bookBody[index + 1] || {};
+
+      bookBody[index + 1]['imgUrl'] = url;
+      bookBody[index + 1]['text'] = storyArray[index];
+    });
+
+    const createBookDto = {
+      title: '테스트',
+      body: bookBody,
+    };
+
+    console.log(createBookDto);
+
+    // book 데이터 생성 코드 필요
+    return await this.booksService.createBook();
   }
 
   async stableDiffusion(stabldDiffusionDto: StableDiffusionDto): Promise<any> {
@@ -123,7 +152,8 @@ export class AiService {
       headers,
       body: JSON.stringify(payload),
     });
-    console.log(res);
-    return res;
+    const arrayBuffer = await res.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    return buffer;
   }
 }

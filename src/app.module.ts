@@ -1,15 +1,16 @@
-import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { User, UserSchema } from './users/schema/user.schema';
+
+import { AiModule } from './ai/ai.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UsersModule } from './users/users.module';
-import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from './users/schema/user.schema';
 import { AuthModule } from './auth/auth.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BooksModule } from './books/books.module';
-import { StoriesModule } from './stories/stories.module';
-import { AiModule } from './ai/ai.module';
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
 import { StoragesModule } from './storages/storages.module';
+import { StoriesModule } from './stories/stories.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [

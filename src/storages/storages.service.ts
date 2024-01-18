@@ -34,4 +34,17 @@ export class StoragesService {
 
     return `https://s3.${process.env.AWS_REGION}.amazonaws.com/${process.env.AWS_S3_BUCKET_NAME}/${fileName}`;
   }
+
+  async bufferUploadToS3(fileName: string, buffer: Buffer, ext: string) {
+    const command = new PutObjectCommand({
+      Bucket: this.configService.get('AWS_S3_BUCKET_NAME'),
+      Key: fileName,
+      Body: buffer,
+      ACL: 'public-read',
+      ContentType: `image/${ext}`,
+    });
+    await this.s3Client.send(command);
+
+    return `https://s3.${process.env.AWS_REGION}.amazonaws.com/${process.env.AWS_S3_BUCKET_NAME}/${fileName}`;
+  }
 }
