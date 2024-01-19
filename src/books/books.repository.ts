@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Book, BookDocument } from './schema/book.schema';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { CreateBookDto } from './dto/create-book.dto';
 
 @Injectable()
@@ -14,24 +14,12 @@ export class BookMongoRepository {
     return createdBook.save();
   }
 
-  async findAllBooks(): Promise<Book[]> {
-    return this.bookModel.find().exec();
+  async findAllBooks(query: any): Promise<Book[]> {
+    return this.bookModel.find(query).exec();
   }
 
   async findBookById(id: string): Promise<Book> {
     return this.bookModel.findById(id).exec();
-  }
-
-  async findByUserId(userId: string): Promise<Book[]> {
-    return this.bookModel.find({ userId: new Types.ObjectId(userId) }).exec();
-  }
-
-  async findByCategory(category: string): Promise<Book[]> {
-    return this.bookModel.find({ category }).exec();
-  }
-
-  async findByTag(tag: string): Promise<Book[]> {
-    return this.bookModel.find({ tag: { $in: [tag] } }).exec();
   }
 
   async deleteBook(id: string): Promise<Book> {

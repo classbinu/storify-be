@@ -4,9 +4,9 @@ import { Book } from './schema/book.schema';
 // import { CreateBookDto } from './dto/create-book.dto';
 // import { UpdateBookDto } from './dto/update-book.dto';
 import { BookMongoRepository } from './books.repository';
+import { CreateBookDto } from './dto/create-book.dto';
 import { StoragesService } from 'src/storages/storages.service';
 import { UtilsService } from 'src/utils/utils.service';
-import { CreateBookDto } from './dto/create-book.dto';
 
 @Injectable()
 export class BooksService {
@@ -38,24 +38,12 @@ export class BooksService {
     return { imageUrl };
   }
 
-  async findAllBooks(): Promise<Book[]> {
-    return this.bookRepository.findAllBooks();
+  async findAllBooks(query): Promise<Book[]> {
+    return this.bookRepository.findAllBooks(query);
   }
 
   async findBookById(id: string): Promise<Book> {
     return this.bookRepository.findBookById(id);
-  }
-
-  async findByUserId(userId: string): Promise<Book[]> {
-    return this.bookRepository.findByUserId(userId);
-  }
-
-  async findBooksByCategory(category: string): Promise<Book[]> {
-    return this.bookRepository.findByCategory(category);
-  }
-
-  async findBooksByTag(tag: string): Promise<Book[]> {
-    return this.bookRepository.findByTag(tag);
   }
 
   async deleteBook(id: string, userId: string): Promise<Book> {

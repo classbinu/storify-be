@@ -12,9 +12,11 @@ import {
   UploadedFile,
   UseInterceptors,
   HttpCode,
+  Query,
+  Patch,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBody, ApiConsumes, ApiOperation } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { BooksService } from './books.service';
 import { Book } from './schema/book.schema';
 import { CreateBookDto } from './dto/create-book.dto';
@@ -47,31 +49,16 @@ export class BooksController {
     return await this.booksService.imageUpload(file);
   }
 
+  @ApiQuery({ name: 'userId', required: false })
+  @ApiQuery({ name: 'title', required: false })
   @Get()
-  async findAllBooks(): Promise<Book[]> {
-    return this.booksService.findAllBooks();
+  async findAllBooks(@Query() query: any): Promise<Book[]> {
+    return this.booksService.findAllBooks(query);
   }
 
   @Get(':id')
   async findBookById(@Param('id') id: string): Promise<Book> {
     return this.booksService.findBookById(id);
-  }
-
-  @Get('user/:userId')
-  async findByUserId(@Param('userId') userId: string): Promise<Book[]> {
-    return this.booksService.findByUserId(userId);
-  }
-
-  @Get('category/:category')
-  async findBooksByCategory(
-    @Param('category') category: string,
-  ): Promise<Book[]> {
-    return this.booksService.findBooksByCategory(category);
-  }
-
-  @Get('tag/:tag')
-  async findBooksByTag(@Param('tag') tag: string): Promise<Book[]> {
-    return this.booksService.findBooksByTag(tag);
   }
 
   // @Patch(':id')
