@@ -146,8 +146,6 @@ export class AiService {
       body: bookBody,
     };
 
-    console.log(createBookDto);
-
     // book 데이터 생성 코드 필요
     return await this.booksService.createBook(createBookDto);
   }
