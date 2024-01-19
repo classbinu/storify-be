@@ -24,9 +24,6 @@ export class CreateBookDto {
   @IsNotEmpty()
   title: string;
 
-  @ValidateNested({ each: true })
-  @Type(() => BodyDto)
-  @IsArray()
   @IsNotEmpty()
-  body: BodyDto[];
+  body: { [key: string]: BodyDto };
 }

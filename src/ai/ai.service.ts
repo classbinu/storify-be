@@ -118,24 +118,24 @@ export class AiService {
     const results = await Promise.all(promises);
 
     // book body 생성
-    // const bookBody = {};
-    // results.forEach((url, index) => {
-    //   bookBody[index + 1] = bookBody[index + 1] || {};
-
-    //   bookBody[index + 1]['imgUrl'] = url;
-    //   bookBody[index + 1]['text'] = storyArray[index];
-    // });
-
-    // book body 생성
-    let bookBody: BodyDto[] = [];
+    const bookBody = {};
     results.forEach((url, index) => {
-      bookBody.push({
-        imageUrl: url,
-        text: storyArray[index],
-        imagePrompt: ['임시 이미지 프롬프트'],
-        ttsUrl: '임시 TTS URL',
-      });
+      bookBody[index + 1] = bookBody[index + 1] || {};
+
+      bookBody[index + 1]['imgUrl'] = url;
+      bookBody[index + 1]['text'] = storyArray[index];
+      bookBody[index + 1]['imagePrompt'] = ['임시 이미지 프롬프트'];
+      bookBody[index + 1]['ttsUrl'] = ['임시 TTS URL'];
     });
+
+    // let bookBody = {};
+    // results.forEach((url, index) => {
+    //   bookBody[index + 1] = {
+    //     imageUrl: url,
+    //     text: storyArray[index],
+
+    //   };
+    // });
 
     const createBookDto: CreateBookDto = {
       title: '테스트',
