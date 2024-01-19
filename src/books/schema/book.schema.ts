@@ -9,22 +9,23 @@ export class Book {
   title: string;
 
   @Prop({
-    type: [
-      {
-        text: String,
-        imagePrompt: [String],
-        imageUrl: String,
-        ttsUrl: String,
-      },
-    ],
-    required: true,
+    type: Map,
+    of: {
+      text: String,
+      imagePrompt: [String],
+      imageUrl: String,
+      ttsUrl: String,
+    },
   })
-  body: {
-    text: string;
-    imagePrompt: string[];
-    imageUrl: string;
-    ttsUrl: string;
-  }[];
+  body: Map<
+    string,
+    {
+      text: string;
+      imagePrompt: string[];
+      imageUrl: string;
+      ttsUrl: string;
+    }
+  >;
 
   // @Prop({ required: true })
   category: string;

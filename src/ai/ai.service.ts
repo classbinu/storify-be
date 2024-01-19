@@ -86,10 +86,14 @@ export class AiService {
     const arrayString = storyArray2.substring(startIndex, endIndex + 1);
     console.log(arrayString);
 
-    const imagePromprts = JSON.parse(arrayString);
-    console.log(imagePromprts);
+    try {
+      const imagePromprts = JSON.parse(arrayString);
+      console.log(imagePromprts);
+      this.createStorybook(storyArray, imagePromprts);
+    } catch (error) {
+      console.log('Invalid JSON:', arrayString);
+    }
 
-    this.createStorybook(storyArray, imagePromprts);
     return res.content;
   }
 
@@ -117,29 +121,32 @@ export class AiService {
     const results = await Promise.all(promises);
 
     // book body 생성
+    // const bookBody = {};
+    // results.forEach((url, index) => {
+    //   bookBody[index + 1] = bookBody[index + 1] || {};
+
+    //   bookBody[index + 1]['imgUrl'] = url;
+    //   bookBody[index + 1]['text'] = storyArray[index];
+    //   bookBody[index + 1]['imagePrompt'] = ['임시 이미지 프롬프트'];
+    //   bookBody[index + 1]['ttsUrl'] = ['임시 TTS URL'];
+    // });
+
     const bookBody = {};
     results.forEach((url, index) => {
-      bookBody[index + 1] = bookBody[index + 1] || {};
-
-      bookBody[index + 1]['imgUrl'] = url;
-      bookBody[index + 1]['text'] = storyArray[index];
-      bookBody[index + 1]['imagePrompt'] = ['임시 이미지 프롬프트'];
-      bookBody[index + 1]['ttsUrl'] = ['임시 TTS URL'];
+      bookBody[index + 1] = {
+        imgUrl: url,
+        text: storyArray[index],
+        imagePrompt: imagePromprts[index],
+        ttsUrl: '',
+      };
     });
-
-    // let bookBody = {};
-    // results.forEach((url, index) => {
-    //   bookBody[index + 1] = {
-    //     imageUrl: url,
-    //     text: storyArray[index],
-
-    //   };
-    // });
 
     const createBookDto: CreateBookDto = {
       title: '테스트',
       body: bookBody,
     };
+
+    console.log(createBookDto);
 
     // book 데이터 생성 코드 필요
     return await this.booksService.createBook(createBookDto);
