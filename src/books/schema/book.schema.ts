@@ -47,6 +47,9 @@ export class Book {
 
   // @Prop({ required: true })
   status: string;
+
+  @Prop({ default: Date.now })
+  createdAt: Date = new Date();
 }
 
 export const BookSchema = SchemaFactory.createForClass(Book);
