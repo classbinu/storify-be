@@ -18,7 +18,11 @@ export class StoriesService {
 
   async createAiStory(createStoryDto: CreateStoryDto): Promise<Story> {
     const newStory = await this.storyRepository.createStory(createStoryDto);
-    return this.aiService.langchain(createStoryDto, newStory._id);
+    return this.aiService.langchain(
+      createStoryDto,
+      newStory._id,
+      createStoryDto.userId,
+    );
   }
 
   async findAllStroy(): Promise<Story[]> {

@@ -13,8 +13,9 @@ export class AiController {
   async langchain(
     @Body() langchainDto: LangchainDto,
     @Body('storyId') storyId: string,
+    @Body('userId') userId: string,
   ) {
-    return await this.aiService.langchain(langchainDto, storyId);
+    return await this.aiService.langchain(langchainDto, storyId, userId);
   }
 
   @Post('stablediffusion')
