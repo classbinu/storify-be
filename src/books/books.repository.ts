@@ -10,6 +10,7 @@ export class BookMongoRepository {
 
   async createBook(createBookDto: CreateBookDto): Promise<Book> {
     const createdBook = new this.bookModel(createBookDto);
+    console.log(createdBook);
     return createdBook.save();
   }
 

@@ -13,8 +13,12 @@ export class StoriesService {
   ) {}
 
   async createStory(createStoryDto: CreateStoryDto): Promise<Story> {
-    this.aiService.langchain(createStoryDto);
     return this.storyRepository.createStory(createStoryDto);
+  }
+
+  async createAiStory(createStoryDto: CreateStoryDto): Promise<Story> {
+    this.storyRepository.createStory(createStoryDto);
+    return this.aiService.langchain(createStoryDto);
   }
 
   async findAllStroy(): Promise<Story[]> {

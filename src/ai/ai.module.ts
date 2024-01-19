@@ -8,5 +8,6 @@ import { StoragesService } from 'src/storages/storages.service';
   imports: [BooksModule],
   controllers: [AiController],
   providers: [AiService, StoragesService],
+  exports: [AiService],
 })
 export class AiModule {}

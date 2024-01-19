@@ -23,6 +23,11 @@ export class StoriesController {
     return this.storiesService.createStory(createStoryDto);
   }
 
+  @Post('ai')
+  createAiStory(@Body() createStoryDto: CreateStoryDto): Promise<Story> {
+    return this.storiesService.createAiStory(createStoryDto);
+  }
+
   @Get()
   findAllStory(): Promise<Story[]> {
     return this.storiesService.findAllStroy();
