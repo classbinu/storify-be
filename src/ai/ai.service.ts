@@ -35,8 +35,9 @@ export class AiService {
 
     # Constraints
     1. In Korean.
-    1. The story must be created with at least 400 characters.
+    1. '제목: [이야기의 제목]' 형식으로 시작한다.
     1. The story is created with at least four paragraphs separated by blank lines.
+    1. The story must be created with at least 400 characters.
     `;
     const prompt = ChatPromptTemplate.fromMessages([
       ['system', systemMessage],
@@ -58,9 +59,9 @@ export class AiService {
     const systemMessage2 = `
     # directive
     1. In English
-    1. Create ${storyArray.length} image prompts about people and landscapes creation to go with this story. 
+    1. Create ${storyArray.length - 1} image prompts about people and landscapes creation to go with this story. 
     1. Each prompt consists of at least 3 words. Like "[lovely_girl, orange_hair, cozy, warm, happy, under_the_tree, sunshie]"
-    1. Each prompt is returned in the form of an array, and the array has ${storyArray.length} elements.
+    1. Each prompt is returned in the form of an array, and the array has ${storyArray.length - 1} elements.
     1. Return the prompts as a JSON array, with each prompt consisting of descriptive elements in a sub-array.
     1. People's names are not used and only objective situations are described.
     1. Characters such as must start with '[' and end with ']'.
@@ -98,7 +99,9 @@ export class AiService {
   }
 
   // 책을 만드는 함수
+
   async createStorybook(storyArray, imagePromprts, storyId, userId) {
+    const title = storyArray.shift().replace('제목: ', '');
     const negativePrompts =
       'bad art, ugly, deformed, watermark, duplicated, ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, extra limbs, disfigured, body out of frame, blurry, bad anatomy, blurred, grainy, signature, cut off, draft';
 
@@ -120,17 +123,6 @@ export class AiService {
     // s3 업로드 결과가 배열에 순서대로 담김
     const results = await Promise.all(promises);
 
-    // book body 생성
-    // const bookBody = {};
-    // results.forEach((url, index) => {
-    //   bookBody[index + 1] = bookBody[index + 1] || {};
-
-    //   bookBody[index + 1]['imgUrl'] = url;
-    //   bookBody[index + 1]['text'] = storyArray[index];
-    //   bookBody[index + 1]['imagePrompt'] = ['임시 이미지 프롬프트'];
-    //   bookBody[index + 1]['ttsUrl'] = ['임시 TTS URL'];
-    // });
-
     const bookBody = {};
     results.forEach((url, index) => {
       bookBody[index + 1] = {
@@ -142,7 +134,7 @@ export class AiService {
     });
 
     const createBookDto: CreateBookDto = {
-      title: '테스트',
+      title,
       body: bookBody,
       storyId: storyId,
       userId: userId,
