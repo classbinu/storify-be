@@ -11,7 +11,7 @@ import { StoriesService } from './stories.service';
 import { CreateStoryDto } from './dto/create-story.dto';
 import { UpdateStoryDto } from './dto/update-story.dto';
 import { Story } from './schema/story.schema';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Stories')
 @Controller('stories')
@@ -23,6 +23,7 @@ export class StoriesController {
     return this.storiesService.createStory(createStoryDto);
   }
 
+  @ApiOperation({ summary: 'AI 동화책 생성을 위한 endpoint' })
   @Post('ai')
   createAiStory(@Body() createStoryDto: CreateStoryDto): Promise<Story> {
     return this.storiesService.createAiStory(createStoryDto);
