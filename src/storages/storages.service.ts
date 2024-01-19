@@ -23,28 +23,44 @@ export class StoragesService {
     file: Express.Multer.File,
     ext: string,
   ) {
-    const command = new PutObjectCommand({
-      Bucket: this.configService.get('AWS_S3_BUCKET_NAME'),
-      Key: fileName,
-      Body: file.buffer,
-      ACL: 'public-read',
-      ContentType: `image/${ext}`,
-    });
-    await this.s3Client.send(command);
+    try {
+      const command = new PutObjectCommand({
+        Bucket: this.configService.get('AWS_S3_BUCKET_NAME'),
+        Key: fileName,
+        Body: file.buffer,
+        ACL: 'public-read',
+        ContentType: `image/${ext}`,
+      });
+      await this.s3Client.send(command);
 
-    return `https://s3.${process.env.AWS_REGION}.amazonaws.com/${process.env.AWS_S3_BUCKET_NAME}/${fileName}`;
+      const region = this.configService.get('AWS_REGION');
+      const bucket = this.configService.get('AWS_S3_BUCKET_NAME');
+
+      return `https://s3.${region}.amazonaws.com/${bucket}/${fileName}`;
+    } catch (error) {
+      console.error(`Error uploading image to S3: ${error}`);
+      throw new Error('Image upload failed');
+    }
   }
 
   async bufferUploadToS3(fileName: string, buffer: Buffer, ext: string) {
-    const command = new PutObjectCommand({
-      Bucket: this.configService.get('AWS_S3_BUCKET_NAME'),
-      Key: fileName,
-      Body: buffer,
-      ACL: 'public-read',
-      ContentType: `image/${ext}`,
-    });
-    await this.s3Client.send(command);
+    try {
+      const command = new PutObjectCommand({
+        Bucket: this.configService.get('AWS_S3_BUCKET_NAME'),
+        Key: fileName,
+        Body: buffer,
+        ACL: 'public-read',
+        ContentType: `image/${ext}`,
+      });
+      await this.s3Client.send(command);
 
-    return `https://s3.${process.env.AWS_REGION}.amazonaws.com/${process.env.AWS_S3_BUCKET_NAME}/${fileName}`;
+      const region = this.configService.get('AWS_REGION');
+      const bucket = this.configService.get('AWS_S3_BUCKET_NAME');
+
+      return `https://s3.${region}.amazonaws.com/${bucket}/${fileName}`;
+    } catch (error) {
+      console.error(`Error uploading buffer to S3: ${error}`);
+      throw new Error('Buffer upload failed');
+    }
   }
 }

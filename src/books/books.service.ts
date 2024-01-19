@@ -6,6 +6,7 @@ import { Book } from './schema/book.schema';
 import { BookMongoRepository } from './books.repository';
 import { StoragesService } from 'src/storages/storages.service';
 import { UtilsService } from 'src/utils/utils.service';
+import { CreateBookDto } from './dto/create-book.dto';
 
 @Injectable()
 export class BooksService {
@@ -15,8 +16,8 @@ export class BooksService {
     private readonly storagesService: StoragesService,
   ) {}
 
-  async createBook() {
-    return 'This action adds a new book';
+  async createBook(createBookDto: CreateBookDto): Promise<Book> {
+    return await this.bookRepository.createBook(createBookDto);
   }
 
   async saveImage(file: Express.Multer.File) {

@@ -26,22 +26,22 @@ export class Book {
     ttsUrl: string;
   }[];
 
-  @Prop({ required: true })
+  // @Prop({ required: true })
   category: string;
 
-  @Prop({ type: [String], required: true })
+  // @Prop({ type: [String], required: true })
   tag: string[];
 
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  // @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   userId: Types.ObjectId;
 
-  @Prop({ required: true })
+  // @Prop({ required: true })
   rate: number;
 
-  @Prop({ required: true })
+  // @Prop({ required: true })
   count: number;
 
-  @Prop({ required: true })
+  // @Prop({ required: true })
   status: string;
 }
 

@@ -2,9 +2,9 @@ import { BooksService } from 'src/books/books.service';
 import { ChatOpenAI } from '@langchain/openai';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
 import { ConfigService } from '@nestjs/config';
-import { CreateBookDto } from 'src/books/dto/create-book.dto';
+import { CreateBookDto, BodyDto } from 'src/books/dto/create-book.dto';
 import { Injectable } from '@nestjs/common';
-import { JsonOutputFunctionsParser } from 'langchain/output_parsers';
+// import { JsonOutputFunctionsParser } from 'langchain/output_parsers';
 import { LangchainDto } from './dto/langchain.dto';
 import { StableDiffusionDto } from './dto/stableDiffusion.dto';
 import { StoragesService } from 'src/storages/storages.service';
@@ -50,6 +50,7 @@ export class AiService {
 
     const storyText = res.content.toString();
     const storyArray = storyText.split('\n\n');
+
     console.log(storyArray);
 
     // 삽화 프롬프트 생성
@@ -122,17 +123,26 @@ export class AiService {
 
       bookBody[index + 1]['imgUrl'] = url;
       bookBody[index + 1]['text'] = storyArray[index];
+      bookBody[index + 1]['imagePrompt'] = ['임시 이미지 프롬프트'];
+      bookBody[index + 1]['ttsUrl'] = ['임시 TTS URL'];
     });
 
-    const createBookDto = {
+    // let bookBody = {};
+    // results.forEach((url, index) => {
+    //   bookBody[index + 1] = {
+    //     imageUrl: url,
+    //     text: storyArray[index],
+
+    //   };
+    // });
+
+    const createBookDto: CreateBookDto = {
       title: '테스트',
       body: bookBody,
     };
 
-    console.log(createBookDto);
-
     // book 데이터 생성 코드 필요
-    // return await this.booksService.createBook();
+    return await this.booksService.createBook(createBookDto);
   }
 
   async stableDiffusion(stabldDiffusionDto: StableDiffusionDto): Promise<any> {
