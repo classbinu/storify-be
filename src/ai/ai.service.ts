@@ -126,7 +126,7 @@ export class AiService {
     const bookBody = {};
     results.forEach((url, index) => {
       bookBody[index + 1] = {
-        imgUrl: url,
+        imageUrl: url,
         text: storyArray[index],
         imagePrompt: imagePromprts[index],
         ttsUrl: '',
