@@ -10,8 +10,11 @@ export class AiController {
   constructor(private readonly aiService: AiService) {}
 
   @Post('langchain')
-  async langchain(@Body() langchainDto: LangchainDto) {
-    return await this.aiService.langchain(langchainDto);
+  async langchain(
+    @Body() langchainDto: LangchainDto,
+    @Body('storyId') storyId: string,
+  ) {
+    return await this.aiService.langchain(langchainDto, storyId);
   }
 
   @Post('stablediffusion')

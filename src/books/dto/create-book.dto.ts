@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsString, IsArray } from 'class-validator';
+import { Types } from 'mongoose';
 
 export class BodyDto {
   @IsString()
@@ -25,4 +26,7 @@ export class CreateBookDto {
 
   @IsNotEmpty()
   body: { [key: string]: BodyDto };
+
+  @IsNotEmpty()
+  storyId: Types.ObjectId;
 }

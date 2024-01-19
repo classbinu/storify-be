@@ -17,7 +17,7 @@ export class AiService {
     private readonly booksService: BooksService,
   ) {}
 
-  async langchain(langchainDto: LangchainDto): Promise<any> {
+  async langchain(langchainDto: LangchainDto, storyId): Promise<any> {
     const chatModel = new ChatOpenAI({
       openAIApiKey: this.configService.get<string>('OPENAI_API_KEY'),
       modelName: 'gpt-3.5-turbo-1106',
@@ -90,7 +90,7 @@ export class AiService {
     try {
       const imagePromprts = JSON.parse(arrayString);
       console.log(imagePromprts);
-      this.createStorybook(storyArray, imagePromprts);
+      this.createStorybook(storyArray, imagePromprts, storyId);
     } catch (error) {
       console.log('Invalid JSON:', arrayString);
     }
@@ -135,6 +135,7 @@ export class AiService {
     const createBookDto: CreateBookDto = {
       title,
       body: bookBody,
+      storyId: storyId,
     };
 
     // book 데이터 생성 코드 필요

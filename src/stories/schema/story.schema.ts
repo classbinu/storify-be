@@ -5,11 +5,13 @@ export type StoryDocument = Story & Document;
 
 @Schema()
 export class Story {
+  _id: Types.ObjectId;
+
   @Prop({ required: false })
   title: string;
 
   @Prop({ required: false })
-  body: string;
+  message: string;
 
   @Prop({ type: Types.ObjectId, ref: 'User', required: false })
   userId: Types.ObjectId;
