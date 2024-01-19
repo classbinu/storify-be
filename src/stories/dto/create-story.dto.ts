@@ -15,4 +15,8 @@ export class CreateStoryDto {
   @IsString()
   @IsNotEmpty()
   message: string;
+
+  @IsString()
+  @IsNotEmpty()
+  storyId: string;
 }
