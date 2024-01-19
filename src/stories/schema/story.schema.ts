@@ -13,7 +13,7 @@ export class Story {
   @Prop({ required: false })
   message: string;
 
-  @Prop({ type: Types.ObjectId, ref: 'User', required: false })
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   userId: Types.ObjectId;
 
   @Prop({ required: false })

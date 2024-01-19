@@ -29,4 +29,7 @@ export class CreateBookDto {
 
   @IsNotEmpty()
   storyId: Types.ObjectId;
+
+  @IsNotEmpty()
+  userId: Types.ObjectId;
 }

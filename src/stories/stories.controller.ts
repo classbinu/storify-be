@@ -6,26 +6,38 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { StoriesService } from './stories.service';
 import { CreateStoryDto } from './dto/create-story.dto';
 import { UpdateStoryDto } from './dto/update-story.dto';
 import { Story } from './schema/story.schema';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
 
 @ApiTags('Stories')
 @Controller('stories')
 export class StoriesController {
   constructor(private storiesService: StoriesService) {}
 
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
   @Post()
   createStory(@Body() createStoryDto: CreateStoryDto): Promise<Story> {
     return this.storiesService.createStory(createStoryDto);
   }
 
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'AI 동화책 생성을 위한 endpoint' })
   @Post('ai')
-  createAiStory(@Body() createStoryDto: CreateStoryDto): Promise<Story> {
+  createAiStory(
+    @Req() req: any,
+    @Body() createStoryDto: CreateStoryDto,
+  ): Promise<Story> {
+    const userId = req.user['sub'];
+    createStoryDto.userId = userId;
     return this.storiesService.createAiStory(createStoryDto);
   }
 

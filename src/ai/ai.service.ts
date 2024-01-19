@@ -17,7 +17,7 @@ export class AiService {
     private readonly booksService: BooksService,
   ) {}
 
-  async langchain(langchainDto: LangchainDto, storyId): Promise<any> {
+  async langchain(langchainDto: LangchainDto, storyId, userId): Promise<any> {
     const chatModel = new ChatOpenAI({
       openAIApiKey: this.configService.get<string>('OPENAI_API_KEY'),
       modelName: 'gpt-3.5-turbo-1106',
@@ -89,7 +89,7 @@ export class AiService {
     try {
       const imagePromprts = JSON.parse(arrayString);
       console.log(imagePromprts);
-      this.createStorybook(storyArray, imagePromprts, storyId);
+      this.createStorybook(storyArray, imagePromprts, storyId, userId);
     } catch (error) {
       console.log('Invalid JSON:', arrayString);
     }
@@ -98,7 +98,7 @@ export class AiService {
   }
 
   // 책을 만드는 함수
-  async createStorybook(storyArray, imagePromprts, storyId) {
+  async createStorybook(storyArray, imagePromprts, storyId, userId) {
     const negativePrompts =
       'bad art, ugly, deformed, watermark, duplicated, ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, extra limbs, disfigured, body out of frame, blurry, bad anatomy, blurred, grainy, signature, cut off, draft';
 
@@ -145,6 +145,7 @@ export class AiService {
       title: '테스트',
       body: bookBody,
       storyId: storyId,
+      userId: userId,
     };
 
     // book 데이터 생성 코드 필요

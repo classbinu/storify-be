@@ -1,4 +1,5 @@
 import { IsString, IsNotEmpty } from 'class-validator';
+import { Types } from 'mongoose';
 
 export class CreateStoryDto {
   // @IsString()
@@ -9,9 +10,9 @@ export class CreateStoryDto {
   // @IsNotEmpty()
   // body: string;
 
-  // @IsString()
-  // @IsNotEmpty()
-  // username: string;
+  @IsNotEmpty()
+  userId: Types.ObjectId;
+
   @IsString()
   @IsNotEmpty()
   message: string;

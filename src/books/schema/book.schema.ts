@@ -33,11 +33,12 @@ export class Book {
   // @Prop({ type: [String], required: true })
   tag: string[];
 
-  // @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   userId: Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId })
+  @Prop({ type: Types.ObjectId, ref: 'Story', required: true })
   storyId: Types.ObjectId;
+
   // @Prop({ required: true })
   rate: number;
 
