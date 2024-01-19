@@ -2,7 +2,7 @@ import { BooksService } from 'src/books/books.service';
 import { ChatOpenAI } from '@langchain/openai';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
 import { ConfigService } from '@nestjs/config';
-import { CreateBookDto, BodyDto } from 'src/books/dto/create-book.dto';
+import { CreateBookDto } from 'src/books/dto/create-book.dto';
 import { Injectable } from '@nestjs/common';
 // import { JsonOutputFunctionsParser } from 'langchain/output_parsers';
 import { LangchainDto } from './dto/langchain.dto';
@@ -17,7 +17,7 @@ export class AiService {
     private readonly booksService: BooksService,
   ) {}
 
-  async langchain(langchainDto: LangchainDto): Promise<any> {
+  async langchain(langchainDto: LangchainDto, storyId): Promise<any> {
     const chatModel = new ChatOpenAI({
       openAIApiKey: this.configService.get<string>('OPENAI_API_KEY'),
       modelName: 'gpt-3.5-turbo-1106',
@@ -89,7 +89,7 @@ export class AiService {
     try {
       const imagePromprts = JSON.parse(arrayString);
       console.log(imagePromprts);
-      this.createStorybook(storyArray, imagePromprts);
+      this.createStorybook(storyArray, imagePromprts, storyId);
     } catch (error) {
       console.log('Invalid JSON:', arrayString);
     }
@@ -98,7 +98,7 @@ export class AiService {
   }
 
   // 책을 만드는 함수
-  async createStorybook(storyArray, imagePromprts) {
+  async createStorybook(storyArray, imagePromprts, storyId) {
     const negativePrompts =
       'bad art, ugly, deformed, watermark, duplicated, ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, extra limbs, disfigured, body out of frame, blurry, bad anatomy, blurred, grainy, signature, cut off, draft';
 
@@ -144,6 +144,7 @@ export class AiService {
     const createBookDto: CreateBookDto = {
       title: '테스트',
       body: bookBody,
+      storyId: storyId,
     };
 
     // book 데이터 생성 코드 필요
