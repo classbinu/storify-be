@@ -6,9 +6,9 @@ export class BodyDto {
   @IsNotEmpty()
   text: string;
 
-  @IsArray()
-  @IsString({ each: true })
-  imagePrompt: string[];
+  @IsString()
+  @IsNotEmpty()
+  imagePrompt: string;
 
   @IsString()
   @IsNotEmpty()

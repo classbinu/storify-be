@@ -99,7 +99,6 @@ export class AiService {
   }
 
   // 책을 만드는 함수
-
   async createStorybook(storyArray, imagePromprts, storyId, userId) {
     const title = storyArray.shift().replace('제목: ', '');
     const negativePrompts =
@@ -128,7 +127,7 @@ export class AiService {
       bookBody[index + 1] = {
         imageUrl: url,
         text: storyArray[index],
-        imagePrompt: imagePromprts[index],
+        imagePrompt: imagePromprts[index].join(', '),
         ttsUrl: '',
       };
     });

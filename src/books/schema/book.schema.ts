@@ -12,7 +12,7 @@ export class Book {
     type: Map,
     of: {
       text: String,
-      imagePrompt: [String],
+      imagePrompt: String,
       imageUrl: String,
       ttsUrl: String,
     },
@@ -21,7 +21,7 @@ export class Book {
     string,
     {
       text: string;
-      imagePrompt: string[];
+      imagePrompt: string;
       imageUrl: string;
       ttsUrl: string;
     }
