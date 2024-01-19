@@ -22,7 +22,7 @@ export class AiService {
       openAIApiKey: this.configService.get<string>('OPENAI_API_KEY'),
       modelName: 'gpt-3.5-turbo-1106',
       // modelName: 'gpt-4',
-      temperature: 0,
+      temperature: 0.2,
     });
 
     const userMessage = langchainDto.message;
@@ -35,7 +35,7 @@ export class AiService {
 
     # Constraints
     1. In Korean.
-    1. The story must be created with at least 400 characters.
+    1. The story must be created with at least 800 characters.
     1. The story is created with at least four paragraphs separated by blank lines.
     `;
     const prompt = ChatPromptTemplate.fromMessages([
@@ -57,10 +57,10 @@ export class AiService {
     const systemMessage2 = `
     # directive
     1. In English
-    1. Create ${storyArray.length} image creation prompts to go with this story. 
-    1. Each prompt consists of at least 10 words. Like "[lovely girl, cozy, happy, under the tree, sunshie]"
+    1. Create ${storyArray.length} image prompts about people and landscapes creation to go with this story. 
+    1. Each prompt consists of at least 10 words. Like "[lovely_girl, orange_hair, cozy, warm, happy, under_the_tree, sunshie]"
     1. Each prompt is returned in the form of an array, and the array has ${storyArray.length} elements.
-    1. It is returned in a form that can only be converted to an array.
+    1. Return the prompts as a JSON array, with each prompt consisting of descriptive elements in a sub-array.
     1. People's names are not used and only objective situations are described.
     1. Characters such as must start with '[' and end with ']'.
     `;
@@ -84,7 +84,6 @@ export class AiService {
 
     const arrayString = storyArray2.substring(startIndex, endIndex + 1);
     console.log(arrayString);
-    console.log('===');
 
     const imagePromprts = JSON.parse(arrayString);
     console.log(imagePromprts);
@@ -96,7 +95,7 @@ export class AiService {
   // 책을 만드는 함수
   async createStorybook(storyArray, imagePromprts) {
     const negativePrompts =
-      'bad art, ugly, deformed, watermark, duplicated, ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, extra limbs, disfigured, body out of frame, blurry, bad anatomy, blurred, grainy, signature, cut off, draft';
+      'worst quality, normal quality, low quality, low res, blurry, text, watermark, logo, banner, extra digits, cropped, jpeg artifacts, signature, username, error, sketch ,duplicate, ugly, monochrome, horror, geometry, mutation, disgusting, bad anatomy, bad hands, three hands, three legs, bad arms, missing legs, missing arms, poorly drawn face, bad face, fused face, cloned face, worst face, three crus, extra crus, fused crus, worst feet, three feet, fused feet, fused thigh, three thigh, fused thigh, extra thigh, worst thigh, missing fingers, extra fingers, ugly fingers, long fingers, horn, realistic photo, extra eyes, huge eyes, 2girl, amputation, disconnected limbs';
 
     // 삽화 생성 병렬 요청
     const promises = imagePromprts.map((prompts: string, index: number) => {
@@ -170,7 +169,7 @@ export class AiService {
     };
 
     const payload = {
-      inputs: `${TRIGGER_WORDS} best quality, ${prompts}, ${LORA}`,
+      inputs: `${TRIGGER_WORDS} detailed, best_quality, ${prompts}, ${LORA}`,
       // inputs: prompts,
       parameters: {
         negative_prompt: negativePrompts,
@@ -178,7 +177,7 @@ export class AiService {
         max_length: false,
         top_k: false,
         top_p: false,
-        temperature: 1.0,
+        temperature: 0,
         repetition_penalty: false,
         max_time: false,
       },
