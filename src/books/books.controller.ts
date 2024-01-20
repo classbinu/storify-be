@@ -56,6 +56,8 @@ export class BooksController {
     return this.booksService.findAllBooks(query);
   }
 
+  // 모든책들 가져오는 함수 추가해야함.
+
   @Get(':id')
   async findBookById(@Param('id') id: string): Promise<Book> {
     return this.booksService.findBookById(id);
