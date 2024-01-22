@@ -13,7 +13,6 @@ import {
   UseInterceptors,
   HttpCode,
   Query,
-  Patch,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes, ApiOperation, ApiQuery } from '@nestjs/swagger';
@@ -51,10 +50,30 @@ export class BooksController {
 
   @ApiQuery({ name: 'userId', required: false })
   @ApiQuery({ name: 'title', required: false })
+  @ApiQuery({ name: 'page', required: false, type: 'number' })
+  @ApiQuery({ name: 'limit', required: false, type: 'number' })
   @Get()
-  async findAllBooks(@Query() query: any): Promise<Book[]> {
-    return this.booksService.findAllBooks(query);
+  async findAllBooks(
+    @Query() query: any,
+    @Query('page') pageStr: string,
+    @Query('limit') limitStr: string,
+  ): Promise<Book[]> {
+    // Validate query
+    const validQuery = ['userId', 'title'];
+    Object.keys(query).forEach((key) => {
+      if (!validQuery.includes(key)) {
+        delete query[key];
+      }
+    });
+
+    // Validate page and limit
+    const page = Number(pageStr) > 0 ? Number(pageStr) : 1;
+    const limit = Number(limitStr) > 0 ? Number(limitStr) : 10;
+
+    return this.booksService.findAllBooks(query, page, limit);
   }
+
+  // 모든책들 가져오는 함수 추가해야함.
 
   @Get(':id')
   async findBookById(@Param('id') id: string): Promise<Book> {
@@ -62,7 +81,7 @@ export class BooksController {
   }
 
   // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateBookDto: UpdateBookDto) {
+  // updateBook(@Param('id') id: string, @Body() updateBookDto: UpdateBookDto) {
   //   return this.booksService.update(+id, updateBookDto);
   // }
 
