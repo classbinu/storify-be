@@ -48,10 +48,20 @@ export class BooksController {
     return await this.booksService.imageUpload(file);
   }
 
-  @ApiQuery({ name: 'userId', required: false })
   @ApiQuery({ name: 'title', required: false })
-  @ApiQuery({ name: 'page', required: false, type: 'number' })
-  @ApiQuery({ name: 'limit', required: false, type: 'number' })
+  @ApiQuery({ name: 'userId', required: false })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: 'number',
+    description: '기본 값: 1',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: 'number',
+    description: '기본 값: 10',
+  })
   @Get()
   async findAllBooks(
     @Query() query: any,
@@ -59,7 +69,7 @@ export class BooksController {
     @Query('limit') limitStr: string,
   ): Promise<Book[]> {
     // Validate query
-    const validQuery = ['userId', 'title'];
+    const validQuery = ['title', 'userId', 'page', 'limit'];
     Object.keys(query).forEach((key) => {
       if (!validQuery.includes(key)) {
         delete query[key];
