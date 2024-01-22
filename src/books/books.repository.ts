@@ -14,7 +14,11 @@ export class BookMongoRepository {
     return createdBook.save();
   }
 
-  async findAllBooks(query: any): Promise<Book[]> {
+  async findAllBooks(): Promise<Book[]> {
+    return this.bookModel.find().exec();
+  }
+
+  async findByQuery(query: any): Promise<Book[]> {
     return this.bookModel.find(query).exec();
   }
 

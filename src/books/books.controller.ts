@@ -13,7 +13,6 @@ import {
   UseInterceptors,
   HttpCode,
   Query,
-  Patch,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes, ApiOperation, ApiQuery } from '@nestjs/swagger';
@@ -49,11 +48,16 @@ export class BooksController {
     return await this.booksService.imageUpload(file);
   }
 
+  @Get()
+  async findAllBooks(): Promise<Book[]> {
+    return this.booksService.findAllBooks();
+  }
+
   @ApiQuery({ name: 'userId', required: false })
   @ApiQuery({ name: 'title', required: false })
-  @Get()
-  async findAllBooks(@Query() query: any): Promise<Book[]> {
-    return this.booksService.findAllBooks(query);
+  @Get('search')
+  async findByQuery(@Query() query: any): Promise<Book[]> {
+    return this.booksService.findByQuery(query);
   }
 
   // 모든책들 가져오는 함수 추가해야함.
