@@ -1,24 +1,28 @@
+import * as argon2 from 'argon2';
+
 import {
   BadRequestException,
-  Injectable,
   ForbiddenException,
+  Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+
+import { AuthDto } from './dto/auth.dto';
+import { ConfigService } from '@nestjs/config';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { JwtService } from '@nestjs/jwt';
+import { MailService } from 'src/mail/mail.service';
+import { UpdateAuthDto } from './dto/update-auth.dto';
 import { User } from 'src/users/schema/user.schema';
 import { UserMongoRepository } from 'src/users/users.repository';
-import * as argon2 from 'argon2';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
-import { AuthDto } from './dto/auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private userMongoRepository: UserMongoRepository,
-    private jwtService: JwtService,
-    private configService: ConfigService,
+    private readonly userMongoRepository: UserMongoRepository,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
+    private readonly mailService: MailService,
   ) {}
 
   // 회원가입
@@ -50,6 +54,9 @@ export class AuthService {
     console.log('Saved hashed password:', savedUser.password);
     const tokens = await this.getTokens(newUser.id, newUser.email);
     await this.updateRefreshToken(newUser.id, tokens.refreshToken);
+
+    // 회원가입 이메일 발송
+    await this.mailService.sendWelcomeMail(newUser.email, newUser.username);
     return tokens;
   }
 
