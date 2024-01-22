@@ -38,12 +38,8 @@ export class BooksService {
     return { imageUrl };
   }
 
-  async findAllBooks(): Promise<Book[]> {
-    return this.bookRepository.findAllBooks();
-  }
-
-  async findByQuery(query): Promise<Book[]> {
-    return this.bookRepository.findByQuery(query);
+  async findAllBooks(query: any, page: number, limit: number): Promise<Book[]> {
+    return this.bookRepository.findAllBooks(query, page, limit);
   }
 
   async findBookById(id: string): Promise<Book> {

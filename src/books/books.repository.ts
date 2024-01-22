@@ -14,12 +14,13 @@ export class BookMongoRepository {
     return createdBook.save();
   }
 
-  async findAllBooks(): Promise<Book[]> {
-    return this.bookModel.find().exec();
-  }
-
-  async findByQuery(query: any): Promise<Book[]> {
-    return this.bookModel.find(query).exec();
+  async findAllBooks(query: any, page: number, limit: number): Promise<Book[]> {
+    return this.bookModel
+      .find(query)
+      .populate('userId', 'username -_id')
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .exec();
   }
 
   async findBookById(id: string): Promise<Book> {

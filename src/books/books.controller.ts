@@ -48,16 +48,29 @@ export class BooksController {
     return await this.booksService.imageUpload(file);
   }
 
-  @Get()
-  async findAllBooks(): Promise<Book[]> {
-    return this.booksService.findAllBooks();
-  }
-
   @ApiQuery({ name: 'userId', required: false })
   @ApiQuery({ name: 'title', required: false })
-  @Get('search')
-  async findByQuery(@Query() query: any): Promise<Book[]> {
-    return this.booksService.findByQuery(query);
+  @ApiQuery({ name: 'page', required: false, type: 'number' })
+  @ApiQuery({ name: 'limit', required: false, type: 'number' })
+  @Get()
+  async findAllBooks(
+    @Query() query: any,
+    @Query('page') pageStr: string,
+    @Query('limit') limitStr: string,
+  ): Promise<Book[]> {
+    // Validate query
+    const validQuery = ['userId', 'title'];
+    Object.keys(query).forEach((key) => {
+      if (!validQuery.includes(key)) {
+        delete query[key];
+      }
+    });
+
+    // Validate page and limit
+    const page = Number(pageStr) > 0 ? Number(pageStr) : 1;
+    const limit = Number(limitStr) > 0 ? Number(limitStr) : 10;
+
+    return this.booksService.findAllBooks(query, page, limit);
   }
 
   // 모든책들 가져오는 함수 추가해야함.
