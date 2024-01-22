@@ -40,4 +40,16 @@ export class MailService {
     `;
     await this.sendMail(to, subject, html);
   }
+
+  async sendResetPasswordMail(to: string, username: string, token: string) {
+    const subject = `[스토리파이] ${username}님, 비밀번호를 재설정하세요`;
+    const html = `
+      <div>
+        <h1>Reset password</h1>
+        <p>Click the link below to reset your password</p>
+        <a href="http://127.0.0.1:3000/reset-password/${token}">Reset password</a>
+      </div>
+    `;
+    await this.sendMail(to, subject, html);
+  }
 }
