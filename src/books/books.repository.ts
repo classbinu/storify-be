@@ -18,6 +18,7 @@ export class BookMongoRepository {
     return this.bookModel
       .find(query)
       .populate('userId', 'username -_id')
+      .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
       .exec();

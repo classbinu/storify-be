@@ -64,10 +64,15 @@ export class BooksController {
   })
   @Get()
   async findAllBooks(
-    @Query() query: any,
+    @Query('title') title: string,
+    @Query('userId') userId: string,
     @Query('page') pageStr: string,
     @Query('limit') limitStr: string,
   ): Promise<Book[]> {
+    const query: any = {};
+    if (title) query.title = title;
+    if (userId) query.userId = userId;
+
     // Validate query
     const validQuery = ['title', 'userId', 'page', 'limit'];
     Object.keys(query).forEach((key) => {
