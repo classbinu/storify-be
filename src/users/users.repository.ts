@@ -34,6 +34,14 @@ export class UserMongoRepository {
     }
   }
 
+  async findByEmail(email: string): Promise<User> {
+    try {
+      return await this.userModel.findOne({ email }).exec();
+    } catch (error) {
+      throw new Error(`Error finding user by email: ${error.message}`);
+    }
+  }
+
   async findAll(): Promise<User[]> {
     try {
       return await this.userModel.find().exec();

@@ -165,4 +165,37 @@ export class AuthService {
     await this.updateRefreshToken(user.id, tokens.refreshToken);
     return tokens;
   }
+
+  async forgotPassword(email: string) {
+    const user = await this.userMongoRepository.findByEmail(email);
+    const username = user.username;
+    if (!user) {
+      throw new BadRequestException('User does not exist');
+    }
+
+    const token = await this.jwtService.signAsync(
+      {
+        sub: user.id,
+      },
+      {
+        secret: this.configService.get<string>('JWT_RESET_SECRET'),
+        expiresIn: '1d',
+      },
+    );
+
+    await this.mailService.sendResetPasswordMail(email, username, token);
+    return { message: 'Reset password email sent' };
+  }
+
+  async resetPassword(token: string, password: string) {
+    const decoded = await this.jwtService.verifyAsync(token, {
+      secret: this.configService.get<string>('JWT_RESET_SECRET'),
+    });
+
+    const hashedPassword = await this.hashData(password);
+    await this.userMongoRepository.updateUser(decoded.sub, {
+      password: hashedPassword,
+    });
+    return { message: 'Password reset successfully' };
+  }
 }
