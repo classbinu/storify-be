@@ -27,7 +27,7 @@ export class AiService {
 
     const userMessage = langchainDto.message;
     const systemMessage = `
-    #role
+    # role
     You are a children's story writer.
 
     # directive
@@ -90,7 +90,7 @@ export class AiService {
     try {
       const imagePromprts = JSON.parse(arrayString);
       console.log(imagePromprts);
-      this.createStorybook(storyArray, imagePromprts, storyId, userId);
+      await this.createStorybook(storyArray, imagePromprts, storyId, userId);
     } catch (error) {
       console.log('Invalid JSON:', arrayString);
     }
