@@ -56,7 +56,7 @@ export class AuthController {
     );
   }
 
-  // 데코레이터 줄이는 리팩토링 필요
+  // 데코레이터 줄이는 리팩토링 필요, dto로 변경예정
   @ApiBody({
     schema: {
       type: 'object',
