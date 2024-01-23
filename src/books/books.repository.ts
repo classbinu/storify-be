@@ -15,8 +15,13 @@ export class BookMongoRepository {
   }
 
   async findAllBooks(query: any, page: number, limit: number): Promise<Book[]> {
-    return this.bookModel
-      .find(query)
+    let findQuery = this.bookModel.find(query);
+    if (query.title) {
+      const regex = new RegExp(query.title, 'i');
+      findQuery = this.bookModel.find({ title: { $regex: regex } });
+    }
+
+    return findQuery
       .populate('userId', 'username')
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
