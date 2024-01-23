@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsString } from 'class-validator';
+
 import { Types } from 'mongoose';
 
 export class BodyDto {
@@ -23,6 +24,10 @@ export class CreateBookDto {
   @IsString()
   @IsNotEmpty()
   title: string;
+
+  @IsString()
+  @IsNotEmpty()
+  coverUrl: string;
 
   @IsNotEmpty()
   body: { [key: string]: BodyDto };

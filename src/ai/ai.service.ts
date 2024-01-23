@@ -55,7 +55,7 @@ export class AiService {
     console.log(storyArray);
 
     // 삽화 프롬프트 생성
-    const userMessage2 = storyArray;
+    // const userMessage2 = storyArray;
     const systemMessage2 = `
     # directive
     1. In English
@@ -92,7 +92,7 @@ export class AiService {
       console.log(imagePromprts);
       await this.createStorybook(storyArray, imagePromprts, storyId, userId);
     } catch (error) {
-      console.log('Invalid JSON:', arrayString);
+      console.log(error);
     }
 
     return res.content;
@@ -111,7 +111,7 @@ export class AiService {
         negativePrompts,
       }).then(async (buffer) => {
         const result = await this.storagesService.bufferUploadToS3(
-          `storybook-${Date.now()}-${index}.png`,
+          `${storyId}-${Date.now()}-${index}.png`,
           buffer,
           'png',
         );
@@ -134,6 +134,7 @@ export class AiService {
 
     const createBookDto: CreateBookDto = {
       title,
+      coverUrl: bookBody[1].imageUrl,
       body: bookBody,
       storyId: storyId,
       userId: userId,
