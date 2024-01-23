@@ -17,7 +17,7 @@ export class BookMongoRepository {
   async findAllBooks(query: any, page: number, limit: number): Promise<Book[]> {
     return this.bookModel
       .find(query)
-      .populate('userId', 'username -_id')
+      .populate('userId', 'username')
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
