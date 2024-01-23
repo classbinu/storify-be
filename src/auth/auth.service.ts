@@ -70,7 +70,11 @@ export class AuthService {
       throw new BadRequestException('Password is incorrect');
     const tokens = await this.getTokens(user.id, user.email);
     await this.updateRefreshToken(user.id, tokens.refreshToken);
-    return tokens;
+    return {
+      ...tokens,
+      username: user.username,
+      id: user.id,
+    };
   }
 
   async findUserById(id: string): Promise<User> {
