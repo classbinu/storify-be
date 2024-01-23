@@ -1,12 +1,13 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-
 import { Book } from './schema/book.schema';
+import { BookHistory } from './schema/book-history.schema';
 // import { CreateBookDto } from './dto/create-book.dto';
 // import { UpdateBookDto } from './dto/update-book.dto';
 import { BookMongoRepository } from './books.repository';
 import { CreateBookDto } from './dto/create-book.dto';
 import { StoragesService } from 'src/storages/storages.service';
 import { UtilsService } from 'src/utils/utils.service';
+import { CreateBookHistoryDto } from './dto/create-book-history.dto';
 
 @Injectable()
 export class BooksService {
@@ -18,6 +19,12 @@ export class BooksService {
 
   async createBook(createBookDto: CreateBookDto): Promise<Book> {
     return await this.bookRepository.createBook(createBookDto);
+  }
+
+  async createOrUpdateBookHistory(
+    createBookHistoryDto: CreateBookHistoryDto,
+  ): Promise<BookHistory> {
+    return this.bookRepository.createOrUpdateBookHistory(createBookHistoryDto);
   }
 
   async saveImage(file: Express.Multer.File) {
