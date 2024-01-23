@@ -1,5 +1,5 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 export type BookDocument = Book & Document;
 
@@ -7,6 +7,9 @@ export type BookDocument = Book & Document;
 export class Book {
   @Prop({ required: true })
   title: string;
+
+  @Prop({ required: true })
+  coverUrl: string;
 
   @Prop({
     type: Map,
