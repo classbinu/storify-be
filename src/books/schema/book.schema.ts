@@ -42,13 +42,13 @@ export class Book {
   @Prop({ type: Types.ObjectId, ref: 'Story', required: true })
   storyId: Types.ObjectId;
 
-  // @Prop({ required: true })
+  @Prop({ required: false, default: 0 })
   rate: number;
 
-  // @Prop({ required: true })
+  @Prop({ required: false, default: 0 })
   count: number;
 
-  // @Prop({ required: true })
+  @Prop({ required: false, default: 'public' })
   status: string;
 
   @Prop({ default: Date.now })

@@ -8,21 +8,31 @@ import {
   Delete,
   Req,
   UnauthorizedException,
-  // UseGuards,
+  BadRequestException,
+  UseGuards,
   UploadedFile,
   UseInterceptors,
   HttpCode,
   Query,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBody, ApiConsumes, ApiOperation, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { BooksService } from './books.service';
 import { Book } from './schema/book.schema';
+import { BookHistory } from './schema/book-history.schema';
 import { CreateBookDto } from './dto/create-book.dto';
 // import { UpdateBookDto } from './dto/update-book.dto';
+import { CreateBookHistoryDto } from './dto/create-book-history.dto';
 import { ImageUploadDto } from './dto/image-upload.dto';
-// import { AuthGuard } from '@nestjs/passport';
+import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
 import { ApiTags } from '@nestjs/swagger';
+import { Types } from 'mongoose';
 
 @ApiTags('Books')
 @Controller('books')
@@ -33,6 +43,25 @@ export class BooksController {
   @Post()
   async createBook(@Body() createBookDto: CreateBookDto): Promise<Book> {
     return this.booksService.createBook(createBookDto);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
+  @Post(':id/history')
+  async createOrUpdateBookHistory(
+    @Param('id') bookId: string,
+    @Req() req,
+    @Body() createBookHistoryDto: CreateBookHistoryDto,
+  ): Promise<BookHistory> {
+    const userId = req.user['sub'];
+    createBookHistoryDto.userId = userId;
+    if (!Types.ObjectId.isValid(bookId)) {
+      throw new BadRequestException('Invalid bookId');
+    }
+
+    createBookHistoryDto.bookId = new Types.ObjectId(bookId);
+
+    return this.booksService.createOrUpdateBookHistory(createBookHistoryDto);
   }
 
   @ApiOperation({ summary: '게시글 작성, 수정 시 이미지 업로드' })
@@ -73,7 +102,6 @@ export class BooksController {
     if (title) query.title = title;
     if (userId) query.userId = userId;
 
-    // Validate query
     const validQuery = ['title', 'userId', 'page', 'limit'];
     Object.keys(query).forEach((key) => {
       if (!validQuery.includes(key)) {
@@ -81,7 +109,6 @@ export class BooksController {
       }
     });
 
-    // Validate page and limit
     const page = Number(pageStr) > 0 ? Number(pageStr) : 1;
     const limit = Number(limitStr) > 0 ? Number(limitStr) : 10;
 
@@ -102,7 +129,7 @@ export class BooksController {
 
   @Delete(':id')
   async deleteBook(@Param('id') id: string, @Req() req: any): Promise<Book> {
-    const userId = req.user?.id;
+    const userId = req.user?.userId;
 
     if (!userId) {
       throw new UnauthorizedException();
