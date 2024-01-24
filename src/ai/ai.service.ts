@@ -90,12 +90,16 @@ export class AiService {
     try {
       const imagePromprts = JSON.parse(arrayString);
       console.log(imagePromprts);
-      await this.createStorybook(storyArray, imagePromprts, storyId, userId);
+      return await this.createStorybook(
+        storyArray,
+        imagePromprts,
+        storyId,
+        userId,
+      );
     } catch (error) {
       console.log(error);
+      return error;
     }
-
-    return res.content;
   }
 
   // 책을 만드는 함수
