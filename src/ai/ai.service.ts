@@ -37,6 +37,7 @@ export class AiService {
     1. In Korean.
     1. '제목: [이야기의 제목]' 형식으로 시작한다.
     1. The story is created with at least four paragraphs separated by blank lines.
+    1. Each paragraph must be less than 100 characters.
     1. The story must be created with at least 400 characters.
     `;
     const prompt = ChatPromptTemplate.fromMessages([
