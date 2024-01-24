@@ -21,10 +21,24 @@ export class BooksService {
     return await this.bookRepository.createBook(createBookDto);
   }
 
+  // books.service
   async createOrUpdateBookHistory(
     createBookHistoryDto: CreateBookHistoryDto,
   ): Promise<BookHistory> {
-    return this.bookRepository.createOrUpdateBookHistory(createBookHistoryDto);
+    const existingHistory =
+      await this.bookRepository.findBookHistoryByBookIdAndUserId(
+        createBookHistoryDto.bookId,
+        createBookHistoryDto.userId,
+      );
+
+    if (existingHistory) {
+      return this.bookRepository.updateBookHistory(
+        createBookHistoryDto.bookId,
+        createBookHistoryDto,
+      );
+    }
+
+    return this.bookRepository.createBookHistory(createBookHistoryDto);
   }
 
   async saveImage(file: Express.Multer.File) {
