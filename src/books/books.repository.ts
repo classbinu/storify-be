@@ -21,22 +21,18 @@ export class BookMongoRepository {
     return createdBook.save();
   }
 
-  async createOrUpdateBookHistory(
+  async createBookHistory(
     createBookHistoryDto: CreateBookHistoryDto,
   ): Promise<BookHistory> {
-    const existingHistory = await this.bookHistoryModel.findOne({
-      bookId: createBookHistoryDto.bookId,
-    });
-
-    if (existingHistory) {
-      return this.updateBookHistory(
-        createBookHistoryDto.bookId,
-        createBookHistoryDto,
-      );
-    }
-
     const createdBookHistory = new this.bookHistoryModel(createBookHistoryDto);
     return createdBookHistory.save();
+  }
+
+  async findBookHistoryByBookIdAndUserId(
+    bookId: Types.ObjectId,
+    userId: Types.ObjectId,
+  ): Promise<BookHistory> {
+    return this.bookHistoryModel.findOne({ bookId, userId }).exec();
   }
 
   async updateBookHistory(
