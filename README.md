@@ -20,7 +20,7 @@
 
 ## 주요 기능
 ### 1. 평범한 일상을 입력하면 다음 과정을 거쳐 한 편의 동화가 생성됩니다.
-- LangChain + GPT: 동화 텍스트롸 이미지 프롬프트 생성
+- LangChain + GPT: 동화 텍스트와 이미지 프롬프트 생성
 - Stable Diffusion + LoRA: 문단별 삽화 이미지 생성
 - CLOVA Voice : 문단별 TTS 음성 파일 생성
 
