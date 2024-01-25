@@ -12,6 +12,8 @@ import { StoragesModule } from './storages/storages.module';
 import { StoriesModule } from './stories/stories.module';
 import { UsersModule } from './users/users.module';
 import { MailModule } from './mail/mail.module';
+import { FriendsModule } from './friends/friends.module';
+import { FriendsModule } from './friends/friends.module';
 
 @Module({
   imports: [
@@ -33,6 +35,7 @@ import { MailModule } from './mail/mail.module';
     AiModule,
     StoragesModule,
     MailModule,
+    FriendsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

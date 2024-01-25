@@ -21,7 +21,6 @@ export class BooksService {
     return await this.bookRepository.createBook(createBookDto);
   }
 
-  // books.service
   async createOrUpdateBookHistory(
     createBookHistoryDto: CreateBookHistoryDto,
   ): Promise<BookHistory> {
