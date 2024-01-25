@@ -97,7 +97,7 @@ export class BooksController {
     @Query('userId') userId: string,
     @Query('page') pageStr: string,
     @Query('limit') limitStr: string,
-  ): Promise<Book[]> {
+  ): Promise<{ total: number; books: Book[] }> {
     const query: any = {};
     if (title) query.title = title;
     if (userId) query.userId = userId;

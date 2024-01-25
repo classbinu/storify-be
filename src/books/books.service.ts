@@ -58,7 +58,11 @@ export class BooksService {
     return { imageUrl };
   }
 
-  async findAllBooks(query: any, page: number, limit: number): Promise<Book[]> {
+  async findAllBooks(
+    query: any,
+    page: number,
+    limit: number,
+  ): Promise<{ total: number; books: Book[] }> {
     return this.bookRepository.findAllBooks(query, page, limit);
   }
 

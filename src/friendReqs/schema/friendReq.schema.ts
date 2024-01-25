@@ -14,9 +14,10 @@ export class FriendReq {
   @Prop({
     type: Number,
     // 0: 대기 상태
-    // 1: 거절
-    // 2: 승낙
-    enum: [0, 1, 2],
+    // 1: 친구 신청 취소
+    // 2: 거절
+    // 3: 승낙
+    enum: [0, 1, 2, 3],
     default: 0,
   })
   status: number;

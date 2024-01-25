@@ -12,7 +12,7 @@ import { StoragesModule } from './storages/storages.module';
 import { StoriesModule } from './stories/stories.module';
 import { UsersModule } from './users/users.module';
 import { MailModule } from './mail/mail.module';
-import { FriendsModule } from './friends/friends.module';
+import { FriendReqsModule } from './friendReqs/friendReqs.module';
 import { FriendsModule } from './friends/friends.module';
 
 @Module({
@@ -35,6 +35,7 @@ import { FriendsModule } from './friends/friends.module';
     AiModule,
     StoragesModule,
     MailModule,
+    FriendReqsModule,
     FriendsModule,
   ],
   controllers: [AppController],
