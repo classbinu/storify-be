@@ -54,19 +54,25 @@ export class BookMongoRepository {
       .exec();
   }
 
-  async findAllBooks(query: any, page: number, limit: number): Promise<Book[]> {
+  async findAllBooks(
+    query: any,
+    page: number,
+    limit: number,
+  ): Promise<{ total: number; books: Book[] }> {
     let findQuery = this.bookModel.find(query);
     if (query.title) {
       const regex = new RegExp(query.title, 'i');
       findQuery = this.bookModel.find({ title: { $regex: regex } });
     }
-
-    return findQuery
+    const totalCount = await this.bookModel.countDocuments(query).exec();
+    const books = await findQuery
       .populate('userId', 'username')
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
       .exec();
+
+    return { total: totalCount, books };
   }
 
   async findBookById(id: string): Promise<Book> {
