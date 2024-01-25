@@ -105,7 +105,7 @@ export class AiService {
 
   // 책을 만드는 함수
   async createStorybook(storyArray, imagePrompts, storyId, userId) {
-    const title = storyArray.shift().replace('제목: ', '');
+    const title = storyArray.shift().replace('제목: ', '').replace(/"/g, '');
     const negativePrompts =
       'bad art, ugly, deformed, watermark, duplicated, ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, extra limbs, disfigured, body out of frame, blurry, bad anatomy, blurred, grainy, signature, cut off, draft';
 
