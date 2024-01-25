@@ -37,6 +37,7 @@ export class AiService {
     1. In Korean.
     1. '제목: [이야기의 제목]' 형식으로 시작한다.
     1. The story is created with at least four paragraphs separated by blank lines.
+    1. Each paragraph must be less than 100 characters.
     1. The story must be created with at least 400 characters.
     `;
     const prompt = ChatPromptTemplate.fromMessages([
@@ -90,44 +91,48 @@ export class AiService {
     try {
       const imagePromprts = JSON.parse(arrayString);
       console.log(imagePromprts);
-      await this.createStorybook(storyArray, imagePromprts, storyId, userId);
+      return await this.createStorybook(
+        storyArray,
+        imagePromprts,
+        storyId,
+        userId,
+      );
     } catch (error) {
       console.log(error);
+      return error;
     }
-
-    return res.content;
   }
 
   // 책을 만드는 함수
-  async createStorybook(storyArray, imagePromprts, storyId, userId) {
+  async createStorybook(storyArray, imagePrompts, storyId, userId) {
     const title = storyArray.shift().replace('제목: ', '');
     const negativePrompts =
       'bad art, ugly, deformed, watermark, duplicated, ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, extra limbs, disfigured, body out of frame, blurry, bad anatomy, blurred, grainy, signature, cut off, draft';
 
     // 삽화 생성 병렬 요청
-    const promises = imagePromprts.map((prompts: string, index: number) => {
-      return this.stableDiffusion({
-        prompts,
-        negativePrompts,
-      }).then(async (buffer) => {
-        const result = await this.storagesService.bufferUploadToS3(
-          `${storyId}-${Date.now()}-${index}.png`,
-          buffer,
-          'png',
-        );
-        return result;
-      });
-    });
+    const results = [];
 
-    // s3 업로드 결과가 배열에 순서대로 담김
-    const results = await Promise.all(promises);
+    for (let i = 0; i < imagePrompts.length; i++) {
+      const buffer = await this.stableDiffusion({
+        prompts: imagePrompts[i],
+        negativePrompts,
+      });
+
+      const result = await this.storagesService.bufferUploadToS3(
+        `${storyId}-${Date.now()}-${i}.png`,
+        buffer,
+        'png',
+      );
+
+      results.push(result);
+    }
 
     const bookBody = {};
     results.forEach((url, index) => {
       bookBody[index + 1] = {
         imageUrl: url,
         text: storyArray[index],
-        imagePrompt: imagePromprts[index].join(', '),
+        imagePrompt: imagePrompts[index].join(', '),
         ttsUrl: '',
       };
     });
