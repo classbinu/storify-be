@@ -1,14 +1,13 @@
 import { IsEnum, IsOptional } from 'class-validator';
-import { Types } from 'mongoose';
 
 export class UpdateFriendReqDto {
   @IsOptional()
-  sender: Types.ObjectId;
+  sender: string | null;
 
   @IsOptional()
-  receiver: Types.ObjectId;
+  receiver: string | null;
 
-  @IsEnum([0, 1, 2, 3])
+  @IsEnum(['대기', '취소', '거절', '승낙'])
   @IsOptional()
-  status: number;
+  status: string;
 }

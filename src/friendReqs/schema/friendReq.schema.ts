@@ -12,15 +12,14 @@ export class FriendReq {
   receiver: Types.ObjectId;
 
   @Prop({
-    type: Number,
-    // 0: 대기 상태
-    // 1: 친구 신청 취소
-    // 2: 거절
-    // 3: 승낙
-    enum: [0, 1, 2, 3],
-    default: 0,
+    type: String,
+    enum: ['대기', '취소', '거절', '승낙'],
+    default: '대기',
   })
-  status: number;
+  status: string;
+
+  @Prop({ default: Date.now })
+  createdAt: Date = new Date();
 }
 
-export const FriendSchema = SchemaFactory.createForClass(FriendReq);
+export const FriendReqSchema = SchemaFactory.createForClass(FriendReq);

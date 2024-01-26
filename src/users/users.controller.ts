@@ -8,6 +8,7 @@ import {
   UseGuards,
   Patch,
 } from '@nestjs/common';
+import { Types } from 'mongoose';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -31,14 +32,14 @@ export class UsersController {
   }
 
   @Get(':id')
-  findById(@Param('id') id: string): Promise<User> {
+  findById(@Param('id') id: Types.ObjectId): Promise<User> {
     return this.usersService.findById(id);
   }
 
   @UseGuards(AccessTokenGuard)
   @Patch(':id')
   updateUser(
-    @Param('id') id: string,
+    @Param('id') id: Types.ObjectId,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<User> {
     return this.usersService.updateUser(id, updateUserDto);
@@ -46,7 +47,7 @@ export class UsersController {
 
   @UseGuards(AccessTokenGuard)
   @Delete(':id')
-  deleteUser(@Param('id') id: string): Promise<any> {
+  deleteUser(@Param('id') id: Types.ObjectId): Promise<any> {
     return this.usersService.deleteUser(id);
   }
 }

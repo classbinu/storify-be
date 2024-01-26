@@ -14,6 +14,7 @@ import { UsersModule } from './users/users.module';
 import { MailModule } from './mail/mail.module';
 import { FriendReqsModule } from './friendReqs/friendReqs.module';
 import { FriendsModule } from './friends/friends.module';
+import { NotiModule } from './noti/noti.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { FriendsModule } from './friends/friends.module';
     MailModule,
     FriendReqsModule,
     FriendsModule,
+    NotiModule,
   ],
   controllers: [AppController],
   providers: [AppService],

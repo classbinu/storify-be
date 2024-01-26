@@ -6,7 +6,7 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-
+import { Types } from 'mongoose';
 import { AuthDto } from './dto/auth.dto';
 import { ConfigService } from '@nestjs/config';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
@@ -15,11 +15,13 @@ import { MailService } from 'src/mail/mail.service';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { User } from 'src/users/schema/user.schema';
 import { UserMongoRepository } from 'src/users/users.repository';
+import { FriendsMongoRepository } from 'src/friends/friends.repository';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userMongoRepository: UserMongoRepository,
+    private readonly friendsMongoRrpository: FriendsMongoRepository,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private readonly mailService: MailService,
@@ -40,20 +42,21 @@ export class AuthService {
     }
 
     // Hash password
-    const hash = await this.hashData(createUserDto.password);
-    console.log('Hashed password:', hash);
-    const newUser = await this.userMongoRepository.createUser({
-      ...createUserDto,
-      password: hash,
-    });
+    const newUser = await this.userMongoRepository.createUser(createUserDto);
 
     // 저장된 비밀번호 확인
     const savedUser = await this.userMongoRepository.findByUsername(
       newUser.username,
     );
     console.log('Saved hashed password:', savedUser.password);
-    const tokens = await this.getTokens(newUser.id, newUser.email);
-    await this.updateRefreshToken(newUser.id, tokens.refreshToken);
+    const tokens = await this.getTokens(newUser._id, newUser.email);
+    await this.updateRefreshToken(newUser._id, tokens.refreshToken);
+
+    // Create friend DB for the new user
+    await this.friendsMongoRrpository.createFriend({
+      user: newUser._id,
+      friends: [],
+    });
 
     // 회원가입 이메일 발송
     await this.mailService.sendWelcomeMail(newUser.email, newUser.username);
@@ -68,16 +71,16 @@ export class AuthService {
     const passwordMatches = await argon2.verify(user.password, data.password);
     if (!passwordMatches)
       throw new BadRequestException('Password is incorrect');
-    const tokens = await this.getTokens(user.id, user.email);
-    await this.updateRefreshToken(user.id, tokens.refreshToken);
+    const tokens = await this.getTokens(user._id, user.email);
+    await this.updateRefreshToken(user._id, tokens.refreshToken);
     return {
       ...tokens,
       username: user.username,
-      id: user.id,
+      id: user._id,
     };
   }
 
-  async findUserById(id: string): Promise<User> {
+  async findUserById(id: Types.ObjectId): Promise<User> {
     try {
       return await this.userMongoRepository.findById(id);
     } catch (error) {
@@ -85,7 +88,7 @@ export class AuthService {
     }
   }
 
-  async logout(id: string) {
+  async logout(id: Types.ObjectId) {
     return this.userMongoRepository.updateUser(id, { refreshToken: null });
   }
 
@@ -93,7 +96,7 @@ export class AuthService {
     return argon2.hash(data);
   }
 
-  async changePassword(id: string, updateAuthDto: UpdateAuthDto) {
+  async changePassword(id: Types.ObjectId, updateAuthDto: UpdateAuthDto) {
     const user = await this.userMongoRepository.findById(id);
     if (!user) {
       throw new UnauthorizedException('User not found');
@@ -114,14 +117,14 @@ export class AuthService {
     return { message: 'Password changed successfully' };
   }
 
-  async updateRefreshToken(id: string, refreshToken: string) {
+  async updateRefreshToken(id: Types.ObjectId, refreshToken: string) {
     const hashedRefreshToken = await this.hashData(refreshToken);
     await this.userMongoRepository.updateUser(id, {
       refreshToken: hashedRefreshToken,
     });
   }
 
-  async getTokens(id: string, email: string) {
+  async getTokens(id: Types.ObjectId, email: string) {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
         {
@@ -151,7 +154,7 @@ export class AuthService {
     };
   }
 
-  async refreshTokens(id: string, refreshToken: string) {
+  async refreshTokens(id: Types.ObjectId, refreshToken: string) {
     const user = await this.userMongoRepository.findById(id);
     if (!user || !user.refreshToken) {
       throw new ForbiddenException('Access Denied');
@@ -165,8 +168,8 @@ export class AuthService {
       throw new ForbiddenException('Access Denied');
     }
 
-    const tokens = await this.getTokens(user.id, user.email);
-    await this.updateRefreshToken(user.id, tokens.refreshToken);
+    const tokens = await this.getTokens(user._id, user.email);
+    await this.updateRefreshToken(user._id, tokens.refreshToken);
     return tokens;
   }
 
@@ -179,7 +182,7 @@ export class AuthService {
 
     const token = await this.jwtService.signAsync(
       {
-        sub: user.id,
+        sub: user._id,
       },
       {
         secret: this.configService.get<string>('JWT_RESET_SECRET'),
