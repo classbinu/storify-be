@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { CreateFriendReqDto } from './dto/create-friendReq.dto';
 import { UpdateFriendReqDto } from './dto/update-friendReq.dto';
 import { FriendReqMongoRepository } from './friendReqs.repository';
@@ -29,7 +33,7 @@ export class FriendReqsService {
         throw new NotFoundException('Other user not found');
       }
 
-      const receiverId = new Types.ObjectId(receiverUser._id).toString();
+      const receiverId = receiverUser._id.toString();
 
       return await this.friendReqMongoRepository.createFriendReq({
         ...createFriendDto,
@@ -58,6 +62,10 @@ export class FriendReqsService {
     const otherUsername =
       updateFriendReqDto.receiver || updateFriendReqDto.sender;
 
+    if (!otherUsername) {
+      throw new BadRequestException('Receiver or sender must be provided');
+    }
+
     const otherUser =
       await this.userMongoRepository.findByUsername(otherUsername);
 
@@ -65,15 +73,17 @@ export class FriendReqsService {
       throw new NotFoundException('Other user not found');
     }
 
-    const otherUserId = new Types.ObjectId(otherUser._id);
+    const otherUserId = otherUser._id.toString();
 
     const { sent, received } =
       await this.friendReqMongoRepository.findByUserId(currentUserId);
 
     const existingReq = [...sent, ...received].find(
       (req) =>
-        new Types.ObjectId(req.sender).equals(otherUserId) ||
-        new Types.ObjectId(req.receiver).equals(otherUserId),
+        (req.sender.toString() === currentUserId.toString() &&
+          req.receiver.toString() === otherUserId) ||
+        (req.receiver.toString() === currentUserId.toString() &&
+          req.sender.toString() === otherUserId),
     );
 
     if (!existingReq) {
@@ -81,27 +91,20 @@ export class FriendReqsService {
     }
 
     if (existingReq.status !== updateFriendReqDto.status) {
-      existingReq.status = updateFriendReqDto.status;
-
       const updatedFriendReqDto: UpdateFriendReqDto = {
         ...updateFriendReqDto,
         sender: existingReq.sender.toString(),
         receiver: existingReq.receiver.toString(),
       };
-      const updatedFriendReq =
-        await this.friendReqMongoRepository.updateFriendReq(
-          updatedFriendReqDto,
-        );
 
-      // If the status of the friend request is '승낙', save the friend relationship in the friend DB.
-      if (updateFriendReqDto.status === '승낙') {
-        await this.friendsMongoRepository.addFriend(
-          updatedFriendReq.sender,
-          updatedFriendReq.receiver,
-        );
-      }
+      // if (updateFriendReqDto.status === '승낙') {
+      //   await this.friendsMongoRepository.addFriend(
+      //     new Types.ObjectId(updatedFriendReqDto.sender),
+      //     new Types.ObjectId(updatedFriendReqDto.receiver),
+      //   );
+      // }
 
-      return updatedFriendReq;
+      return this.friendReqMongoRepository.updateFriendReq(updatedFriendReqDto);
     } else {
       throw new Error('New status is the same as the current status');
     }
