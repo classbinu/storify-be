@@ -81,8 +81,10 @@ export class FriendReqMongoRepository {
     const { sender, receiver, status } = updateFriendReqDto;
 
     const friendReq = await this.friendReqModel.findOne({
-      sender: sender,
-      receiver: receiver,
+      $or: [
+        { sender: sender, receiver: receiver },
+        { sender: receiver, receiver: sender },
+      ],
     });
 
     if (!friendReq) {
