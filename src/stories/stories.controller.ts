@@ -28,18 +28,18 @@ export class StoriesController {
     return this.storiesService.createStory(createStoryDto);
   }
 
-  @UseGuards(AccessTokenGuard)
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'AI 동화책 생성을 위한 endpoint' })
-  @Post('ai')
-  createAiStory(
-    @Req() req: any,
-    @Body() createStoryDto: CreateStoryDto,
-  ): Promise<Story> {
-    const userId = req.user['sub'];
-    createStoryDto.userId = userId;
-    return this.storiesService.createAiStory(createStoryDto);
-  }
+  // @UseGuards(AccessTokenGuard)
+  // @ApiBearerAuth()
+  // @ApiOperation({ summary: 'API 분리 중. 사용 금지.' })
+  // @Post('ai')
+  // createAiStory(
+  //   @Req() req: any,
+  //   @Body() createStoryDto: CreateStoryDto,
+  // ): Promise<Story> {
+  //   const userId = req.user['sub'];
+  //   createStoryDto.userId = userId;
+  //   return this.storiesService.createAiStory(createStoryDto);
+  // }
 
   @Get()
   findAllStory(): Promise<Story[]> {

@@ -2,18 +2,21 @@ import { BooksService } from 'src/books/books.service';
 import { ChatOpenAI } from '@langchain/openai';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
 import { ConfigService } from '@nestjs/config';
+import { CreateAiStoryDto } from './dto/create-ai-story.dto';
 import { CreateBookDto } from 'src/books/dto/create-book.dto';
 import { Injectable } from '@nestjs/common';
 // import { JsonOutputFunctionsParser } from 'langchain/output_parsers';
 import { LangchainDto } from './dto/langchain.dto';
 import { StableDiffusionDto } from './dto/stableDiffusion.dto';
 import { StoragesService } from 'src/storages/storages.service';
+import { StoriesService } from 'src/stories/stories.service';
 
 @Injectable()
 export class AiService {
   constructor(
     private configService: ConfigService,
     private readonly storagesService: StoragesService,
+    private readonly storiesService: StoriesService,
     private readonly booksService: BooksService,
   ) {}
 
@@ -209,5 +212,60 @@ export class AiService {
     const arrayBuffer = await res.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
     return buffer;
+  }
+
+  // LLM으로 텍스트를 생성하는 베이스 함수
+  async generateAiText(systemMessage: string, userMessage: string) {
+    const chatModel = new ChatOpenAI({
+      openAIApiKey: this.configService.get<string>('OPENAI_API_KEY'),
+      modelName: 'gpt-3.5-turbo-1106',
+      // modelName: 'gpt-4-1106-preview',
+      temperature: 0.1,
+    });
+
+    const prompt = ChatPromptTemplate.fromMessages([
+      ['system', systemMessage],
+      ['user', '{input}'],
+    ]);
+
+    const chain = prompt.pipe(chatModel);
+    const res = await chain.invoke({
+      input: userMessage,
+    });
+
+    return res.content;
+  }
+
+  async createAiStory(createAiStoryDto: CreateAiStoryDto, userId: string) {
+    const systemMessage = `
+    # role
+    You are a children's story writer.
+
+    # directive
+    Creates a story based on user input.
+
+    # Constraints
+    1. In Korean.
+    1. '제목: [이야기의 제목]' 형식으로 시작한다.
+    1. The story is created with at least four paragraphs separated by blank lines.
+    1. Each paragraph must be less than 100 characters.
+    1. The story must be created with at least 400 characters.
+    `;
+    const userMessage = createAiStoryDto.message;
+    const createdAiStory = await this.generateAiText(
+      systemMessage,
+      userMessage,
+    );
+
+    const createdStory = await this.storiesService.createStory({
+      userId,
+      message: createAiStoryDto.message,
+    });
+
+    if (!createdStory) {
+      throw new Error('Story not created');
+    }
+
+    return { content: createdAiStory, story: createdStory };
   }
 }

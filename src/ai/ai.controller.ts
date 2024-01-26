@@ -1,8 +1,10 @@
 import { AiService } from './ai.service';
-import { ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Post } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { LangchainDto } from './dto/langchain.dto';
 import { StableDiffusionDto } from './dto/stableDiffusion.dto';
+import { CreateAiStoryDto } from './dto/create-ai-story.dto';
+import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
 
 @ApiTags('Ai')
 @Controller('ai')
@@ -21,5 +23,16 @@ export class AiController {
   @Post('stablediffusion')
   async stableDiffusion(@Body() stabldDiffusionDto: StableDiffusionDto) {
     return await this.aiService.stableDiffusion(stabldDiffusionDto);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
+  @Post('createAiStory')
+  async createAiStory(
+    @Req() req: any,
+    @Body() createAiStoryDto: CreateAiStoryDto,
+  ) {
+    const userId = req.user['sub'];
+    return await this.aiService.createAiStory(createAiStoryDto, userId);
   }
 }
