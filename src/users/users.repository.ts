@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { User, UserDocument } from './schema/user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -18,7 +18,7 @@ export class UserMongoRepository {
     }
   }
 
-  async findById(id: string): Promise<User> {
+  async findById(id: Types.ObjectId): Promise<User> {
     try {
       return await this.userModel.findById(id).exec();
     } catch (error) {
@@ -50,7 +50,10 @@ export class UserMongoRepository {
     }
   }
 
-  async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+  async updateUser(
+    id: Types.ObjectId,
+    updateUserDto: UpdateUserDto,
+  ): Promise<User> {
     try {
       if (updateUserDto.refreshToken === null) {
         delete updateUserDto.refreshToken;
@@ -63,9 +66,9 @@ export class UserMongoRepository {
     }
   }
 
-  async deleteUser(_id: string): Promise<any> {
+  async deleteUser(id: Types.ObjectId): Promise<any> {
     try {
-      return await this.userModel.findByIdAndDelete(_id).exec();
+      return await this.userModel.findByIdAndDelete(id).exec();
     } catch (error) {
       throw new Error(`Error deleting user: ${error.message}`);
     }

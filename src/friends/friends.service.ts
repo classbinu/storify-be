@@ -1,26 +1,50 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateFriendDto } from './dto/create-friend.dto';
 import { UpdateFriendDto } from './dto/update-friend.dto';
+import { Friend } from './schema/friend.schema';
+import { FriendsMongoRepository } from './friends.repository';
 
 @Injectable()
 export class FriendsService {
-  create(createFriendDto: CreateFriendDto) {
-    return 'This action adds a new friend';
+  constructor(
+    private readonly friendsMongoRepository: FriendsMongoRepository,
+  ) {}
+
+  async createFriend(createFriendDto: CreateFriendDto): Promise<Friend> {
+    return this.friendsMongoRepository.createFriend(createFriendDto);
   }
 
-  findAll() {
-    return `This action returns all friends`;
+  async findAll(): Promise<Friend[]> {
+    return this.friendsMongoRepository.findAll();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} friend`;
+  async findOne(id: string): Promise<Friend> {
+    const friend = await this.friendsMongoRepository.findOne(id);
+    if (!friend) {
+      throw new NotFoundException(`Friend with id ${id} not found.`);
+    }
+    return friend;
   }
 
-  update(id: number, updateFriendDto: UpdateFriendDto) {
-    return `This action updates a #${id} friend`;
+  async updateFriend(
+    id: string,
+    updateFriendDto: UpdateFriendDto,
+  ): Promise<Friend> {
+    const updatedFriend = await this.friendsMongoRepository.updateFriend(
+      id,
+      updateFriendDto,
+    );
+    if (!updatedFriend) {
+      throw new NotFoundException(`Friend with id ${id} not found.`);
+    }
+    return updatedFriend;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} friend`;
+  async deleteFriend(id: string): Promise<Friend> {
+    const removedFriend = await this.friendsMongoRepository.deleteFriend(id);
+    if (!removedFriend) {
+      throw new NotFoundException(`Friend with id ${id} not found.`);
+    }
+    return removedFriend;
   }
 }

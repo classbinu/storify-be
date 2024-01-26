@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Types } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserMongoRepository } from './users.repository';
@@ -16,15 +17,18 @@ export class UsersService {
     return this.userRepository.findAll();
   }
 
-  async findById(id: string): Promise<User> {
+  async findById(id: Types.ObjectId): Promise<User> {
     return this.userRepository.findById(id);
   }
 
-  async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+  async updateUser(
+    id: Types.ObjectId,
+    updateUserDto: UpdateUserDto,
+  ): Promise<User> {
     return this.userRepository.updateUser(id, updateUserDto);
   }
 
-  async deleteUser(id: string): Promise<any> {
+  async deleteUser(id: Types.ObjectId): Promise<any> {
     return this.userRepository.deleteUser(id);
   }
 }

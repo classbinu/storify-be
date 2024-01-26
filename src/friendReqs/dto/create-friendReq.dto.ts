@@ -6,8 +6,8 @@ export class CreateFriendReqDto {
   sender: Types.ObjectId;
 
   @IsNotEmpty()
-  receiver: Types.ObjectId;
+  receiver: string;
 
-  @IsEnum([0, 1, 2, 3])
-  status: number;
+  @IsEnum(['대기', '취소', '거절', '승낙'])
+  status: string;
 }

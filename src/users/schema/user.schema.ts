@@ -2,13 +2,13 @@ import * as argon2 from 'argon2';
 
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export type UserDocument = User & Document;
 
 @Schema()
 export class User {
-  id: string;
+  _id: Types.ObjectId;
 
   @Prop({ required: true, unique: true })
   username: string;
@@ -26,8 +26,7 @@ export class User {
   createdAt: Date = new Date();
 
   async validatePassword(password: string): Promise<boolean> {
-    const hash = await argon2.hash(password);
-    return await argon2.verify(hash, this.password);
+    return await argon2.verify(this.password, password);
   }
 
   @Prop()
@@ -40,6 +39,6 @@ UserSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {
     return next();
   }
-  // this.password = await argon2.hash(this.password);
+  this.password = await argon2.hash(this.password);
   next();
 });
