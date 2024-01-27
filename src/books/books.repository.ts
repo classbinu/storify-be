@@ -1,9 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Book, BookDocument } from './schema/book.schema';
 import { BookHistory, BookHistoryDocument } from './schema/book-history.schema';
 import { Model, Types } from 'mongoose';
 import { CreateBookDto } from './dto/create-book.dto';
+import { UpdateBookDto } from './dto/update-book.dto';
 import { CreateBookHistoryDto } from './dto/create-book-history.dto';
 
 @Injectable()
@@ -79,7 +84,30 @@ export class BookMongoRepository {
     return this.bookModel.findById(id).exec();
   }
 
-  async deleteBook(id: string): Promise<Book> {
+  async updateBook(
+    id: string,
+    updateBookDto: UpdateBookDto,
+    writerId: string,
+  ): Promise<Book> {
+    const book = await this.bookModel.findById(id).exec();
+    if (!book) {
+      throw new NotFoundException('Book not found');
+    }
+    if (book.userId.toString() !== writerId) {
+      throw new UnauthorizedException('You are not the writer of this book');
+    }
+    Object.assign(book, updateBookDto);
+    return book.save();
+  }
+
+  async deleteBook(id: string, writerId: string): Promise<Book> {
+    const book = await this.bookModel.findById(id).exec();
+    if (!book) {
+      throw new NotFoundException('Book not found');
+    }
+    if (book.userId.toString() !== writerId) {
+      throw new UnauthorizedException('You are not the writer of this book');
+    }
     return this.bookModel.findByIdAndDelete(id).exec();
   }
 }

@@ -3,7 +3,7 @@ import {
   Get,
   Post,
   Body,
-  // Patch,
+  Patch,
   Param,
   Delete,
   Req,
@@ -27,7 +27,7 @@ import { BooksService } from './books.service';
 import { Book } from './schema/book.schema';
 import { BookHistory } from './schema/book-history.schema';
 import { CreateBookDto } from './dto/create-book.dto';
-// import { UpdateBookDto } from './dto/update-book.dto';
+import { UpdateBookDto } from './dto/update-book.dto';
 import { CreateBookHistoryDto } from './dto/create-book-history.dto';
 import { ImageUploadDto } from './dto/image-upload.dto';
 import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
@@ -122,19 +122,33 @@ export class BooksController {
     return this.booksService.findBookById(id);
   }
 
-  // @Patch(':id')
-  // updateBook(@Param('id') id: string, @Body() updateBookDto: UpdateBookDto) {
-  //   return this.booksService.update(+id, updateBookDto);
-  // }
-
-  @Delete(':id')
-  async deleteBook(@Param('id') id: string, @Req() req: any): Promise<Book> {
-    const userId = req.user?.userId;
-
-    if (!userId) {
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
+  @Patch(':id')
+  async updateBook(
+    @Param('id') id: string,
+    @Body() updateBookDto: UpdateBookDto,
+    @Req() req: any,
+  ): Promise<Book> {
+    const writerId = req.user['sub'];
+    console.log(writerId);
+    if (!writerId) {
       throw new UnauthorizedException();
     }
 
-    return this.booksService.deleteBook(id, userId);
+    return this.booksService.updateBook(id, updateBookDto, writerId);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
+  @Delete(':id')
+  async deleteBook(@Param('id') id: string, @Req() req: any): Promise<Book> {
+    const writerId = req.user?.userId;
+
+    if (!writerId) {
+      throw new UnauthorizedException();
+    }
+
+    return this.booksService.deleteBook(id, writerId);
   }
 }
