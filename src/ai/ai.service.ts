@@ -288,6 +288,7 @@ export class AiService {
     );
 
     bookBody[page].imageUrl = s3Url;
-    // return await this.booksService.updateBook(id, bookBody);
+    // book 서비스 함수 수정 필요
+    // return await this.booksService.updateBook(id, bookBody, userId);
   }
 }

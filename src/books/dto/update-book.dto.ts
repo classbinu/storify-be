@@ -1,4 +1,5 @@
-import { IsString, IsOptional } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
+
 import { ApiProperty } from '@nestjs/swagger';
 
 export class BodyDto {
@@ -18,13 +19,13 @@ export class BodyDto {
 export class UpdateBookDto {
   @IsString()
   @IsOptional()
-  title: string;
+  title?: string;
 
   @IsString()
   @IsOptional()
-  coverUrl: string;
+  coverUrl?: string;
 
   @IsOptional()
   @ApiProperty({ type: () => BodyDto })
-  body: { [key: string]: BodyDto };
+  body?: { [key: string]: BodyDto };
 }
