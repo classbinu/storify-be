@@ -44,7 +44,7 @@ export class AiService {
     };
 
     const negativePrompt =
-      'bad art, ugly, deformed, watermark, duplicated, ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, extra limbs, disfigured, body out of frame, blurry, bad anatomy, blurred, grainy, signature, cut off, draft';
+      'bad art, ugly, deformed, watermark, duplicated, ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, poorly drawn eyes, out of frame, extra limbs, disfigured, body out of frame, blurry, bad anatomy, blurred, grainy, signature, cut off, draft';
 
     const API_URL = THEME_LIST[imageStyle].url;
     const TRIGGER_WORDS = THEME_LIST[imageStyle].trigger;
@@ -91,7 +91,7 @@ export class AiService {
       openAIApiKey: this.configService.get<string>('OPENAI_API_KEY'),
       modelName: 'gpt-3.5-turbo-1106',
       // modelName: 'gpt-4-1106-preview',
-      temperature: 0.1,
+      temperature: 0.9,
     });
 
     const prompt = ChatPromptTemplate.fromMessages([
@@ -114,12 +114,15 @@ export class AiService {
     You are a children's story writer.
 
     # directive
-    Creates a story based on user input.
+    1. You have to Creates a creative story based on user input.
+    1. The user will not be asked again.
+    1. You don't respond to users, you only create stories.
 
     # Constraints
     1. In Korean.
     1. '제목: [이야기의 제목]' 형식으로 시작한다.
-    1. The story is created with at least four paragraphs separated by blank lines.
+    1. The story should have the following structure: Introduction, Development, Turn, and Conclusion.
+    1. The story is created with at least 4 paragraphs separated by double blank lines.
     1. Each paragraph must be less than 100 characters.
     1. The story must be created with at least 400 characters.
     `;
