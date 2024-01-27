@@ -156,7 +156,7 @@ export class AiService {
     1. Each prompt is returned in the form of an array, and the array has ${storyArray.length - 1} elements.
     1. Return the prompts as a JSON array, with each prompt consisting of descriptive elements in a sub-array.
     1. People's names are not used and only objective situations are described.
-    1. Characters such as must start with '[' and end with ']'.
+    1. Each prompt must start with '[' and end with ']'.
     `;
     const userMessage = storyText;
     const createdImagePrompts = await this.generateAiText(
