@@ -9,6 +9,7 @@ import { Injectable } from '@nestjs/common';
 // import { JsonOutputFunctionsParser } from 'langchain/output_parsers';
 import { StoragesService } from 'src/storages/storages.service';
 import { StoriesService } from 'src/stories/stories.service';
+import { UpdateBookDto } from 'src/books/dto/update-book.dto';
 
 @Injectable()
 export class AiService {
@@ -278,7 +279,8 @@ export class AiService {
     }
 
     const bookBody = book.body;
-    const imagePrompt = bookBody[page].imagePrompt;
+    console.log(bookBody.get(page));
+    const imagePrompt = bookBody.get(page).imagePrompt;
 
     const buffer = await this.stableDiffusion(imagePrompt);
     const s3Url = await this.storagesService.bufferUploadToS3(
@@ -287,8 +289,14 @@ export class AiService {
       'png',
     );
 
-    bookBody[page].imageUrl = s3Url;
-    // book 서비스 함수 수정 필요
-    // return await this.booksService.updateBook(id, bookBody, userId);
+    bookBody.get(page).imageUrl = s3Url;
+
+    const updateBookDto: UpdateBookDto = {
+      title: book.title,
+      coverUrl: book.coverUrl,
+      body: Object.fromEntries(bookBody),
+    };
+
+    return await this.booksService.updateBook(id, updateBookDto, userId);
   }
 }
