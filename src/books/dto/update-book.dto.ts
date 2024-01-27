@@ -4,16 +4,20 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class BodyDto {
   @IsString()
-  text: string;
+  @IsOptional()
+  text?: string;
 
   @IsString()
-  imagePrompt: string;
+  @IsOptional()
+  imagePrompt?: string;
 
   @IsString()
-  imageUrl: string;
+  @IsOptional()
+  imageUrl?: string;
 
   @IsString()
-  ttsUrl: string;
+  @IsOptional()
+  ttsUrl?: string;
 }
 
 export class UpdateBookDto {
