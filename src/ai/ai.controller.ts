@@ -12,7 +12,7 @@ export class AiController {
 
   @UseGuards(AccessTokenGuard)
   @ApiBearerAuth()
-  @Post('createAiStory')
+  @Post('stories')
   async createAiStory(
     @Req() req: any,
     @Body() createAiStoryDto: CreateAiStoryDto,
@@ -23,7 +23,7 @@ export class AiController {
 
   @UseGuards(AccessTokenGuard)
   @ApiBearerAuth()
-  @Post('createAiBook')
+  @Post('books')
   async createAiBook(
     @Req() req: any,
     @Body() createAiBookDto: CreateAiBookDto,
