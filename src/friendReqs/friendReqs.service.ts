@@ -10,7 +10,6 @@ import { FriendReq } from './schema/friendReq.schema';
 import { NotiService } from 'src/noti/noti.service';
 import { FriendsMongoRepository } from 'src/friends/friends.repository';
 import { UserMongoRepository } from 'src/users/users.repository';
-import { Types } from 'mongoose';
 
 @Injectable()
 export class FriendReqsService {
@@ -33,11 +32,9 @@ export class FriendReqsService {
         throw new NotFoundException('Other user not found');
       }
 
-      const receiverId = receiverUser._id.toString();
-
       return await this.friendReqMongoRepository.createFriendReq({
         ...createFriendDto,
-        receiver: receiverId,
+        receiver: receiverUser._id.toString(),
       });
     } catch (error) {
       console.error(error);
@@ -46,7 +43,7 @@ export class FriendReqsService {
   }
 
   async findByUserId(
-    userId: Types.ObjectId,
+    userId: string,
   ): Promise<{ sent: FriendReq[]; received: FriendReq[] }> {
     return this.friendReqMongoRepository.findByUserId(userId);
   }
@@ -57,7 +54,7 @@ export class FriendReqsService {
 
   async updateFriendReq(
     updateFriendReqDto: UpdateFriendReqDto,
-    currentUserId: Types.ObjectId,
+    currentUserId: string,
   ): Promise<FriendReq> {
     const otherUsername =
       updateFriendReqDto.receiver || updateFriendReqDto.sender;
@@ -73,17 +70,15 @@ export class FriendReqsService {
       throw new NotFoundException('Other user not found');
     }
 
-    const otherUserId = otherUser._id.toString();
-
     const { sent, received } =
       await this.friendReqMongoRepository.findByUserId(currentUserId);
 
     const existingReq = [...sent, ...received].find(
       (req) =>
-        (req.sender.toString() === currentUserId.toString() &&
-          req.receiver.toString() === otherUserId) ||
-        (req.receiver.toString() === currentUserId.toString() &&
-          req.sender.toString() === otherUserId),
+        (req.sender.toString() === currentUserId &&
+          req.receiver.toString() === otherUser._id.toString()) ||
+        (req.receiver.toString() === currentUserId &&
+          req.sender.toString() === otherUser._id.toString()),
     );
 
     if (!existingReq) {
@@ -91,18 +86,18 @@ export class FriendReqsService {
     }
 
     if (existingReq.status !== updateFriendReqDto.status) {
+      if (updateFriendReqDto.status === '승낙') {
+        await this.friendsMongoRepository.addFriend(
+          existingReq.sender.toString(),
+          existingReq.receiver.toString(),
+        );
+      }
+
       const updatedFriendReqDto: UpdateFriendReqDto = {
         ...updateFriendReqDto,
         sender: existingReq.sender.toString(),
         receiver: existingReq.receiver.toString(),
       };
-
-      // if (updateFriendReqDto.status === '승낙') {
-      //   await this.friendsMongoRepository.addFriend(
-      //     new Types.ObjectId(updatedFriendReqDto.sender),
-      //     new Types.ObjectId(updatedFriendReqDto.receiver),
-      //   );
-      // }
 
       return this.friendReqMongoRepository.updateFriendReq(updatedFriendReqDto);
     } else {
@@ -110,7 +105,7 @@ export class FriendReqsService {
     }
   }
 
-  deleteFriendReq(id: Types.ObjectId): Promise<FriendReq> {
+  deleteFriendReq(id: string): Promise<FriendReq> {
     return this.friendReqMongoRepository.deleteFriendReq(id);
   }
 }

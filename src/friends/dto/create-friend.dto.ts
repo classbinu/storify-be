@@ -3,8 +3,7 @@ import { Types } from 'mongoose';
 
 export class CreateFriendDto {
   @IsNotEmpty()
-  @IsMongoId()
-  user: Types.ObjectId;
+  user: string | Types.ObjectId;
 
   @IsArray()
   @IsMongoId({ each: true })

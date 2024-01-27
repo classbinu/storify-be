@@ -56,13 +56,13 @@ export class FriendReqMongoRepository {
   }
 
   async findByUserId(
-    userId: Types.ObjectId,
+    userId: string,
   ): Promise<{ sent: FriendReq[]; received: FriendReq[] }> {
     const sent = await this.friendReqModel.find({
-      sender: userId.toHexString(),
+      sender: userId,
     });
     const received = await this.friendReqModel.find({
-      receiver: userId.toHexString(),
+      receiver: userId,
     });
     return { sent, received };
   }
@@ -95,7 +95,7 @@ export class FriendReqMongoRepository {
     return friendReq.save();
   }
 
-  async deleteFriendReq(id: Types.ObjectId): Promise<FriendReq> {
+  async deleteFriendReq(id: string): Promise<FriendReq> {
     return this.friendReqModel.findByIdAndDelete(id).exec();
   }
 }
