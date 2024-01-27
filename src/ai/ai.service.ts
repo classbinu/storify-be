@@ -291,6 +291,11 @@ export class AiService {
 
     bookBody.get(page).imageUrl = s3Url;
 
+    // 1페이지면 표지도 연동(임시)
+    if (page === '1') {
+      book.coverUrl = s3Url;
+    }
+
     const updateBookDto: UpdateBookDto = {
       title: book.title,
       coverUrl: book.coverUrl,
