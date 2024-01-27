@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Book } from './schema/book.schema';
 import { BookHistory } from './schema/book-history.schema';
 // import { CreateBookDto } from './dto/create-book.dto';
-// import { UpdateBookDto } from './dto/update-book.dto';
+import { UpdateBookDto } from './dto/update-book.dto';
 import { BookMongoRepository } from './books.repository';
 import { CreateBookDto } from './dto/create-book.dto';
 import { StoragesService } from 'src/storages/storages.service';
@@ -70,13 +70,27 @@ export class BooksService {
     return this.bookRepository.findBookById(id);
   }
 
-  async deleteBook(id: string, userId: string): Promise<Book> {
+  async updateBook(
+    id: string,
+    updateBookDto: UpdateBookDto,
+    writerId: string,
+  ): Promise<Book> {
     const book = await this.bookRepository.findBookById(id);
 
-    if (book.userId.toString() !== userId) {
+    if (book.userId.toString() !== writerId) {
       throw new UnauthorizedException();
     }
 
-    return this.bookRepository.deleteBook(id);
+    return this.bookRepository.updateBook(id, updateBookDto, writerId);
+  }
+
+  async deleteBook(id: string, writerId: string): Promise<Book> {
+    const book = await this.bookRepository.findBookById(id);
+
+    if (book.userId.toString() !== writerId) {
+      throw new UnauthorizedException();
+    }
+
+    return this.bookRepository.deleteBook(id, writerId);
   }
 }
