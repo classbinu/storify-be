@@ -20,49 +20,11 @@ export class AiService {
     private readonly booksService: BooksService,
   ) {}
 
-  // 책을 만드는 함수
-  async createStorybook(storyArray, imagePrompts, storyId, userId) {
-    const title = storyArray.shift().replace('제목: ', '').replace(/"/g, '');
-
-    // 삽화 생성 병렬 요청
-    const results = [];
-
-    for (let i = 0; i < imagePrompts.length; i++) {
-      const buffer = await this.stableDiffusion(imagePrompts[i]);
-
-      const result = await this.storagesService.bufferUploadToS3(
-        `${storyId}-${Date.now()}-${i}.png`,
-        buffer,
-        'png',
-      );
-
-      results.push(result);
-    }
-
-    const bookBody = {};
-    results.forEach((url, index) => {
-      bookBody[index + 1] = {
-        imageUrl: url,
-        text: storyArray[index],
-        imagePrompt: imagePrompts[index].join(', '),
-        ttsUrl: '',
-      };
-    });
-
-    const createBookDto: CreateBookDto = {
-      title,
-      coverUrl: bookBody[1].imageUrl,
-      body: bookBody,
-      storyId: storyId,
-      userId: userId,
-    };
-
-    // book 데이터 생성 코드 필요
-    return await this.booksService.createBook(createBookDto);
-  }
-
   // 프롬프트를 바탕으로 삽화를 생성하는 함수
-  async stableDiffusion(prompt: string): Promise<any> {
+  async stableDiffusion(
+    prompt: string,
+    imageStyle: string = 'cartoon',
+  ): Promise<any> {
     const THEME_LIST = {
       storybook: {
         url: 'https://api-inference.huggingface.co/models/artificialguybr/StoryBookRedmond-V2',
@@ -81,13 +43,12 @@ export class AiService {
       },
     };
 
-    const theme = 'cartoon';
     const negativePrompt =
       'bad art, ugly, deformed, watermark, duplicated, ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, extra limbs, disfigured, body out of frame, blurry, bad anatomy, blurred, grainy, signature, cut off, draft';
 
-    const API_URL = THEME_LIST[theme].url;
-    const TRIGGER_WORDS = THEME_LIST[theme].trigger;
-    const LORA = THEME_LIST[theme].lora;
+    const API_URL = THEME_LIST[imageStyle].url;
+    const TRIGGER_WORDS = THEME_LIST[imageStyle].trigger;
+    const LORA = THEME_LIST[imageStyle].lora;
     const HUGGINFACE_API_KEY =
       this.configService.get<string>('HUGGINFACE_API_KEY');
 
@@ -225,10 +186,11 @@ export class AiService {
     const title = storyArray.shift().replace('제목: ', '').replace(/"/g, '');
 
     const imagePrompts = await this.createImagePrompts(storyText);
+    const imageStyle = createAiBookDto.imageStyle;
     // 삽화 생성 병렬 요청
     const uploadPromises = imagePrompts.map(
       async (prompt: string, i: number) => {
-        const buffer = await this.stableDiffusion(prompt);
+        const buffer = await this.stableDiffusion(prompt, imageStyle);
 
         const s3Url = await this.storagesService.bufferUploadToS3(
           `${storyId}-${Date.now()}-${i + 1}.png`,
@@ -278,11 +240,12 @@ export class AiService {
       throw new Error('User not authorized');
     }
 
+    const imageStyle = book.imageStyle;
     const bookBody = book.body;
     console.log(bookBody.get(page));
     const imagePrompt = bookBody.get(page).imagePrompt;
 
-    const buffer = await this.stableDiffusion(imagePrompt);
+    const buffer = await this.stableDiffusion(imagePrompt, imageStyle);
     const s3Url = await this.storagesService.bufferUploadToS3(
       `${book.storyId}-${Date.now()}-${page}.png`,
       buffer,

@@ -11,6 +11,9 @@ export class Book {
   @Prop({ required: true })
   coverUrl: string;
 
+  @Prop({ required: true, default: 'cartoon' })
+  imageStyle: string;
+
   @Prop({
     type: Map,
     of: {
