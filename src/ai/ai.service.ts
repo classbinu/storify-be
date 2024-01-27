@@ -230,7 +230,7 @@ export class AiService {
         const buffer = await this.stableDiffusion(prompt);
 
         const s3Url = await this.storagesService.bufferUploadToS3(
-          `${storyId}-${Date.now()}-${i}.png`,
+          `${storyId}-${Date.now()}-${i + 1}.png`,
           buffer,
           'png',
         );
@@ -264,5 +264,30 @@ export class AiService {
 
     // book 데이터 생성 코드 필요
     return await this.booksService.createBook(createBookDto);
+  }
+
+  // 기존 삽화를 재생성하는 함수
+  async updateAiBooksImages(id: string, page: string, userId: string) {
+    const book = await this.booksService.findBookById(id);
+    if (!book) {
+      throw new Error('Book not found');
+    }
+
+    if (book.userId.toString() !== userId) {
+      throw new Error('User not authorized');
+    }
+
+    const bookBody = book.body;
+    const imagePrompt = bookBody[page].imagePrompt;
+
+    const buffer = await this.stableDiffusion(imagePrompt);
+    const s3Url = await this.storagesService.bufferUploadToS3(
+      `${book.storyId}-${Date.now()}-${page}.png`,
+      buffer,
+      'png',
+    );
+
+    bookBody[page].imageUrl = s3Url;
+    // return await this.booksService.updateBook(id, bookBody);
   }
 }

@@ -1,6 +1,14 @@
 import { AiService } from './ai.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Param,
+  Patch,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { CreateAiStoryDto } from './dto/create-ai-story.dto';
 import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
 import { CreateAiBookDto } from './dto/create-ai-book.dto';
@@ -30,5 +38,17 @@ export class AiController {
   ) {
     const userId = req.user['sub'];
     return await this.aiService.createAiBook(createAiBookDto, userId);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
+  @Patch('books/:id/:page/images')
+  async updateAiBooksImages(
+    @Req() req: any,
+    @Param('id') id: string,
+    @Param('page') page: string,
+  ) {
+    const userId = req.user['sub'];
+    return await this.aiService.updateAiBooksImages(id, page, userId);
   }
 }
