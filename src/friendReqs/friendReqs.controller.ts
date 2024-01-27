@@ -34,7 +34,7 @@ export class FriendReqsController {
   ): Promise<FriendReq> {
     try {
       createFriendDto.sender = req.user['sub'];
-      console.log(createFriendDto);
+
       return this.friendsService.createFriendReq(createFriendDto);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);

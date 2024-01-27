@@ -88,7 +88,7 @@ describe('BooksService', () => {
     expect(
       await service.createOrUpdateBookHistory(mockCreateBookHistoryDto),
     ).toBe(mockBookHistory);
-    expect(repository.createOrUpdateBookHistory).toHaveBeenCalledWith(
+    expect(repository.createBookHistory).toHaveBeenCalledWith(
       mockCreateBookHistoryDto,
     );
   });
