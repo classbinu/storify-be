@@ -77,6 +77,17 @@ export class BooksController {
     return await this.booksService.imageUpload(file);
   }
 
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
+  @Get('/likes')
+  async getLikedBooks(@Req() req) {
+    if (!req.user) {
+      throw new UnauthorizedException('User is not authorized');
+    }
+    const userId = req.user.sub;
+    return await this.booksService.getLikedBooks(userId);
+  }
+
   @ApiQuery({ name: 'title', required: false })
   @ApiQuery({ name: 'userId', required: false })
   @ApiQuery({
@@ -166,19 +177,6 @@ export class BooksController {
   async removeLike(@Param('bookId') bookId: string, @Req() req) {
     const userId = req.user.sub;
     return await this.booksService.removeLike(userId, bookId);
-  }
-
-  @UseGuards(AccessTokenGuard)
-  @ApiBearerAuth()
-  @Get('/likes')
-  async getLikedBooks(@Req() req) {
-    console.log('getLikedBooks called');
-    if (!req.user) {
-      throw new UnauthorizedException('User is not authorized');
-    }
-    const userId = req.user.sub;
-    console.log(userId);
-    return await this.booksService.getLikedBooks(userId);
   }
 
   @UseGuards(AccessTokenGuard)
