@@ -151,4 +151,49 @@ export class BooksController {
 
     return this.booksService.deleteBook(id, writerId);
   }
+
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
+  @Post(':bookId/likes')
+  async addLike(@Param('bookId') bookId: string, @Req() req) {
+    const userId = req.user.sub;
+    return await this.booksService.addLike(userId, bookId);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
+  @Delete(':bookId/likes')
+  async removeLike(@Param('bookId') bookId: string, @Req() req) {
+    const userId = req.user.sub;
+    return await this.booksService.removeLike(userId, bookId);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
+  @Get('/likes')
+  async getLikedBooks(@Req() req) {
+    console.log('getLikedBooks called');
+    if (!req.user) {
+      throw new UnauthorizedException('User is not authorized');
+    }
+    const userId = req.user.sub;
+    console.log(userId);
+    return await this.booksService.getLikedBooks(userId);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
+  @Post(':bookId/dislikes')
+  async addDislike(@Param('bookId') bookId: string, @Req() req) {
+    const userId = req.user.sub;
+    return await this.booksService.addDislike(userId, bookId);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
+  @Delete(':bookId/dislikes')
+  async removeDislike(@Param('bookId') bookId: string, @Req() req) {
+    const userId = req.user.sub;
+    return await this.booksService.removeDislike(userId, bookId);
+  }
 }

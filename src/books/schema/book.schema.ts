@@ -51,8 +51,14 @@ export class Book {
   @Prop({ required: false, default: 0 })
   count: number;
 
-  @Prop({ required: false, default: 'public' })
-  status: string;
+  @Prop({ type: [Types.ObjectId], ref: 'User' })
+  likes: Types.ObjectId[];
+
+  @Prop({ type: [Types.ObjectId], ref: 'User' })
+  dislikes: Types.ObjectId[];
+
+  @Prop({ required: false, default: false })
+  isPrivate: boolean;
 
   @Prop({ default: Date.now })
   createdAt: Date = new Date();
