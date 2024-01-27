@@ -1,6 +1,7 @@
-import { IsString, IsNotEmpty } from 'class-validator';
-import { Types } from 'mongoose';
+import { IsNotEmpty, IsString } from 'class-validator';
+
 import { ApiHideProperty } from '@nestjs/swagger';
+import { Types } from 'mongoose';
 
 export class CreateStoryDto {
   // @IsString()
@@ -13,7 +14,7 @@ export class CreateStoryDto {
 
   @IsNotEmpty()
   @ApiHideProperty()
-  userId: Types.ObjectId;
+  userId: Types.ObjectId | string;
 
   @IsString()
   @IsNotEmpty()
