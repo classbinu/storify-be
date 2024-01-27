@@ -33,8 +33,8 @@ export class CreateBookDto {
   body: { [key: string]: BodyDto };
 
   @IsNotEmpty()
-  storyId: Types.ObjectId;
+  storyId: string | Types.ObjectId;
 
   @IsNotEmpty()
-  userId: Types.ObjectId;
+  userId: string | Types.ObjectId;
 }

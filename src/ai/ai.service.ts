@@ -2,12 +2,11 @@ import { BooksService } from 'src/books/books.service';
 import { ChatOpenAI } from '@langchain/openai';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
 import { ConfigService } from '@nestjs/config';
+import { CreateAiBookDto } from './dto/create-ai-book.dto';
 import { CreateAiStoryDto } from './dto/create-ai-story.dto';
 import { CreateBookDto } from 'src/books/dto/create-book.dto';
 import { Injectable } from '@nestjs/common';
 // import { JsonOutputFunctionsParser } from 'langchain/output_parsers';
-import { LangchainDto } from './dto/langchain.dto';
-import { StableDiffusionDto } from './dto/stableDiffusion.dto';
 import { StoragesService } from 'src/storages/storages.service';
 import { StoriesService } from 'src/stories/stories.service';
 
@@ -20,106 +19,15 @@ export class AiService {
     private readonly booksService: BooksService,
   ) {}
 
-  async langchain(langchainDto: LangchainDto, storyId, userId): Promise<any> {
-    const chatModel = new ChatOpenAI({
-      openAIApiKey: this.configService.get<string>('OPENAI_API_KEY'),
-      modelName: 'gpt-3.5-turbo-1106',
-      // modelName: 'gpt-4',
-      temperature: 0.1,
-    });
-
-    const userMessage = langchainDto.message;
-    const systemMessage = `
-    # role
-    You are a children's story writer.
-
-    # directive
-    Creates a story based on user input.
-
-    # Constraints
-    1. In Korean.
-    1. '제목: [이야기의 제목]' 형식으로 시작한다.
-    1. The story is created with at least four paragraphs separated by blank lines.
-    1. Each paragraph must be less than 100 characters.
-    1. The story must be created with at least 400 characters.
-    `;
-    const prompt = ChatPromptTemplate.fromMessages([
-      ['system', systemMessage],
-      ['user', '{input}'],
-    ]);
-
-    const chain = prompt.pipe(chatModel);
-    const res = await chain.invoke({
-      input: userMessage,
-    });
-
-    const storyText = res.content.toString();
-    const storyArray = storyText.split('\n\n');
-
-    console.log(storyArray);
-
-    // 삽화 프롬프트 생성
-    // const userMessage2 = storyArray;
-    const systemMessage2 = `
-    # directive
-    1. In English
-    1. Create ${storyArray.length - 1} image prompts about people and landscapes creation to go with this story. 
-    1. Each prompt consists of at least 3 words. Like "[lovely_girl, orange_hair, cozy, warm, happy, under_the_tree, sunshie]"
-    1. Each prompt is returned in the form of an array, and the array has ${storyArray.length - 1} elements.
-    1. Return the prompts as a JSON array, with each prompt consisting of descriptive elements in a sub-array.
-    1. People's names are not used and only objective situations are described.
-    1. Characters such as must start with '[' and end with ']'.
-    `;
-
-    const prompt2 = ChatPromptTemplate.fromMessages([
-      ['system', systemMessage2],
-      ['user', '{input}'],
-    ]);
-
-    const chain2 = prompt2.pipe(chatModel);
-    const res2 = await chain2.invoke({
-      input: storyText,
-    });
-
-    // const imageText = res2.content.toString();
-    // const imageArray = imageText.split('\n\n');
-    const storyArray2 = res2.content.toString();
-
-    const startIndex = storyArray2.indexOf('[');
-    const endIndex = storyArray2.lastIndexOf(']');
-
-    const arrayString = storyArray2.substring(startIndex, endIndex + 1);
-    console.log(arrayString);
-
-    try {
-      const imagePromprts = JSON.parse(arrayString);
-      console.log(imagePromprts);
-      return await this.createStorybook(
-        storyArray,
-        imagePromprts,
-        storyId,
-        userId,
-      );
-    } catch (error) {
-      console.log(error);
-      return error;
-    }
-  }
-
   // 책을 만드는 함수
   async createStorybook(storyArray, imagePrompts, storyId, userId) {
     const title = storyArray.shift().replace('제목: ', '').replace(/"/g, '');
-    const negativePrompts =
-      'bad art, ugly, deformed, watermark, duplicated, ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, extra limbs, disfigured, body out of frame, blurry, bad anatomy, blurred, grainy, signature, cut off, draft';
 
     // 삽화 생성 병렬 요청
     const results = [];
 
     for (let i = 0; i < imagePrompts.length; i++) {
-      const buffer = await this.stableDiffusion({
-        prompts: imagePrompts[i],
-        negativePrompts,
-      });
+      const buffer = await this.stableDiffusion(imagePrompts[i]);
 
       const result = await this.storagesService.bufferUploadToS3(
         `${storyId}-${Date.now()}-${i}.png`,
@@ -152,7 +60,8 @@ export class AiService {
     return await this.booksService.createBook(createBookDto);
   }
 
-  async stableDiffusion(stabldDiffusionDto: StableDiffusionDto): Promise<any> {
+  // 프롬프트를 바탕으로 삽화를 생성하는 함수
+  async stableDiffusion(prompt: string): Promise<any> {
     const THEME_LIST = {
       storybook: {
         url: 'https://api-inference.huggingface.co/models/artificialguybr/StoryBookRedmond-V2',
@@ -172,8 +81,8 @@ export class AiService {
     };
 
     const theme = 'cartoon';
-    const prompts = stabldDiffusionDto.prompts;
-    const negativePrompts = stabldDiffusionDto.negativePrompts;
+    const negativePrompt =
+      'bad art, ugly, deformed, watermark, duplicated, ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, extra limbs, disfigured, body out of frame, blurry, bad anatomy, blurred, grainy, signature, cut off, draft';
 
     const API_URL = THEME_LIST[theme].url;
     const TRIGGER_WORDS = THEME_LIST[theme].trigger;
@@ -186,10 +95,10 @@ export class AiService {
     };
 
     const payload = {
-      inputs: `${TRIGGER_WORDS} detailed, best_quality, ${prompts}, ${LORA}`,
-      // inputs: prompts,
+      inputs: `${TRIGGER_WORDS} detailed, best_quality, ${prompt}, ${LORA}`,
+      // inputs: prompt,
       parameters: {
-        negative_prompt: negativePrompts,
+        negative_prompt: negativePrompt,
         min_length: false,
         max_length: false,
         top_k: false,
@@ -236,6 +145,7 @@ export class AiService {
     return res.content;
   }
 
+  // LLM으로 이야기를 생성하는 함수
   async createAiStory(createAiStoryDto: CreateAiStoryDto, userId: string) {
     const systemMessage = `
     # role
@@ -267,5 +177,92 @@ export class AiService {
     }
 
     return { content: createdAiStory, story: createdStory };
+  }
+
+  // LLM으로 삽화 프롬프트를 생성하는 함수
+  async createImagePrompts(storyText: string) {
+    const storyArray = storyText.split('\n\n');
+
+    const systemMessage = `
+    # directive
+    1. In English
+    1. Create ${storyArray.length - 1} image prompts about people and landscapes creation to go with this story. 
+    1. Each prompt consists of at least 3 words. Like "[lovely_girl, orange_hair, cozy, warm, happy, under_the_tree, sunshie]"
+    1. Each prompt is returned in the form of an array, and the array has ${storyArray.length - 1} elements.
+    1. Return the prompts as a JSON array, with each prompt consisting of descriptive elements in a sub-array.
+    1. People's names are not used and only objective situations are described.
+    1. Characters such as must start with '[' and end with ']'.
+    `;
+    const userMessage = storyText;
+    const createdImagePrompts = await this.generateAiText(
+      systemMessage,
+      userMessage,
+    );
+
+    const createdImagePromptsString = createdImagePrompts.toString();
+    const startIndex = createdImagePromptsString.indexOf('[');
+    const endIndex = createdImagePromptsString.lastIndexOf(']');
+    const createdImagePromptsSubstring = createdImagePromptsString.substring(
+      startIndex,
+      endIndex + 1,
+    );
+
+    try {
+      const createdImagePromptsArray = JSON.parse(createdImagePromptsSubstring);
+      return createdImagePromptsArray;
+    } catch (error) {
+      console.error('Error parsing JSON:', error);
+      return null;
+    }
+  }
+
+  // AI 책을 생성하는 함수
+  async createAiBook(createAiBookDto: CreateAiBookDto, userId: string) {
+    const storyText = createAiBookDto.aiStory;
+    const storyId = createAiBookDto.storyId;
+    const storyArray = storyText.split('\n\n');
+    const title = storyArray.shift().replace('제목: ', '').replace(/"/g, '');
+
+    const imagePrompts = await this.createImagePrompts(storyText);
+    // 삽화 생성 병렬 요청
+    const uploadPromises = imagePrompts.map(
+      async (prompt: string, i: number) => {
+        const buffer = await this.stableDiffusion(prompt);
+
+        const s3Url = await this.storagesService.bufferUploadToS3(
+          `${storyId}-${Date.now()}-${i}.png`,
+          buffer,
+          'png',
+        );
+
+        return s3Url;
+      },
+    );
+
+    const imageUrlArray = await Promise.all(uploadPromises);
+
+    // 책 데이터 생성
+    const bookBody = {};
+    imageUrlArray.forEach((url, index) => {
+      bookBody[index + 1] = {
+        imageUrl: url,
+        text: storyArray[index],
+        imagePrompt: imagePrompts[index].join(', '),
+        ttsUrl: '',
+      };
+    });
+
+    const createBookDto: CreateBookDto = {
+      title,
+      coverUrl: bookBody[1].imageUrl,
+      body: bookBody,
+      storyId: storyId,
+      userId: userId,
+    };
+
+    console.log(createBookDto);
+
+    // book 데이터 생성 코드 필요
+    return await this.booksService.createBook(createBookDto);
   }
 }
