@@ -33,7 +33,7 @@ export class FriendReqsController {
     @Req() req,
   ): Promise<FriendReq> {
     try {
-      createFriendDto.sender = req.user['sub'];
+      createFriendDto.sender = req.user.sub;
 
       return this.friendsService.createFriendReq(createFriendDto);
     } catch (error) {
@@ -48,7 +48,7 @@ export class FriendReqsController {
     if (!Types.ObjectId.isValid(id)) {
       throw new BadRequestException('Invalid ID!');
     }
-    return this.friendsService.findByUserId(new Types.ObjectId(id));
+    return this.friendsService.findByUserId(id);
   }
 
   @Get()
@@ -63,7 +63,7 @@ export class FriendReqsController {
     @Body() updateFriendReqDto: UpdateFriendReqDto,
     @Req() req,
   ): Promise<FriendReq> {
-    const currentUserId = new Types.ObjectId(req.user['sub']);
+    const currentUserId = req.user.sub;
     return this.friendsService.updateFriendReq(
       updateFriendReqDto,
       currentUserId,
@@ -75,6 +75,6 @@ export class FriendReqsController {
     if (!Types.ObjectId.isValid(id)) {
       throw new BadRequestException('Invalid ID!');
     }
-    return this.friendsService.deleteFriendReq(new Types.ObjectId(id));
+    return this.friendsService.deleteFriendReq(id);
   }
 }
