@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   UnauthorizedException,
+  BadRequestException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Book, BookDocument } from './schema/book.schema';
@@ -109,5 +110,80 @@ export class BookMongoRepository {
       throw new UnauthorizedException('You are not the writer of this book');
     }
     return this.bookModel.findByIdAndDelete(id).exec();
+  }
+
+  async updateBookLike(id: string, book: Book) {
+    return await this.bookModel.findByIdAndUpdate(id, book, { new: true });
+  }
+
+  async addLike(userId: string, bookId: string) {
+    const book = await this.findBookById(bookId);
+    if (!book) {
+      throw new NotFoundException('Book not found');
+    }
+    if (!book.likes.includes(new Types.ObjectId(userId))) {
+      book.likes.push(new Types.ObjectId(userId));
+      return await this.updateBookLike(bookId, book);
+    } else {
+      throw new BadRequestException('You already liked this book');
+    }
+  }
+
+  async removeLike(userId: string, bookId: string) {
+    const book = await this.findBookById(bookId);
+    if (!book) {
+      throw new NotFoundException('Book not found');
+    }
+    const index = book.likes.indexOf(new Types.ObjectId(userId));
+    if (index > -1) {
+      book.likes.splice(index, 1);
+      return await this.updateBookLike(bookId, book);
+    } else {
+      throw new BadRequestException('You did not like this book before');
+    }
+  }
+
+  async getLikedBooks(userId: string) {
+    if (!Types.ObjectId.isValid(userId)) {
+      throw new BadRequestException('Invalid user ID');
+    }
+
+    const userObjectId = new Types.ObjectId(userId);
+    const books = await this.bookModel.find({
+      likes: { $in: [userObjectId] },
+    });
+
+    if (!books) {
+      throw new NotFoundException('No liked books found');
+    }
+
+    return books;
+  }
+
+  async addDislike(userId: string, bookId: string) {
+    const book = await this.findBookById(bookId);
+    if (!book) {
+      throw new NotFoundException('Book not found');
+    }
+    if (!book.dislikes.includes(new Types.ObjectId(userId))) {
+      book.dislikes.push(new Types.ObjectId(userId));
+      return await this.updateBookLike(bookId, book);
+    } else {
+      throw new BadRequestException('You already disliked this book');
+    }
+  }
+
+  async removeDislike(userId: string, bookId: string) {
+    const book = await this.findBookById(bookId);
+    if (!book) {
+      throw new NotFoundException('Book not found');
+    }
+    const index = book.dislikes.indexOf(new Types.ObjectId(userId));
+    if (index > -1) {
+      book.dislikes.splice(index, 1);
+      return await this.updateBookLike(bookId, book);
+    } else {
+      throw new BadRequestException('You did not dislike this book before');
+    }
   }
 }

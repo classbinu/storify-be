@@ -94,4 +94,44 @@ export class BooksService {
 
     return this.bookRepository.deleteBook(id, writerId);
   }
+
+  async addLike(userId: string, bookId: string) {
+    try {
+      return await this.bookRepository.addLike(userId, bookId);
+    } catch (error) {
+      throw new Error(`Like 추가 실패: ${error.message}`);
+    }
+  }
+
+  async removeLike(userId: string, bookId: string) {
+    try {
+      return await this.bookRepository.removeLike(userId, bookId);
+    } catch (error) {
+      throw new Error(`Like 제거 실패: ${error.message}`);
+    }
+  }
+
+  async getLikedBooks(userId: string) {
+    try {
+      return await this.bookRepository.getLikedBooks(userId);
+    } catch (error) {
+      throw new Error(`좋아요한 책 목록 조회 실패: ${error.message}`);
+    }
+  }
+
+  async addDislike(userId: string, bookId: string) {
+    try {
+      return await this.bookRepository.addDislike(userId, bookId);
+    } catch (error) {
+      throw new Error(`Dislike 추가 실패: ${error.message}`);
+    }
+  }
+
+  async removeDislike(userId: string, bookId: string) {
+    try {
+      return await this.bookRepository.removeDislike(userId, bookId);
+    } catch (error) {
+      throw new Error(`Dislike 제거 실패: ${error.message}`);
+    }
+  }
 }
