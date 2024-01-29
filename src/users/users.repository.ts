@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { User, UserDocument } from './schema/user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -14,11 +14,12 @@ export class UserMongoRepository {
       const newUser = new this.userModel(user);
       return await newUser.save();
     } catch (error) {
-      throw new Error(`Error creating user: ${error.message}`);
+      Logger.error(`createUser 실패: ${error.message}`);
+      throw new Error('유저 생성 실패했습니다. 다시 시도해주세요.');
     }
   }
 
-  async findById(id: Types.ObjectId): Promise<User> {
+  async findById(id: string): Promise<User> {
     try {
       return await this.userModel.findById(id).exec();
     } catch (error) {
@@ -50,10 +51,7 @@ export class UserMongoRepository {
     }
   }
 
-  async updateUser(
-    id: Types.ObjectId,
-    updateUserDto: UpdateUserDto,
-  ): Promise<User> {
+  async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     try {
       if (updateUserDto.refreshToken === null) {
         delete updateUserDto.refreshToken;
@@ -62,15 +60,17 @@ export class UserMongoRepository {
         .findByIdAndUpdate(id, updateUserDto, { new: true })
         .exec();
     } catch (error) {
-      throw new Error(`Error updating user: ${error.message}`);
+      Logger.error(`updateUser 실패: ${error.message}`);
+      throw new Error('유저 정보 업데이트 실패했습니다. 다시 시도해주세요.');
     }
   }
 
-  async deleteUser(id: Types.ObjectId): Promise<any> {
+  async deleteUser(id: string): Promise<any> {
     try {
       return await this.userModel.findByIdAndDelete(id).exec();
     } catch (error) {
-      throw new Error(`Error deleting user: ${error.message}`);
+      Logger.error(`deleteUser 실패: ${error.message}`);
+      throw new Error('유저 삭제 실패했습니다. 다시 시도해주세요.');
     }
   }
 

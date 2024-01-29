@@ -10,6 +10,7 @@ import { FriendReq } from './schema/friendReq.schema';
 import { NotiService } from 'src/noti/noti.service';
 import { FriendsMongoRepository } from 'src/friends/friends.repository';
 import { UserMongoRepository } from 'src/users/users.repository';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class FriendReqsService {
@@ -23,23 +24,18 @@ export class FriendReqsService {
   async createFriendReq(
     createFriendDto: CreateFriendReqDto,
   ): Promise<FriendReq> {
-    try {
-      const receiverUser = await this.userMongoRepository.findByUsername(
-        createFriendDto.receiver,
-      );
+    const receiverUser = await this.userMongoRepository.findByUsername(
+      createFriendDto.receiver,
+    );
 
-      if (!receiverUser) {
-        throw new NotFoundException('Other user not found');
-      }
-
-      return await this.friendReqMongoRepository.createFriendReq({
-        ...createFriendDto,
-        receiver: receiverUser._id.toString(),
-      });
-    } catch (error) {
-      console.error(error);
-      throw new Error('Failed to create a friend request');
+    if (!receiverUser) {
+      throw new NotFoundException('Other user not found');
     }
+
+    return await this.friendReqMongoRepository.createFriendReq({
+      ...createFriendDto,
+      receiver: receiverUser._id.toString(),
+    });
   }
 
   async findByUserId(
@@ -106,6 +102,9 @@ export class FriendReqsService {
   }
 
   deleteFriendReq(id: string): Promise<FriendReq> {
+    if (!Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('Invalid ID');
+    }
     return this.friendReqMongoRepository.deleteFriendReq(id);
   }
 }
