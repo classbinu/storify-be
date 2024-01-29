@@ -7,8 +7,6 @@ import {
   Param,
   Delete,
   Req,
-  UnauthorizedException,
-  BadRequestException,
   UseGuards,
   UploadedFile,
   UseInterceptors,
@@ -53,12 +51,8 @@ export class BooksController {
     @Req() req,
     @Body() createBookHistoryDto: CreateBookHistoryDto,
   ): Promise<BookHistory> {
-    const userId = req.user['sub'];
+    const userId = req.user.sub;
     createBookHistoryDto.userId = userId;
-    if (!Types.ObjectId.isValid(bookId)) {
-      throw new BadRequestException('Invalid bookId');
-    }
-
     createBookHistoryDto.bookId = new Types.ObjectId(bookId);
 
     return this.booksService.createOrUpdateBookHistory(createBookHistoryDto);
@@ -81,9 +75,6 @@ export class BooksController {
   @ApiBearerAuth()
   @Get('/likes')
   async getLikedBooks(@Req() req) {
-    if (!req.user) {
-      throw new UnauthorizedException('User is not authorized');
-    }
     const userId = req.user.sub;
     return await this.booksService.getLikedBooks(userId);
   }
@@ -141,12 +132,7 @@ export class BooksController {
     @Body() updateBookDto: UpdateBookDto,
     @Req() req: any,
   ): Promise<Book> {
-    const writerId = req.user['sub'];
-    console.log(writerId);
-    if (!writerId) {
-      throw new UnauthorizedException();
-    }
-
+    const writerId = req.user.sub;
     return this.booksService.updateBook(id, updateBookDto, writerId);
   }
 
@@ -154,12 +140,7 @@ export class BooksController {
   @ApiBearerAuth()
   @Delete(':id')
   async deleteBook(@Param('id') id: string, @Req() req: any): Promise<Book> {
-    const writerId = req.user?.userId;
-
-    if (!writerId) {
-      throw new UnauthorizedException();
-    }
-
+    const writerId = req.user.sub;
     return this.booksService.deleteBook(id, writerId);
   }
 
