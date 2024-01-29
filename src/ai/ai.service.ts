@@ -121,6 +121,12 @@ export class AiService {
 
     # Constraints
     1. In Korean.
+    1. 예시의 질문을 그대로 하지 않고, 사용자의 입력에 어울리는 후속 질문을 한다.
+
+    # 예시
+    1. 친구와 무슨 놀이를 했는지 자세히 알려 줄래?
+    1. 음식의 맛, 냄새가 어땠는지 자세히 알려 줄래?
+    1. 누구와 사탕을 먹었어?
     `;
     const userMessage = createQuestionDto.message;
     const createdQuestion = await this.generateAiText(
