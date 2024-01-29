@@ -118,6 +118,7 @@ export class AiService {
     1. Create a question that encourages the user to write a more specific story about the story they entered.
     1. The user will not be asked again.
     1. You don't respond to users, you only create ONE question.
+    1. Use simple expressions that children can understand.
 
     # Constraints
     1. In Korean.
