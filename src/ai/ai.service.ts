@@ -152,6 +152,7 @@ export class AiService {
     # Constraints
     1. In Korean.
     1. '제목: [이야기의 제목]' 형식으로 시작한다.
+    1. 제목은 한글로 12자 이하이다.
     1. The story should have the following structure: Introduction, Development, Turn, and Conclusion.
     1. The story is created with at least 4 paragraphs separated by double blank lines.
     1. Each paragraph must be less than 100 characters.
