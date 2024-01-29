@@ -1,5 +1,6 @@
 import * as nodemailer from 'nodemailer';
 
+import { FeedbackMailDto } from './dto/feedback-mail.dto';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -65,6 +66,22 @@ export class MailService {
     } catch (error) {
       console.error(error);
       throw new Error('Error sendResetPasswordMail');
+    }
+  }
+
+  async sendFeedbackMail(feedbackMailDto: FeedbackMailDto, userId: string) {
+    const to = 'jungle.storify@gmail.com';
+    const subject = `[피드백] ${userId}님의 피드백입니다.`;
+    const html = `
+      <div>
+        <p>${feedbackMailDto.feedback}</p>
+      </div>
+    `;
+    try {
+      await this.sendMail(to, subject, html);
+    } catch (error) {
+      console.error(error);
+      throw new Error('Error sendWelcomeMail');
     }
   }
 }
