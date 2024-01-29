@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { CreateAiBookDto } from './dto/create-ai-book.dto';
 import { CreateAiStoryDto } from './dto/create-ai-story.dto';
 import { CreateBookDto } from 'src/books/dto/create-book.dto';
+import { CreateQuestionDto } from './dto/create-question.dto';
 import { Injectable } from '@nestjs/common';
 // import { JsonOutputFunctionsParser } from 'langchain/output_parsers';
 import { StoragesService } from 'src/storages/storages.service';
@@ -105,6 +106,29 @@ export class AiService {
     });
 
     return res.content;
+  }
+
+  // LLM으로 이야기를 쓸 수 있는 질문을 유도하는 함수
+  async createQuestion(createQuestionDto: CreateQuestionDto) {
+    const systemMessage = `
+    # role
+    You are a teacher who asks good questions to help children write better.
+
+    # directive
+    1. Create a question that encourages the user to write a more specific story about the story they entered.
+    1. The user will not be asked again.
+    1. You don't respond to users, you only create ONE question.
+
+    # Constraints
+    1. In Korean.
+    `;
+    const userMessage = createQuestionDto.message;
+    const createdQuestion = await this.generateAiText(
+      systemMessage,
+      userMessage,
+    );
+
+    return createdQuestion;
   }
 
   // LLM으로 이야기를 생성하는 함수
