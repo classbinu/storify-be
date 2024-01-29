@@ -125,7 +125,7 @@ export class AiService {
 
     # 예시
     1. 친구와 무슨 놀이를 했는지 자세히 알려 줄래?
-    1. 음식의 맛, 냄새가 어땠는지 자세히 알려 줄래?
+    1. 음식의 맛, 냄새가 어땠어?
     1. 누구와 사탕을 먹었어?
     `;
     const userMessage = createQuestionDto.message;
