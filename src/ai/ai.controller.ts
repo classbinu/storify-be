@@ -12,6 +12,7 @@ import {
 import { CreateAiStoryDto } from './dto/create-ai-story.dto';
 import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
 import { CreateAiBookDto } from './dto/create-ai-book.dto';
+import { CreateQuestionDto } from './dto/create-question.dto';
 
 @ApiTags('Ai')
 @Controller('ai')
@@ -27,6 +28,16 @@ export class AiController {
   ) {
     const userId = req.user['sub'];
     return await this.aiService.createAiStory(createAiStoryDto, userId);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
+  @Post('question')
+  async createQuestion(
+    @Req() req: any,
+    @Body() createQuestionDto: CreateQuestionDto,
+  ) {
+    return await this.aiService.createQuestion(createQuestionDto);
   }
 
   @UseGuards(AccessTokenGuard)
