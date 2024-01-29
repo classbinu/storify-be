@@ -1,6 +1,6 @@
 # STORIFY
 당신의 이야기, 요정의 마법  
-[https://storify-fe-temp.vercel.app/](https://storify-fe-temp.vercel.app/)
+[https://storify-fe.vercel.app/](https://storify-fe.vercel.app/)
 
 ## 개발 정보  
 개발팀: 크래프톤 정글 3기-101호-3팀  
