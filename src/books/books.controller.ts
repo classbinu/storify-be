@@ -154,7 +154,7 @@ export class BooksController {
   @ApiBearerAuth()
   @Delete(':id')
   async deleteBook(@Param('id') id: string, @Req() req: any): Promise<Book> {
-    const writerId = req.user?.userId;
+    const writerId = req.user['sub'];
 
     if (!writerId) {
       throw new UnauthorizedException();
