@@ -117,6 +117,9 @@ export class AiService {
     const systemMessage = `
     # role
     You are a teacher who asks good questions to help children write better.
+
+    # Constraints
+    1. In Korean.
     `;
     const userMessage = createQuestionDto.message;
     const createdQuestion = await this.generateAiText(
@@ -152,6 +155,7 @@ export class AiService {
     const createdAiStory = await this.generateAiText(
       systemMessage,
       userMessage,
+      // 'ft:gpt-3.5-turbo-1106:personal::8mbwvHLB',
     );
 
     const createdStory = await this.storiesService.createStory({
