@@ -2,7 +2,7 @@ import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
 import { ConfigService } from '@nestjs/config';
 // aws.service.ts
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 
 @Injectable()
 export class StoragesService {
@@ -38,8 +38,8 @@ export class StoragesService {
 
       return `https://s3.${region}.amazonaws.com/${bucket}/${fileName}`;
     } catch (error) {
-      console.error(`Error uploading image to S3: ${error}`);
-      throw new Error('Image upload failed');
+      Logger.error(`imageUploadToS3 실패: ${error.message}`);
+      throw new Error('이미지 저장 실패했습니다. 다시 시도해주세요.');
     }
   }
 
@@ -59,8 +59,8 @@ export class StoragesService {
 
       return `https://s3.${region}.amazonaws.com/${bucket}/${fileName}`;
     } catch (error) {
-      console.error(`Error uploading buffer to S3: ${error}`);
-      throw new Error('Buffer upload failed');
+      Logger.error(`bufferUploadToS3 실패: ${error.message}`);
+      throw new Error('Buffer 업로드 실패했습니다.');
     }
   }
 }
