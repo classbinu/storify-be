@@ -34,14 +34,14 @@ export class AuthController {
   @ApiBearerAuth()
   @Get('logout')
   logout(@Req() req: any) {
-    this.authService.logout(req.user['sub']);
+    this.authService.logout(req.user.sub);
   }
 
   @UseGuards(RefreshTokenGuard)
   @ApiBearerAuth()
   @Post('refresh')
   refreshTokens(@Req() req: any) {
-    const userId = req.user['sub'];
+    const userId = req.user.sub;
     const refreshToken = req.user['refreshToken'];
     return this.authService.refreshTokens(userId, refreshToken);
   }
@@ -50,10 +50,7 @@ export class AuthController {
   @ApiBearerAuth()
   @Patch('password')
   async changePassword(@Body() updateAuthDto: UpdateAuthDto, @Req() req: any) {
-    return await this.authService.changePassword(
-      req.user['sub'],
-      updateAuthDto,
-    );
+    return await this.authService.changePassword(req.user.sub, updateAuthDto);
   }
 
   // 데코레이터 줄이는 리팩토링 필요, dto로 변경예정

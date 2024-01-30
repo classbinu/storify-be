@@ -80,7 +80,7 @@ export class AuthService {
     };
   }
 
-  async findUserById(id: Types.ObjectId): Promise<User> {
+  async findUserById(id: string): Promise<User> {
     try {
       return await this.userMongoRepository.findById(id);
     } catch (error) {
@@ -89,15 +89,19 @@ export class AuthService {
   }
 
   async logout(id: Types.ObjectId) {
-    return this.userMongoRepository.updateUser(id, { refreshToken: null });
+    return this.userMongoRepository.updateUser(id.toString(), {
+      refreshToken: null,
+    });
   }
 
   hashData(data: string) {
     return argon2.hash(data);
   }
 
-  async changePassword(id: Types.ObjectId, updateAuthDto: UpdateAuthDto) {
+  async changePassword(id: string, updateAuthDto: UpdateAuthDto) {
+    console.log(id);
     const user = await this.userMongoRepository.findById(id);
+
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
@@ -119,7 +123,7 @@ export class AuthService {
 
   async updateRefreshToken(id: Types.ObjectId, refreshToken: string) {
     const hashedRefreshToken = await this.hashData(refreshToken);
-    await this.userMongoRepository.updateUser(id, {
+    await this.userMongoRepository.updateUser(id.toString(), {
       refreshToken: hashedRefreshToken,
     });
   }
@@ -154,8 +158,8 @@ export class AuthService {
     };
   }
 
-  async refreshTokens(id: Types.ObjectId, refreshToken: string) {
-    const user = await this.userMongoRepository.findById(id);
+  async refreshTokens(id: string, refreshToken: string) {
+    const user = await this.userMongoRepository.findById(id.toString());
     if (!user || !user.refreshToken) {
       throw new ForbiddenException('Access Denied');
     }
