@@ -9,7 +9,7 @@ export class NotiService {
 
   constructor() {
     // 웹소켓 서버 초기화
-    this.server = new Server(4000);
+    this.server = new Server(4001);
   }
 
   async sendNotification(userId: Types.ObjectId, message: string) {

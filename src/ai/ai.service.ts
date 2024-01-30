@@ -87,10 +87,14 @@ export class AiService {
   }
 
   // LLM으로 텍스트를 생성하는 베이스 함수
-  async generateAiText(systemMessage: string, userMessage: string) {
+  async generateAiText(
+    systemMessage: string,
+    userMessage: string,
+    modelName: string = 'gpt-3.5-turbo-1106',
+  ) {
     const chatModel = new ChatOpenAI({
       openAIApiKey: this.configService.get<string>('OPENAI_API_KEY'),
-      modelName: 'gpt-3.5-turbo-1106',
+      modelName: modelName,
       // modelName: 'gpt-4-1106-preview',
       temperature: 0.9,
     });
@@ -113,28 +117,12 @@ export class AiService {
     const systemMessage = `
     # role
     You are a teacher who asks good questions to help children write better.
-
-    # directive
-    1. Create a question that encourages the user to write a more specific story about the story they entered.
-    1. The user will not be asked again.
-    1. You don't respond to users, you only create ONE question.
-    1. Use simple expressions that children can understand.
-
-    # Constraints
-    1. In Korean.
-    1. 예시의 질문을 그대로 하지 않고, 사용자의 입력에 어울리는 후속 질문을 한다.
-    1. 인물, 사건, 시간적 배경, 공간적 배경을 묻는 질문을 한다.
-    1. 이미 사용하자 대답한 내용에 관해서는 질문하지 않는다.
-
-    # 예시
-    1. 친구와 무슨 놀이를 했는지 자세히 알려 줄래?
-    1. 음식의 맛, 냄새가 어땠어?
-    1. 누구와 사탕을 먹었어?
     `;
     const userMessage = createQuestionDto.message;
     const createdQuestion = await this.generateAiText(
       systemMessage,
       userMessage,
+      'ft:gpt-3.5-turbo-1106:personal::8mZuEDOU',
     );
 
     return createdQuestion;
