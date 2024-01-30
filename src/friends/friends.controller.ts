@@ -12,7 +12,6 @@ import { CreateFriendDto } from './dto/create-friend.dto';
 import { Friend } from './schema/friend.schema';
 import { FriendsService } from './friends.service';
 import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
-import { Types } from 'mongoose';
 
 @ApiTags('Friends')
 @Controller('friends')
@@ -34,7 +33,7 @@ export class FriendsController {
   @UseGuards(AccessTokenGuard)
   @ApiBearerAuth()
   @Get(':id')
-  async getFriendsByUserId(@Req() req): Promise<Types.ObjectId[]> {
+  async getFriendsByUserId(@Req() req): Promise<string[]> {
     const userId = req.user.sub;
     return this.friendsService.getFriendsByUserId(userId);
   }

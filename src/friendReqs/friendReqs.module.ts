@@ -7,8 +7,9 @@ import { FriendReq, FriendReqSchema } from './schema/friendReq.schema';
 import { Friend, FriendSchema } from 'src/friends/schema/friend.schema';
 import { FriendsMongoRepository } from 'src/friends/friends.repository';
 import { FriendsModule } from 'src/friends/friends.module';
-import { NotiModule } from 'src/noti/noti.module';
 import { UsersModule } from 'src/users/users.module';
+import { NotiGateway } from 'src/noti/noti.gateway';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
@@ -18,13 +19,14 @@ import { UsersModule } from 'src/users/users.module';
     ]),
     FriendsModule,
     UsersModule,
-    NotiModule,
+    AuthModule,
   ],
   controllers: [FriendReqsController],
   providers: [
     FriendReqsService,
     FriendReqMongoRepository,
     FriendsMongoRepository,
+    NotiGateway,
   ],
   exports: [FriendsMongoRepository],
 })

@@ -8,11 +8,13 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { CreateFriendDto } from './dto/create-friend.dto';
 import { Friend, FriendDocument } from './schema/friend.schema';
+import { UserMongoRepository } from 'src/users/users.repository';
 
 @Injectable()
 export class FriendsMongoRepository {
   constructor(
     @InjectModel(Friend.name) private friendModel: Model<FriendDocument>,
+    private readonly userMongoRepository: UserMongoRepository,
   ) {}
 
   async createFriend(createFriendDto: CreateFriendDto): Promise<Friend> {
@@ -24,7 +26,7 @@ export class FriendsMongoRepository {
     return this.friendModel.find().exec();
   }
 
-  async getFriendsByUserId(userId: string): Promise<Types.ObjectId[]> {
+  async getFriendsByUserId(userId: string): Promise<string[]> {
     try {
       const objectIdUserId = new Types.ObjectId(userId);
       const user = await this.friendModel.findOne({ user: objectIdUserId });
@@ -33,7 +35,16 @@ export class FriendsMongoRepository {
           `Friend model for user with id ${userId} not found.`,
         );
       }
-      return await user.friends;
+      // user.friends가 Types.ObjectId[] 타입이라면, 각각의 ObjectId를 string으로 변환합니다.
+      const friendIds = user.friends.map((friendId) => friendId.toHexString());
+
+      // 각각의 친구 id로 사용자 정보를 불러옵니다.
+      const friends = await Promise.all(
+        friendIds.map((id) => this.userMongoRepository.findById(id)),
+      );
+
+      // 반환값을 사용자의 이름으로 변환합니다.
+      return friends.map((friend) => friend.username);
     } catch (error) {
       Logger.error(`getFriendsByUserId 실패: ${error.message}`);
       throw new Error(`친구 목록 불러오기 실패했습니다. 다시 시도해 주세요.`);
