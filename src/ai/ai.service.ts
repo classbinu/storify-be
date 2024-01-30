@@ -6,7 +6,9 @@ import { CreateAiBookDto } from './dto/create-ai-book.dto';
 import { CreateAiStoryDto } from './dto/create-ai-story.dto';
 import { CreateBookDto } from 'src/books/dto/create-book.dto';
 import { CreateQuestionDto } from './dto/create-question.dto';
+import { CreateTtsDto } from './dto/create-tts.dto';
 import { Injectable } from '@nestjs/common';
+import { Polly } from 'aws-sdk';
 // import { JsonOutputFunctionsParser } from 'langchain/output_parsers';
 import { StoragesService } from 'src/storages/storages.service';
 import { StoriesService } from 'src/stories/stories.service';
@@ -309,5 +311,32 @@ export class AiService {
     };
 
     return await this.booksService.updateBook(id, updateBookDto, userId);
+  }
+
+  async createTTS(createTtsDto: CreateTtsDto) {
+    const message = createTtsDto.message;
+
+    const polly = new Polly({
+      region: 'ap-northeast-2',
+      credentials: {
+        accessKeyId: this.configService.get<string>('AWS_POLLY_ACCESS_KEY'),
+        secretAccessKey: this.configService.get<string>(
+          'AWS_POLLY_SECRET_ACCESS_KEY',
+        ),
+      },
+    });
+
+    const params = {
+      Text: message,
+      OutputFormat: 'mp3',
+      VoiceId: 'Seoyeon',
+    };
+    try {
+      const result = await polly.synthesizeSpeech(params).promise();
+      return result.AudioStream;
+    } catch (error) {
+      console.log(error);
+      throw new Error(error);
+    }
   }
 }
