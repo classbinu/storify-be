@@ -19,7 +19,11 @@ export class BooksService {
   ) {}
 
   async createBook(createBookDto: CreateBookDto): Promise<Book> {
-    return await this.bookRepository.createBook(createBookDto);
+    try {
+      return await this.bookRepository.createBook(createBookDto);
+    } catch (error) {
+      throw new Error(`책 저장 실패: ${error.message}`);
+    }
   }
 
   async createOrUpdateBookHistory(
@@ -42,10 +46,13 @@ export class BooksService {
   }
 
   async saveImage(file: Express.Multer.File) {
-    return await this.imageUpload(file);
+    try {
+      return await this.imageUpload(file);
+    } catch (error) {
+      throw new Error(`이미지 저장 실패: ${error.message}`);
+    }
   }
 
-  // S3 이미지 업로드
   async imageUpload(file: Express.Multer.File) {
     const imageName = this.utilsService.getUUID();
     const ext = file.originalname.split('.').pop();
@@ -76,13 +83,17 @@ export class BooksService {
     updateBookDto: UpdateBookDto,
     writerId: string,
   ): Promise<Book> {
-    const book = await this.bookRepository.findBookById(id);
+    try {
+      const book = await this.bookRepository.findBookById(id);
 
-    if (book.userId.toString() !== writerId) {
-      throw new UnauthorizedException();
+      if (book.userId.toString() !== writerId) {
+        throw new UnauthorizedException();
+      }
+
+      return this.bookRepository.updateBook(id, updateBookDto, writerId);
+    } catch (error) {
+      throw new Error(`책 업데이트 실패: ${error.message}`);
     }
-
-    return this.bookRepository.updateBook(id, updateBookDto, writerId);
   }
 
   async deleteBook(id: string, writerId: string): Promise<Book> {

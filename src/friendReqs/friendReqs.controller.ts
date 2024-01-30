@@ -6,13 +6,9 @@ import {
   Param,
   Delete,
   Patch,
-  HttpException,
-  HttpStatus,
-  BadRequestException,
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { Types } from 'mongoose';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { CreateFriendReqDto } from './dto/create-friendReq.dto';
 import { UpdateFriendReqDto } from './dto/update-friendReq.dto';
@@ -32,22 +28,16 @@ export class FriendReqsController {
     @Body() createFriendDto: CreateFriendReqDto,
     @Req() req,
   ): Promise<FriendReq> {
-    try {
-      createFriendDto.sender = req.user.sub;
-
-      return this.friendsService.createFriendReq(createFriendDto);
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-    }
+    createFriendDto.sender = req.user.sub;
+    return this.friendsService.createFriendReq(createFriendDto);
   }
 
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
   @Get(':id')
   async findByUserId(
     @Param('id') id: string,
   ): Promise<{ sent: FriendReq[]; received: FriendReq[] }> {
-    if (!Types.ObjectId.isValid(id)) {
-      throw new BadRequestException('Invalid ID!');
-    }
     return this.friendsService.findByUserId(id);
   }
 
@@ -70,11 +60,10 @@ export class FriendReqsController {
     );
   }
 
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
   @Delete(':id')
   deleteFriendReq(@Param('id') id: string): Promise<FriendReq> {
-    if (!Types.ObjectId.isValid(id)) {
-      throw new BadRequestException('Invalid ID!');
-    }
     return this.friendsService.deleteFriendReq(id);
   }
 }
