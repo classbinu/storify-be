@@ -37,4 +37,4 @@ lerna-debug.log*
 # ENV
 .env
 
-fine-tuning.jsonl
+fine-tuning/
