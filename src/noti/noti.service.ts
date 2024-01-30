@@ -1,19 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { Server } from 'socket.io';
-import { Types } from 'mongoose';
+import { CreateNotiDto } from './dto/create-noti.dto';
+import { UpdateNotiDto } from './dto/update-noti.dto';
 
 @Injectable()
 export class NotiService {
-  // 웹소켓 서버 객체
-  private server: Server;
-
-  constructor() {
-    // 웹소켓 서버 초기화
-    this.server = new Server(4001);
+  create(createNotiDto: CreateNotiDto) {
+    return 'This action adds a new noti';
   }
 
-  async sendNotification(userId: Types.ObjectId, message: string) {
-    // 웹소켓 서버를 통해 클라이언트에게 알림 전송
-    this.server.to(userId.toString()).emit('notification', { message });
+  findAll() {
+    return `This action returns all noti`;
+  }
+
+  findOne(id: number) {
+    return `This action returns a #${id} noti`;
+  }
+
+  update(id: number, updateNotiDto: UpdateNotiDto) {
+    return `This action updates a #${id} noti`;
+  }
+
+  remove(id: number) {
+    return `This action removes a #${id} noti`;
   }
 }

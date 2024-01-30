@@ -20,7 +20,7 @@ export class FriendsService {
     return this.friendsMongoRepository.findAll();
   }
 
-  async getFriendsByUserId(userId: string): Promise<Types.ObjectId[]> {
+  async getFriendsByUserId(userId: string): Promise<string[]> {
     return this.friendsMongoRepository.getFriendsByUserId(userId);
   }
 

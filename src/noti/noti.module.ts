@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
-import { NotiService } from './noti.service';
+import { AuthModule } from 'src/auth/auth.module';
+import { NotiGateway } from './noti.gateway';
 
 @Module({
-  providers: [NotiService],
-  exports: [NotiService],
+  imports: [AuthModule],
+  providers: [NotiGateway],
 })
 export class NotiModule {}

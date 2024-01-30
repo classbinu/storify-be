@@ -7,7 +7,7 @@ import { CreateFriendReqDto } from './dto/create-friendReq.dto';
 import { UpdateFriendReqDto } from './dto/update-friendReq.dto';
 import { FriendReqMongoRepository } from './friendReqs.repository';
 import { FriendReq } from './schema/friendReq.schema';
-import { NotiService } from 'src/noti/noti.service';
+import { NotiGateway } from 'src/noti/noti.gateway';
 import { FriendsMongoRepository } from 'src/friends/friends.repository';
 import { UserMongoRepository } from 'src/users/users.repository';
 import { Types } from 'mongoose';
@@ -18,7 +18,7 @@ export class FriendReqsService {
     private readonly friendReqMongoRepository: FriendReqMongoRepository,
     private readonly friendsMongoRepository: FriendsMongoRepository,
     private readonly userMongoRepository: UserMongoRepository,
-    private readonly notiService: NotiService,
+    private readonly notiGateway: NotiGateway,
   ) {}
 
   async createFriendReq(
@@ -32,10 +32,22 @@ export class FriendReqsService {
       throw new NotFoundException('Other user not found');
     }
 
-    return await this.friendReqMongoRepository.createFriendReq({
+    const newFriendReq = await this.friendReqMongoRepository.createFriendReq({
       ...createFriendDto,
       receiver: receiverUser._id.toString(),
     });
+
+    const receiverSocketId = this.notiGateway.findUserSocketId(
+      receiverUser._id.toString(),
+    );
+
+    if (receiverSocketId) {
+      // socket id가 있으면 알림을 보냅니다.
+      this.notiGateway.server.to(receiverSocketId).emit('friendRequest', {
+        sender: createFriendDto.sender,
+      });
+    }
+    return newFriendReq;
   }
 
   async findByUserId(
