@@ -8,26 +8,15 @@ import {
   Delete,
   Req,
   UseGuards,
-  UploadedFile,
-  UseInterceptors,
-  HttpCode,
   Query,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
-import {
-  ApiBearerAuth,
-  ApiBody,
-  ApiConsumes,
-  ApiOperation,
-  ApiQuery,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { BooksService } from './books.service';
 import { Book } from './schema/book.schema';
 import { BookHistory } from './schema/book-history.schema';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { CreateBookHistoryDto } from './dto/create-book-history.dto';
-import { ImageUploadDto } from './dto/image-upload.dto';
 import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
 import { ApiTags } from '@nestjs/swagger';
 import { Types } from 'mongoose';
@@ -58,18 +47,18 @@ export class BooksController {
     return this.booksService.createOrUpdateBookHistory(createBookHistoryDto);
   }
 
-  @ApiOperation({ summary: '게시글 작성, 수정 시 이미지 업로드' })
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    description: '업로드할 파일',
-    type: ImageUploadDto,
-  })
-  @UseInterceptors(FileInterceptor('file'))
-  @HttpCode(200)
-  @Post('image')
-  async saveImage(@UploadedFile() file: Express.Multer.File) {
-    return await this.booksService.imageUpload(file);
-  }
+  // @ApiOperation({ summary: '게시글 작성, 수정 시 이미지 업로드' })
+  // @ApiConsumes('multipart/form-data')
+  // @ApiBody({
+  //   description: '업로드할 파일',
+  //   type: ImageUploadDto,
+  // })
+  // @UseInterceptors(FileInterceptor('file'))
+  // @HttpCode(200)
+  // @Post('image')
+  // async saveImage(@UploadedFile() file: Express.Multer.File) {
+  //   return await this.booksService.imageUpload(file);
+  // }
 
   @UseGuards(AccessTokenGuard)
   @ApiBearerAuth()
