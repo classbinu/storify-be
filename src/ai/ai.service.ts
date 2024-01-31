@@ -322,9 +322,9 @@ export class AiService {
     const client = new PollyClient({
       region: 'ap-northeast-2',
       credentials: {
-        accessKeyId: this.configService.get<string>('AWS_POLLY_ACCESS_KEY'),
+        accessKeyId: this.configService.get<string>('AWS_ACCESS_KEY'),
         secretAccessKey: this.configService.get<string>(
-          'AWS_POLLY_SECRET_ACCESS_KEY',
+          'AWS_SECRET_ACCESS_KEY',
         ),
       },
     });
