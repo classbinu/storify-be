@@ -67,7 +67,7 @@ export class AiController {
   @UseGuards(AccessTokenGuard)
   @ApiBearerAuth()
   @Post('tts')
-  async careteTTS(@Req() req: any, @Body() createTtsDto: CreateTtsDto) {
-    return await this.aiService.createTTS(createTtsDto);
+  async textToSpeech(@Req() req: any, @Body() createTtsDto: CreateTtsDto) {
+    return await this.aiService.textToSpeech(createTtsDto);
   }
 }
