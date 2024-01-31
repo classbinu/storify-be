@@ -13,9 +13,11 @@ export class NotiGateway {
   server: Server;
 
   private users = new Map<string, string>();
+
   public findUserSocketId(userId: string): string | undefined {
     return this.users.get(userId);
   }
+
   constructor(private readonly jwtService: JwtService) {}
 
   @SubscribeMessage('connection')
@@ -23,7 +25,7 @@ export class NotiGateway {
     const token = payload.token;
     const decodedToken = this.jwtService.verify(token);
     const userId = decodedToken.sub;
-
+    console.log('소켓 연결된 유저 아이디', userId);
     this.users.set(userId, client.id);
   }
 
