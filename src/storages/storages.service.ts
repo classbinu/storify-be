@@ -1,8 +1,8 @@
+// aws.service.ts
+import { Injectable, Logger } from '@nestjs/common';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
 import { ConfigService } from '@nestjs/config';
-// aws.service.ts
-import { Injectable, Logger } from '@nestjs/common';
 
 @Injectable()
 export class StoragesService {
@@ -58,6 +58,36 @@ export class StoragesService {
       const bucket = this.configService.get('AWS_S3_BUCKET_NAME');
 
       return `https://s3.${region}.amazonaws.com/${bucket}/${fileName}`;
+    } catch (error) {
+      Logger.error(`bufferUploadToS3 실패: ${error.message}`);
+      throw new Error('Buffer 업로드 실패했습니다.');
+    }
+  }
+
+  async fileUploadToS3(file: Express.Multer.File) {
+    const fileNameWithExt = file.originalname;
+    const lastDotIndex = fileNameWithExt.lastIndexOf('.');
+    const fileName = fileNameWithExt.substring(0, lastDotIndex);
+    const ext = fileNameWithExt.substring(lastDotIndex + 1);
+    const key = `${fileName}-${Date.now()}.${ext}`;
+    const buffer = file.buffer;
+
+    try {
+      const contentType = file.mimetype;
+
+      const command = new PutObjectCommand({
+        Bucket: this.configService.get('AWS_S3_BUCKET_NAME'),
+        Key: `public/${key}`,
+        Body: buffer,
+        ACL: 'public-read',
+        ContentType: contentType,
+      });
+      await this.s3Client.send(command);
+
+      const region = this.configService.get('AWS_REGION');
+      const bucket = this.configService.get('AWS_S3_BUCKET_NAME');
+
+      return `https://s3.${region}.amazonaws.com/${bucket}/public/${key}`;
     } catch (error) {
       Logger.error(`bufferUploadToS3 실패: ${error.message}`);
       throw new Error('Buffer 업로드 실패했습니다.');

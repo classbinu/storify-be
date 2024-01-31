@@ -332,6 +332,8 @@ export class AiService {
     const params = {
       OutputFormat: 'mp3' as const,
       Text: message,
+      TextType: 'text' as const,
+      Engine: 'neural' as const,
       VoiceId: 'Seoyeon' as const,
     };
 
