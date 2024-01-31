@@ -1,3 +1,5 @@
+import { PollyClient, SynthesizeSpeechCommand } from '@aws-sdk/client-polly';
+
 import { BooksService } from 'src/books/books.service';
 import { ChatOpenAI } from '@langchain/openai';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
@@ -6,7 +8,9 @@ import { CreateAiBookDto } from './dto/create-ai-book.dto';
 import { CreateAiStoryDto } from './dto/create-ai-story.dto';
 import { CreateBookDto } from 'src/books/dto/create-book.dto';
 import { CreateQuestionDto } from './dto/create-question.dto';
+import { CreateTtsDto } from './dto/create-tts.dto';
 import { Injectable } from '@nestjs/common';
+import { Readable } from 'stream';
 // import { JsonOutputFunctionsParser } from 'langchain/output_parsers';
 import { StoragesService } from 'src/storages/storages.service';
 import { StoriesService } from 'src/stories/stories.service';
@@ -309,5 +313,46 @@ export class AiService {
     };
 
     return await this.booksService.updateBook(id, updateBookDto, userId);
+  }
+
+  // 텍스트를 음성으로 변환하는 함수
+  async textToSpeech(createTtsDto: CreateTtsDto) {
+    const message = createTtsDto.message;
+
+    const client = new PollyClient({
+      region: 'ap-northeast-2',
+      credentials: {
+        accessKeyId: this.configService.get<string>('AWS_POLLY_ACCESS_KEY'),
+        secretAccessKey: this.configService.get<string>(
+          'AWS_POLLY_SECRET_ACCESS_KEY',
+        ),
+      },
+    });
+
+    const params = {
+      OutputFormat: 'mp3' as const,
+      Text: message,
+      VoiceId: 'Seoyeon' as const,
+    };
+
+    const command = new SynthesizeSpeechCommand(params);
+
+    try {
+      const data = await client.send(command);
+      // 스트림을 버퍼로 변환
+      const audioStream = data.AudioStream as Readable;
+      const chunks = [];
+      for await (const chunk of audioStream) {
+        chunks.push(chunk instanceof Buffer ? chunk : Buffer.from(chunk));
+      }
+      const audioBuffer = Buffer.concat(chunks);
+
+      // 버퍼를 base64 문자열로 인코딩
+      const base64Audio = audioBuffer.toString('base64');
+      return base64Audio;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
   }
 }
