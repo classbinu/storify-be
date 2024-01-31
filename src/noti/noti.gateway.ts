@@ -7,7 +7,7 @@ import {
 import { Server } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
 
-@WebSocketGateway()
+@WebSocketGateway(3001)
 export class NotiGateway {
   @WebSocketServer()
   server: Server;
