@@ -3,7 +3,6 @@ import { CreateFriendDto } from './dto/create-friend.dto';
 import { Friend } from './schema/friend.schema';
 import { FriendsMongoRepository } from './friends.repository';
 import { UserMongoRepository } from 'src/users/users.repository';
-import { Types } from 'mongoose';
 
 @Injectable()
 export class FriendsService {
