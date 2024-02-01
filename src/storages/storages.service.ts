@@ -2,6 +2,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
+import { Base64Dto } from './dto/base64.dto';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -91,6 +92,32 @@ export class StoragesService {
     } catch (error) {
       Logger.error(`bufferUploadToS3 실패: ${error.message}`);
       throw new Error('Buffer 업로드 실패했습니다.');
+    }
+  }
+
+  async fileUploadToS3ByBase64(base64Dto: Base64Dto) {
+    const base64 = base64Dto.base64;
+    const buffer = Buffer.from(base64, 'base64');
+    const ext = 'png';
+    const fileName = `${Date.now()}.${ext}`;
+
+    try {
+      const command = new PutObjectCommand({
+        Bucket: this.configService.get('AWS_S3_BUCKET_NAME'),
+        Key: fileName,
+        Body: buffer,
+        ACL: 'public-read',
+        ContentType: `image/${ext}`,
+      });
+      await this.s3Client.send(command);
+
+      const region = this.configService.get('AWS_REGION');
+      const bucket = this.configService.get('AWS_S3_BUCKET_NAME');
+
+      return `https://s3.${region}.amazonaws.com/${bucket}/${fileName}`;
+    } catch (error) {
+      Logger.error(`fileUploadToS3ByBase64 실패: ${error.message}`);
+      throw new Error('Base64 이미지 업로드 실패했습니다.');
     }
   }
 }
