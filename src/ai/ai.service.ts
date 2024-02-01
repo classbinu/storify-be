@@ -1,5 +1,6 @@
 import { PollyClient, SynthesizeSpeechCommand } from '@aws-sdk/client-polly';
 
+import { Base64Dto } from 'src/storages/dto/base64.dto';
 import { BooksService } from 'src/books/books.service';
 import { ChatOpenAI } from '@langchain/openai';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
@@ -14,6 +15,7 @@ import { Readable } from 'stream';
 // import { JsonOutputFunctionsParser } from 'langchain/output_parsers';
 import { StoragesService } from 'src/storages/storages.service';
 import { StoriesService } from 'src/stories/stories.service';
+import { UpdateAiBookDto } from './dto/update-ai-book.dto';
 import { UpdateBookDto } from 'src/books/dto/update-book.dto';
 
 @Injectable()
@@ -359,5 +361,55 @@ export class AiService {
       console.error(error);
       return null;
     }
+  }
+
+  async generateNewBookImages(id: string, page: string): Promise<string[]> {
+    const book = await this.booksService.findBookById(id);
+    const prompt = book.body.get(page).imagePrompt;
+    const imageStyle = book.imageStyle || 'cartoon';
+
+    const imagePromises = [];
+    for (let i = 0; i < 4; i++) {
+      imagePromises.push(this.stableDiffusion(prompt, imageStyle));
+    }
+
+    const buffers = await Promise.all(imagePromises);
+    const base64Images = buffers.map((buffer) => buffer.toString('base64'));
+    return base64Images;
+  }
+
+  // Base64 이미지로 동화 특정 페이지 삽화를 업데이트하는 함수
+  async updateAiBookNewImage(
+    id: string,
+    page: string,
+    userId: string,
+    base64Dto: Base64Dto,
+  ) {
+    const book = await this.booksService.findBookById(id);
+    if (!book) {
+      throw new Error('Book not found');
+    }
+
+    if (book.userId.toString() !== userId) {
+      throw new Error('User not authorized');
+    }
+
+    const s3Url = await this.storagesService.fileUploadToS3ByBase64(base64Dto);
+
+    const bookBody = book.body;
+    bookBody.get(page).imageUrl = s3Url;
+
+    // 1페이지면 표지도 연동(임시)
+    if (page === '1') {
+      book.coverUrl = s3Url;
+    }
+
+    const updateBookDto: UpdateBookDto = {
+      title: book.title,
+      coverUrl: book.coverUrl,
+      body: Object.fromEntries(bookBody),
+    };
+
+    return await this.booksService.updateBook(id, updateBookDto, userId);
   }
 }
