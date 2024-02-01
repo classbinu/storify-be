@@ -360,4 +360,19 @@ export class AiService {
       return null;
     }
   }
+
+  async generateNewBookImages(id: string, page: string): Promise<string[]> {
+    const book = await this.booksService.findBookById(id);
+    const prompt = book.body.get(page).imagePrompt;
+    const imageStyle = book.imageStyle || 'cartoon';
+
+    const imagePromises = [];
+    for (let i = 0; i < 4; i++) {
+      imagePromises.push(this.stableDiffusion(prompt, imageStyle));
+    }
+
+    const buffers = await Promise.all(imagePromises);
+    const base64Images = buffers.map((buffer) => buffer.toString('base64'));
+    return base64Images;
+  }
 }

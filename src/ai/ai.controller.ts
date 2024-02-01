@@ -1,5 +1,5 @@
 import { AiService } from './ai.service';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   Body,
   Controller,
@@ -54,6 +54,7 @@ export class AiController {
 
   @UseGuards(AccessTokenGuard)
   @ApiBearerAuth()
+  @ApiOperation({ summary: '❌ AI 책 이미지 업데이트(비가역적 변경)' })
   @Patch('books/:id/:page/images')
   async updateAiBooksImages(
     @Req() req: any,
@@ -69,5 +70,19 @@ export class AiController {
   @Post('tts')
   async textToSpeech(@Req() req: any, @Body() createTtsDto: CreateTtsDto) {
     return await this.aiService.textToSpeech(createTtsDto);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: '해당 페이지의 이미지 프롬프트에 맞는 이미지 4장을 생성합니다.',
+  })
+  @Post('books/:id/:page/new-images')
+  async generateNewBookImages(
+    @Req() req: any,
+    @Param('id') id: string,
+    @Param('page') page: string,
+  ) {
+    return await this.aiService.generateNewBookImages(id, page);
   }
 }
