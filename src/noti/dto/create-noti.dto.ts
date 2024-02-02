@@ -1,7 +1,8 @@
 export class CreateNotiDto {
-  readonly senderId: string;
-  readonly receiverId: string;
-  readonly message: string;
-  readonly type: string;
-  readonly service: string;
+  senderId: string;
+  receiverId: string;
+  message: string;
+  service: string;
+  status?: string;
+  createdAt?: Date;
 }

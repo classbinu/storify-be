@@ -25,6 +25,15 @@ export class User {
   @Prop({ default: Date.now })
   createdAt: Date = new Date();
 
+  @Prop({ required: false })
+  profileImage: string;
+
+  @Prop({ required: false, unique: true })
+  nickname: string;
+
+  @Prop({ required: false })
+  introduction: string;
+
   async validatePassword(password: string): Promise<boolean> {
     return await argon2.verify(this.password, password);
   }

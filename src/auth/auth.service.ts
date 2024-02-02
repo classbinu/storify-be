@@ -16,6 +16,7 @@ import { UpdateAuthDto } from './dto/update-auth.dto';
 import { User } from 'src/users/schema/user.schema';
 import { UserMongoRepository } from 'src/users/users.repository';
 import { FriendsMongoRepository } from 'src/friends/friends.repository';
+import { NotiService } from 'src/noti/noti.service';
 
 @Injectable()
 export class AuthService {
@@ -25,6 +26,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private readonly mailService: MailService,
+    private readonly notiService: NotiService,
   ) {}
 
   // 회원가입
@@ -73,6 +75,9 @@ export class AuthService {
       throw new BadRequestException('Password is incorrect');
     const tokens = await this.getTokens(user._id, user.email);
     await this.updateRefreshToken(user._id, tokens.refreshToken);
+
+    this.notiService.sendMissedNotifications(user._id.toString());
+
     return {
       ...tokens,
       username: user.username,
@@ -208,5 +213,9 @@ export class AuthService {
       password: hashedPassword,
     });
     return { message: 'Password reset successfully' };
+  }
+
+  async verifyJwt(jwt: string): Promise<any> {
+    return this.jwtService.verifyAsync(jwt);
   }
 }

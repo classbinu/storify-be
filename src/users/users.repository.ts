@@ -4,10 +4,15 @@ import { Model, Types } from 'mongoose';
 import { User, UserDocument } from './schema/user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserProfileDto } from './dto/update-user-profile.dto';
+import { BookMongoRepository } from 'src/books/books.repository';
 
 @Injectable()
 export class UserMongoRepository {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    private readonly booksRepository: BookMongoRepository,
+  ) {}
 
   async createUser(user: CreateUserDto): Promise<User> {
     try {
@@ -52,6 +57,51 @@ export class UserMongoRepository {
     }
   }
 
+  async getUserProfile(userId: string): Promise<any> {
+    try {
+      const user = await this.userModel
+        .findById(userId)
+        .select('name email profileImage nickname introduction')
+        .exec();
+      if (!user) {
+        throw new Error('User not found');
+      }
+      return user;
+    } catch (error) {
+      Logger.error(`getUserProfile 실패: ${error.message}`);
+      throw new Error(`유저 프로필 불러오기 실패했습니다. 다시 시도해주세요.`);
+    }
+  }
+
+  async getOtherUserProfile(
+    userId: string,
+    page: number,
+    size: number,
+  ): Promise<any> {
+    try {
+      const user = await this.userModel
+        .findById(userId)
+        .select('-password -refreshToken -email');
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      const books = await this.booksRepository.findAllBooks(
+        { userId },
+        page,
+        size,
+      );
+
+      return {
+        user,
+        books: books.books,
+      };
+    } catch (error) {
+      Logger.error(`getOtherUserProfile 실패: ${error.message}`);
+      throw new Error(`유저 프로필 불러오기 실패했습니다. 다시 시도해주세요.`);
+    }
+  }
+
   async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     try {
       if (updateUserDto.refreshToken === null) {
@@ -64,6 +114,27 @@ export class UserMongoRepository {
     } catch (error) {
       Logger.error(`updateUser 실패: ${error.message}`);
       throw new Error('유저 정보 업데이트 실패했습니다. 다시 시도해주세요.');
+    }
+  }
+
+  async updateUserProfile(
+    userId: string,
+    updateUserInfo: UpdateUserProfileDto,
+  ): Promise<User> {
+    try {
+      const user = await this.userModel
+        .findByIdAndUpdate(userId, updateUserInfo, { new: true })
+        .select('profileImage nickname introduction')
+        .exec();
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      return user;
+    } catch (error) {
+      Logger.error(`updateUserProfile 실패: ${error.message}`);
+      throw new Error('유저 프로필 업데이트 실패했습니다. 다시 시도해주세요.');
     }
   }
 
