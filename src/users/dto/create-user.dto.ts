@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateUserDto {
   @IsString()
@@ -9,10 +9,10 @@ export class CreateUserDto {
   @IsNotEmpty()
   password: string;
 
-  @IsString()
-  @IsEmail()
-  @IsOptional()
-  email: string;
+  // @IsString()
+  // @IsEmail()
+  // @IsOptional()
+  // email: string;
 
   // @IsOptional()
   // refreshToken?: string | null;

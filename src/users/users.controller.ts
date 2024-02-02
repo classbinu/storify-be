@@ -8,7 +8,6 @@ import {
   UseGuards,
   Patch,
   Req,
-  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -17,6 +16,7 @@ import { UpdateUserProfileDto } from './dto/update-user-profile.dto';
 import { User } from './schema/user.schema';
 import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
 import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiTags('Users')
 @Controller('users')
@@ -33,37 +33,21 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  @Get(':id')
-  findById(@Param('id') id: string): Promise<User> {
-    return this.usersService.findById(id);
-  }
-
   @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
   @Get('profile')
   async getProfile(@Req() req): Promise<User> {
     const userId = req.user.sub;
     return this.usersService.getUserProfile(userId);
   }
 
-  @Get('profile/:id')
-  async viewOtherProfile(
-    @Param('userId') userId: string,
-    @Query('page') page: number,
-    @Query('size') size: number,
-  ): Promise<any> {
-    return this.usersService.viewOtherUserProfile(userId, page, size);
+  @Get('profile/:username')
+  async viewOtherProfile(@Param('username') username: string): Promise<any> {
+    return this.usersService.viewOtherUserProfile(username);
   }
 
   @UseGuards(AccessTokenGuard)
-  @Patch(':id')
-  updateUser(
-    @Param('id') id: string,
-    @Body() updateUserDto: UpdateUserDto,
-  ): Promise<User> {
-    return this.usersService.updateUser(id, updateUserDto);
-  }
-
-  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
   @Patch('profile')
   async updateProfile(
     @Req() req,
@@ -74,6 +58,22 @@ export class UsersController {
   }
 
   @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
+  @Patch(':id')
+  updateUser(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ): Promise<User> {
+    return this.usersService.updateUser(id, updateUserDto);
+  }
+
+  @Get(':id')
+  findById(@Param('id') id: string): Promise<User> {
+    return this.usersService.findById(id);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
   @Delete(':id')
   deleteUser(@Param('id') id: string): Promise<any> {
     return this.usersService.deleteUser(id);

@@ -57,15 +57,16 @@ export class UserMongoRepository {
     }
   }
 
-  async getUserProfile(userId: string): Promise<any> {
+  async getUserProfile(userId: string): Promise<User> {
     try {
       const user = await this.userModel
         .findById(userId)
-        .select('name email profileImage nickname introduction')
+        .select('name email avatar nickname introduction')
         .exec();
       if (!user) {
         throw new Error('User not found');
       }
+
       return user;
     } catch (error) {
       Logger.error(`getUserProfile 실패: ${error.message}`);
@@ -73,29 +74,17 @@ export class UserMongoRepository {
     }
   }
 
-  async getOtherUserProfile(
-    userId: string,
-    page: number,
-    size: number,
-  ): Promise<any> {
+  async getOtherUserProfile(username: string): Promise<User> {
     try {
-      const user = await this.userModel
-        .findById(userId)
-        .select('-password -refreshToken -email');
-      if (!user) {
+      const otherUserId = await this.findByUsername(username);
+      const otherUserProfile = await this.userModel
+        .findById(otherUserId)
+        .select('-_id -status -createdAt -password -refreshToken -email');
+      if (!otherUserProfile) {
         throw new Error('User not found');
       }
 
-      const books = await this.booksRepository.findAllBooks(
-        { userId },
-        page,
-        size,
-      );
-
-      return {
-        user,
-        books: books.books,
-      };
+      return otherUserProfile;
     } catch (error) {
       Logger.error(`getOtherUserProfile 실패: ${error.message}`);
       throw new Error(`유저 프로필 불러오기 실패했습니다. 다시 시도해주세요.`);
