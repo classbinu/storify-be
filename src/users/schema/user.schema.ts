@@ -26,7 +26,7 @@ export class User {
   createdAt: Date = new Date();
 
   @Prop({ required: false })
-  profileImage: string;
+  avatar: string;
 
   @Prop({ required: false, unique: true })
   nickname: string;

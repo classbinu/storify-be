@@ -51,7 +51,7 @@ export class AuthService {
       newUser.username,
     );
     console.log('Saved hashed password:', savedUser.password);
-    const tokens = await this.getTokens(newUser._id, newUser.email);
+    const tokens = await this.getTokens(newUser._id);
     await this.updateRefreshToken(newUser._id, tokens.refreshToken);
 
     // Create friend DB for the new user
@@ -61,7 +61,7 @@ export class AuthService {
     });
 
     // 회원가입 이메일 발송
-    await this.mailService.sendWelcomeMail(newUser.email, newUser.username);
+    // await this.mailService.sendWelcomeMail(newUser.email, newUser.username);
     return tokens;
   }
 
@@ -73,7 +73,7 @@ export class AuthService {
     const passwordMatches = await argon2.verify(user.password, data.password);
     if (!passwordMatches)
       throw new BadRequestException('Password is incorrect');
-    const tokens = await this.getTokens(user._id, user.email);
+    const tokens = await this.getTokens(user._id);
     await this.updateRefreshToken(user._id, tokens.refreshToken);
 
     this.notiService.sendMissedNotifications(user._id.toString());
@@ -133,12 +133,41 @@ export class AuthService {
     });
   }
 
-  async getTokens(id: Types.ObjectId, email: string) {
+  // async getTokens(id: Types.ObjectId, email: string) {
+  //   const [accessToken, refreshToken] = await Promise.all([
+  //     this.jwtService.signAsync(
+  //       {
+  //         sub: id,
+  //         email,
+  //       },
+  //       {
+  //         secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
+  //         expiresIn: '1d',
+  //       },
+  //     ),
+  //     this.jwtService.signAsync(
+  //       {
+  //         sub: id,
+  //         email,
+  //       },
+  //       {
+  //         secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+  //         expiresIn: '7d',
+  //       },
+  //     ),
+  //   ]);
+
+  //   return {
+  //     accessToken,
+  //     refreshToken,
+  //   };
+  // }
+
+  async getTokens(id: Types.ObjectId) {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
         {
           sub: id,
-          email,
         },
         {
           secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
@@ -148,7 +177,6 @@ export class AuthService {
       this.jwtService.signAsync(
         {
           sub: id,
-          email,
         },
         {
           secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
@@ -177,7 +205,8 @@ export class AuthService {
       throw new ForbiddenException('Access Denied');
     }
 
-    const tokens = await this.getTokens(user._id, user.email);
+    // const tokens = await this.getTokens(user._id, user.email);
+    const tokens = await this.getTokens(user._id);
     await this.updateRefreshToken(user._id, tokens.refreshToken);
     return tokens;
   }
