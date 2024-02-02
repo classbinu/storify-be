@@ -15,9 +15,6 @@ export class Noti {
   message: string;
 
   @Prop({ required: true })
-  type: string;
-
-  @Prop({ required: true })
   service: string; // 서비스 유형 필드 추가
 
   @Prop({ default: 'unread' })

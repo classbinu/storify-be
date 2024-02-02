@@ -5,10 +5,12 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import { MailModule } from 'src/mail/mail.module';
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { RefreshTokenStrategy } from './strategies/refreshToken.strategy';
 import { UsersModule } from 'src/users/users.module';
+import { NotiModule } from 'src/noti/noti.module';
 
+@Global()
 @Module({
   imports: [
     UsersModule,
@@ -22,9 +24,10 @@ import { UsersModule } from 'src/users/users.module';
         signOptions: { expiresIn: configService.get<string>('30m') },
       }),
     }),
+    NotiModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, AccessTokenStrategy, RefreshTokenStrategy],
-  exports: [JwtModule],
+  exports: [AuthService, JwtModule],
 })
 export class AuthModule {}

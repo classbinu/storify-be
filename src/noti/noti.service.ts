@@ -1,26 +1,43 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, forwardRef, Inject } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Noti, NotiDocument } from './schema/noti.schema';
 import { CreateNotiDto } from './dto/create-noti.dto';
-import { UpdateNotiDto } from './dto/update-noti.dto';
+import { NotiGateway } from './noti.gateway';
 
 @Injectable()
 export class NotiService {
-  create(createNotiDto: CreateNotiDto) {
-    return 'This action adds a new noti';
+  constructor(
+    @InjectModel(Noti.name) private notiModel: Model<NotiDocument>,
+    @Inject(forwardRef(() => NotiGateway))
+    private readonly notiGateway: NotiGateway,
+  ) {}
+
+  async create(createNotiDto: CreateNotiDto): Promise<Noti> {
+    const createdNoti = new this.notiModel(createNotiDto);
+    return createdNoti.save();
   }
 
-  findAll() {
-    return `This action returns all noti`;
+  async findMissedNotifications(userId: string): Promise<Noti[]> {
+    return this.notiModel.find({ receiverId: userId, status: 'unread' }).exec();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} noti`;
+  async sendMissedNotifications(userId: string) {
+    const userSocketId = this.notiGateway.getUserSocketId(userId);
+    if (userSocketId) {
+      const missedNotifications = await this.findMissedNotifications(userId);
+      this.notiGateway.server
+        .to(userSocketId)
+        .emit('missedNotifications', missedNotifications);
+    }
   }
 
-  update(id: number, updateNotiDto: UpdateNotiDto) {
-    return `This action updates a #${id} noti`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} noti`;
+  async updateNotificationStatus(
+    notiId: string,
+    status: string,
+  ): Promise<Noti> {
+    return this.notiModel
+      .findByIdAndUpdate(notiId, { status }, { new: true })
+      .exec();
   }
 }

@@ -10,6 +10,7 @@ import { FriendsModule } from 'src/friends/friends.module';
 import { UsersModule } from 'src/users/users.module';
 import { NotiGateway } from 'src/noti/noti.gateway';
 import { AuthModule } from 'src/auth/auth.module';
+import { NotiModule } from 'src/noti/noti.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { AuthModule } from 'src/auth/auth.module';
     FriendsModule,
     UsersModule,
     AuthModule,
+    NotiModule,
   ],
   controllers: [FriendReqsController],
   providers: [

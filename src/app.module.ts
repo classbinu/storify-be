@@ -1,5 +1,4 @@
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { User, UserSchema } from './users/schema/user.schema';
 
 import { AiModule } from './ai/ai.module';
 import { AppController } from './app.controller';
@@ -29,7 +28,6 @@ import { NotiModule } from './noti/noti.module';
       }),
       inject: [ConfigService],
     }),
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     AuthModule,
     BooksModule,
     StoriesModule,

@@ -11,6 +11,7 @@ import { NotiGateway } from 'src/noti/noti.gateway';
 import { FriendsMongoRepository } from 'src/friends/friends.repository';
 import { UserMongoRepository } from 'src/users/users.repository';
 import { Types } from 'mongoose';
+import { NotiService } from 'src/noti/noti.service';
 
 @Injectable()
 export class FriendReqsService {
@@ -19,6 +20,7 @@ export class FriendReqsService {
     private readonly friendsMongoRepository: FriendsMongoRepository,
     private readonly userMongoRepository: UserMongoRepository,
     private readonly notiGateway: NotiGateway,
+    private readonly notiService: NotiService,
   ) {}
 
   async createFriendReq(
@@ -37,16 +39,22 @@ export class FriendReqsService {
       receiver: receiverUser._id.toString(),
     });
 
-    const receiverSocketId = this.notiGateway.findUserSocketId(
+    const receiverSocketId = this.notiGateway.getUserSocketId(
       receiverUser._id.toString(),
     );
-
     if (receiverSocketId) {
-      // socket id가 있으면 알림을 보냅니다.
       this.notiGateway.server.to(receiverSocketId).emit('friendRequest', {
         sender: createFriendDto.sender,
       });
     }
+    // 알림 저장
+    await this.notiService.create({
+      senderId: createFriendDto.sender.toString(),
+      receiverId: receiverUser._id.toString(),
+      message: `${createFriendDto.sender}가 당신에게 친구 요청을 보냈습니다.`,
+      service: 'FriendRequests',
+    });
+
     return newFriendReq;
   }
 

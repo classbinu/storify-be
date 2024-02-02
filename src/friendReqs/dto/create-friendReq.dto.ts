@@ -1,7 +1,8 @@
-import { IsNotEmpty, IsEnum } from 'class-validator';
+import { IsNotEmpty, IsEnum, IsOptional } from 'class-validator';
 import { Types } from 'mongoose';
 
 export class CreateFriendReqDto {
+  @IsOptional()
   sender: Types.ObjectId;
 
   @IsNotEmpty()
