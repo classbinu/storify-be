@@ -13,9 +13,13 @@ import { NotiService } from './noti.service';
 
 @WebSocketGateway(3001, {
   cors: {
-    origin: ['http://localhost:3000/', 'http://storify-be.fly.dev/'], // 여러 출처를 허용하려면 배열로 추가
+    origin: ['http://localhost:3000/', 'http://storify-be.fly.dev/'],
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['authorization', 'Authorization'],
     credentials: true,
   },
+  namespace: '/ws-.+/',
+  transports: ['websocket', 'polling'],
 })
 export class NotiGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
