@@ -15,13 +15,18 @@ export class Noti {
   message: string;
 
   @Prop({ required: true })
-  service: string; // 서비스 유형 필드 추가
+  service: string;
 
   @Prop({ default: 'unread' })
   status: string;
 
   @Prop({ default: Date.now })
   createdAt: Date;
+
+  @Prop()
+  readAt: Date;
 }
 
 export const NotiSchema = SchemaFactory.createForClass(Noti);
+
+NotiSchema.index({ readAt: 1 }, { expireAfterSeconds: 30 * 24 * 60 * 60 }); // 30 days
