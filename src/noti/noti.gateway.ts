@@ -14,12 +14,11 @@ import { NotiService } from './noti.service';
 
 @WebSocketGateway({
   cors: {
-    // origin: ['http://localhost:3000/', 'http://storify-be.fly.dev/'],
     origin: '*',
     allowedHeaders: ['authorization', 'Authorization'],
     credentials: true,
   },
-  namespace: '/ws-noti/',
+  namespace: '/ws-noti',
 })
 export class NotiGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
