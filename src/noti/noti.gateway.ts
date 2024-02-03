@@ -11,7 +11,7 @@ import { Server, Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
 import { NotiService } from './noti.service';
 
-@WebSocketGateway(3001, {
+@WebSocketGateway(3000, {
   cors: {
     origin: ['http://localhost:3000/', 'http://storify-be.fly.dev/'],
     methods: ['GET', 'POST'],
@@ -19,7 +19,7 @@ import { NotiService } from './noti.service';
     credentials: true,
   },
   namespace: '/ws-.+/',
-  transports: ['websocket', 'polling'],
+  transports: ['websocket'],
 })
 export class NotiGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
