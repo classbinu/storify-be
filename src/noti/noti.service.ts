@@ -18,8 +18,16 @@ export class NotiService {
     return createdNoti.save();
   }
 
-  async findMissedNotifications(userId: string): Promise<Noti[]> {
+  async findMissedNotifications(userId: string): Promise<NotiDocument[]> {
     return this.notiModel.find({ receiverId: userId, status: 'unread' }).exec();
+  }
+
+  async markAsRead(notifications: NotiDocument[]): Promise<void> {
+    for (const noti of notifications) {
+      noti.status = 'read';
+      noti.readAt = new Date();
+      await noti.save();
+    }
   }
 
   async sendMissedNotifications(userId: string) {
@@ -29,6 +37,7 @@ export class NotiService {
       this.notiGateway.server
         .to(userSocketId)
         .emit('missedNotifications', missedNotifications);
+      await this.markAsRead(missedNotifications);
     }
   }
 

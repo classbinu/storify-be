@@ -4,7 +4,6 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
-  WsResponse,
   MessageBody,
 } from '@nestjs/websockets';
 import { forwardRef, Inject } from '@nestjs/common';
@@ -14,7 +13,7 @@ import { NotiService } from './noti.service';
 
 @WebSocketGateway(3001, {
   cors: {
-    origin: '*', // 모든 도메인에서의 접근을 허용합니다. 실제 사용 시에는 보안을 위해 구체적인 도메인을 명시하는 것이 좋습니다.
+    origin: '*', // 모든 도메인에서의 접근을 허용
     credentials: true, // 쿠키를 사용할 경우 true로 설정
   },
 })
@@ -67,18 +66,6 @@ export class NotiGateway implements OnGatewayConnection, OnGatewayDisconnect {
       client.emit('message', 'You have successfully disconnected.');
     }
     client.disconnect();
-  }
-
-  @SubscribeMessage('friendRequest')
-  handleFriendRequest(@MessageBody() payload: any): WsResponse<any> {
-    const { senderId, receiverId } = payload;
-    const receiverSocketId = this.users.get(receiverId);
-
-    if (receiverSocketId) {
-      this.server.to(receiverSocketId).emit('friendRequest', { senderId });
-    }
-
-    return { event: 'friendRequest', data: 'completed' };
   }
 
   @SubscribeMessage('readNotification')
