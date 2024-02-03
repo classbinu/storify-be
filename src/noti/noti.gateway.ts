@@ -13,8 +13,8 @@ import { NotiService } from './noti.service';
 
 @WebSocketGateway(3001, {
   cors: {
-    origin: 'http://localhost:3000', // 모든 도메인에서의 접근을 허용, 추후 프론트 주소 넣을 예정
-    credentials: true, // 쿠키를 사용할 경우 true로 설정
+    origin: ['http://localhost:3000/', 'http://storify-be.fly.dev/'], // 여러 출처를 허용하려면 배열로 추가
+    credentials: true,
   },
 })
 export class NotiGateway implements OnGatewayConnection, OnGatewayDisconnect {
