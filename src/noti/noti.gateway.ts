@@ -11,9 +11,10 @@ import { Server, Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
 import { NotiService } from './noti.service';
 
-@WebSocketGateway(3000, {
+@WebSocketGateway({
   cors: {
-    origin: ['http://localhost:3000/', 'http://storify-be.fly.dev/'],
+    // origin: ['http://localhost:3000/', 'http://storify-be.fly.dev/'],
+    origin: '*',
     methods: ['GET', 'POST'],
     allowedHeaders: ['authorization', 'Authorization'],
     credentials: true,
