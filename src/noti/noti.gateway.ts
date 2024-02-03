@@ -5,6 +5,7 @@ import {
   WebSocketGateway,
   WebSocketServer,
   MessageBody,
+  // WsResponse,
 } from '@nestjs/websockets';
 import { forwardRef, Inject } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
@@ -15,12 +16,10 @@ import { NotiService } from './noti.service';
   cors: {
     // origin: ['http://localhost:3000/', 'http://storify-be.fly.dev/'],
     origin: '*',
-    methods: ['GET', 'POST'],
     allowedHeaders: ['authorization', 'Authorization'],
     credentials: true,
   },
-  namespace: '/ws-.+/',
-  transports: ['websocket'],
+  namespace: '/ws-noti/',
 })
 export class NotiGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
@@ -41,8 +40,8 @@ export class NotiGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async verifyToken(client: Socket): Promise<string> {
     const token = client.handshake.headers.authorization?.split(' ')[1];
     try {
-      const { userId } = await this.jwtService.decode(token);
-      return userId;
+      const { sub } = await this.jwtService.decode(token);
+      return sub;
     } catch (error) {
       client.emit('error', 'Invalid token. Connection refused.');
       client.disconnect();
@@ -51,9 +50,8 @@ export class NotiGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   async handleConnection(client: Socket) {
     const userId: string = await this.verifyToken(client);
-    const socketId = this.users.get(userId);
-
-    if (socketId) {
+    const existingUser = this.users.get(userId);
+    if (existingUser) {
       client.emit('message', 'You are already connected.');
     } else {
       this.users.set(userId, client.id);
@@ -72,6 +70,19 @@ export class NotiGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
     client.disconnect();
   }
+
+  // 테스트용 코드
+  // @SubscribeMessage('friendRequest')
+  // handleFriendRequest(@MessageBody() payload: any): WsResponse<any> {
+  //   const { senderId, receiverId } = payload;
+  //   const receiverSocketId = this.users.get(receiverId);
+
+  //   if (receiverSocketId) {
+  //     this.server.to(receiverSocketId).emit('friendRequest', { senderId });
+  //   }
+
+  //   return { event: 'friendRequest', data: 'completed' };
+  // }
 
   @SubscribeMessage('readNotification')
   async handleReadNotification(
