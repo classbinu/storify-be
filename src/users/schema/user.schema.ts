@@ -16,7 +16,7 @@ export class User {
   @Prop({ required: true })
   password: string;
 
-  @Prop({ required: false, unique: true })
+  @Prop({ required: false })
   email: string;
 
   @Prop({ required: false })
@@ -28,7 +28,7 @@ export class User {
   @Prop({ required: false })
   avatar: string;
 
-  @Prop({ required: false, unique: true })
+  @Prop({ required: false })
   nickname: string;
 
   @Prop({ required: false })
