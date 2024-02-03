@@ -15,7 +15,6 @@ import { Readable } from 'stream';
 // import { JsonOutputFunctionsParser } from 'langchain/output_parsers';
 import { StoragesService } from 'src/storages/storages.service';
 import { StoriesService } from 'src/stories/stories.service';
-import { UpdateAiBookDto } from './dto/update-ai-book.dto';
 import { UpdateBookDto } from 'src/books/dto/update-book.dto';
 
 @Injectable()
