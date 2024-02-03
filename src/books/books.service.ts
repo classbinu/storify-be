@@ -121,20 +121,21 @@ export class BooksService {
       const userSocketId = this.notiGateway.getUserSocketId(
         authorId.toString(),
       );
-      if (userSocketId) {
-        this.notiGateway.server.to(userSocketId).emit('like', {
-          bookId: bookId,
+      try {
+        if (userSocketId) {
+          this.notiGateway.server.to(userSocketId).emit('like', {
+            bookId: bookId,
+          });
+        }
+      } catch (error) {
+        // 알림 실패한 경우만 알림 저장
+        await this.notiService.create({
+          senderId: userId,
+          receiverId: authorId.toString(),
+          message: `${userId}가 당신의 책(${bookId})에 좋아요를 추가했습니다.`,
+          service: 'Books',
         });
       }
-
-      // 알림 저장
-      await this.notiService.create({
-        senderId: userId,
-        receiverId: authorId.toString(),
-        message: `${userId}가 당신의 책(${bookId})에 좋아요를 추가했습니다.`,
-        service: 'Books',
-      });
-
       return result;
     } catch (error) {
       throw new Error(`Like 추가 실패: ${error.message}`);

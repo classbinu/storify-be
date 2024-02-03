@@ -42,18 +42,20 @@ export class FriendReqsService {
     const receiverSocketId = this.notiGateway.getUserSocketId(
       receiverUser._id.toString(),
     );
-    if (receiverSocketId) {
-      this.notiGateway.server.to(receiverSocketId).emit('friendRequest', {
-        sender: createFriendDto.sender,
+    try {
+      if (receiverSocketId) {
+        this.notiGateway.server.to(receiverSocketId).emit('friendRequest', {
+          sender: createFriendDto.sender,
+        });
+      }
+    } catch (error) {
+      await this.notiService.create({
+        senderId: createFriendDto.sender.toString(),
+        receiverId: receiverUser._id.toString(),
+        message: `${createFriendDto.sender}가 당신에게 친구 요청을 보냈습니다.`,
+        service: 'FriendRequests',
       });
     }
-    // 알림 저장
-    await this.notiService.create({
-      senderId: createFriendDto.sender.toString(),
-      receiverId: receiverUser._id.toString(),
-      message: `${createFriendDto.sender}가 당신에게 친구 요청을 보냈습니다.`,
-      service: 'FriendRequests',
-    });
 
     return newFriendReq;
   }
