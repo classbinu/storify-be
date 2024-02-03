@@ -13,7 +13,7 @@ import { NotiService } from './noti.service';
 
 @WebSocketGateway(3001, {
   cors: {
-    origin: '*', // 모든 도메인에서의 접근을 허용
+    origin: 'http://localhost:3000', // 모든 도메인에서의 접근을 허용, 추후 프론트 주소 넣을 예정
     credentials: true, // 쿠키를 사용할 경우 true로 설정
   },
 })

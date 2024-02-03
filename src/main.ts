@@ -17,7 +17,7 @@ async function bootstrap() {
     cors: true,
   });
   const corsOptions: CorsOptions = {
-    origin: '*',
+    origin: 'http://localhost:3000',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   };
