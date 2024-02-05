@@ -59,12 +59,10 @@ export class UsersController {
 
   @UseGuards(AccessTokenGuard)
   @ApiBearerAuth()
-  @Patch(':id')
-  updateUser(
-    @Param('id') id: string,
-    @Body() updateUserDto: UpdateUserDto,
-  ): Promise<User> {
-    return this.usersService.updateUser(id, updateUserDto);
+  @Patch()
+  updateUser(@Req() req, @Body() updateUserDto: UpdateUserDto): Promise<User> {
+    const userId = req.user.sub;
+    return this.usersService.updateUser(userId, updateUserDto);
   }
 
   @Get(':id')
@@ -74,8 +72,9 @@ export class UsersController {
 
   @UseGuards(AccessTokenGuard)
   @ApiBearerAuth()
-  @Delete(':id')
-  deleteUser(@Param('id') id: string): Promise<any> {
-    return this.usersService.deleteUser(id);
+  @Delete()
+  deleteUser(@Req() req): Promise<any> {
+    const userId = req.user.sub;
+    return this.usersService.deleteUser(userId);
   }
 }
