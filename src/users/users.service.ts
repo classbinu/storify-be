@@ -29,8 +29,11 @@ export class UsersService {
     return this.userRepository.getOtherUserProfile(username);
   }
 
-  async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<User> {
-    return this.userRepository.updateUser(id, updateUserDto);
+  async updateUser(
+    userId: string,
+    updateUserDto: UpdateUserDto,
+  ): Promise<User> {
+    return this.userRepository.updateUser(userId, updateUserDto);
   }
 
   async updateUserProfile(
@@ -40,7 +43,7 @@ export class UsersService {
     return this.userRepository.updateUserProfile(userId, updateUserInfo);
   }
 
-  async deleteUser(id: string): Promise<any> {
-    return this.userRepository.deleteUser(id);
+  async deleteUser(userId: string): Promise<any> {
+    return this.userRepository.deleteUser(userId);
   }
 }

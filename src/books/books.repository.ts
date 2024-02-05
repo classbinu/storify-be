@@ -108,7 +108,20 @@ export class BookMongoRepository {
   }
 
   async findBookById(id: string): Promise<Book> {
-    return this.bookModel.findById(id).exec();
+    try {
+      const book = await this.bookModel
+        .findByIdAndUpdate(id, { $inc: { count: 1 } }, { new: true })
+        .exec();
+      if (!book) {
+        throw new NotFoundException('Book not found');
+      }
+      return book;
+    } catch (error) {
+      Logger.error(`findBookById 실패: ${error.message}`);
+      throw new NotFoundException(
+        `책 불러오기 실패했습니다. 다시 시도해 주세요.`,
+      );
+    }
   }
 
   async updateBook(
