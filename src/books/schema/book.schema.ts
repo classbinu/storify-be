@@ -54,8 +54,14 @@ export class Book {
   @Prop({ type: [Types.ObjectId], ref: 'User' })
   likes: Types.ObjectId[];
 
+  @Prop({ required: false, default: 0 })
+  likesCount: number;
+
   @Prop({ type: [Types.ObjectId], ref: 'User' })
   dislikes: Types.ObjectId[];
+
+  @Prop({ required: false, default: 0 })
+  dislikesCount: number;
 
   @Prop({ required: false, default: false })
   isPrivate: boolean;
