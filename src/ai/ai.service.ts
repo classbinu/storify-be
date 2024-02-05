@@ -15,6 +15,7 @@ import { Readable } from 'stream';
 // import { JsonOutputFunctionsParser } from 'langchain/output_parsers';
 import { StoragesService } from 'src/storages/storages.service';
 import { StoriesService } from 'src/stories/stories.service';
+import { TelegramService } from 'src/telegram/telegram.service';
 import { UpdateBookDto } from 'src/books/dto/update-book.dto';
 
 @Injectable()
@@ -24,6 +25,7 @@ export class AiService {
     private readonly storagesService: StoragesService,
     private readonly storiesService: StoriesService,
     private readonly booksService: BooksService,
+    private readonly telegramService: TelegramService,
   ) {}
 
   // 프롬프트를 바탕으로 삽화를 생성하는 함수
@@ -275,6 +277,10 @@ export class AiService {
     };
 
     console.log(createBookDto);
+
+    this.telegramService.sendMessage({
+      message: `[AI 동화 생성]\ntitle: ${title}\nuserId: ${userId}`,
+    });
 
     // book 데이터 생성 코드 필요
     return await this.booksService.createBook(createBookDto);
