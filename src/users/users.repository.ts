@@ -93,9 +93,19 @@ export class UserMongoRepository {
 
   async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     try {
+      if (updateUserDto.email) {
+        const existingUser = await this.userModel
+          .findOne({ email: updateUserDto.email })
+          .exec();
+        if (existingUser && existingUser._id.toString() !== id) {
+          throw new Error('이미 사용중인 이메일입니다.');
+        }
+      }
+
       if (updateUserDto.refreshToken === null) {
         delete updateUserDto.refreshToken;
       }
+
       const userId = new Types.ObjectId(id);
       return await this.userModel
         .findByIdAndUpdate(userId, updateUserDto, { new: true })
@@ -111,6 +121,15 @@ export class UserMongoRepository {
     updateUserInfo: UpdateUserProfileDto,
   ): Promise<User> {
     try {
+      if (updateUserInfo.nickname) {
+        const existingNickname = await this.userModel
+          .findOne({ nickname: updateUserInfo.nickname })
+          .exec();
+        if (existingNickname && existingNickname._id.toString() !== userId) {
+          throw new Error('이미 사용중인 닉네임입니다.');
+        }
+      }
+
       const user = await this.userModel
         .findByIdAndUpdate(userId, updateUserInfo, { new: true })
         .select('profileImage nickname introduction')
