@@ -5,12 +5,12 @@ import { BookHistory } from './schema/book-history.schema';
 import { BookMongoRepository } from './books.repository';
 import { CreateBookDto } from './dto/create-book.dto';
 import { CreateBookHistoryDto } from './dto/create-book-history.dto';
+import { NotiGateway } from 'src/noti/noti.gateway';
+import { NotiService } from 'src/noti/noti.service';
 import { StoragesService } from 'src/storages/storages.service';
 // import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { UtilsService } from 'src/utils/utils.service';
-import { NotiGateway } from 'src/noti/noti.gateway';
-import { NotiService } from 'src/noti/noti.service';
 
 @Injectable()
 export class BooksService {

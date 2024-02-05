@@ -91,15 +91,26 @@ export class BookMongoRepository {
     page: number,
     limit: number,
   ): Promise<{ total: number; books: Book[] }> {
+    const sort = query.sort;
+    delete query.sort;
+
     let findQuery = this.bookModel.find(query);
     if (query.title) {
       const regex = new RegExp(query.title, 'i');
       findQuery = this.bookModel.find({ title: { $regex: regex } });
     }
+
+    if (sort === 'recent') {
+      findQuery = findQuery.sort({ createdAt: -1 });
+    } else if (sort === 'like') {
+      findQuery = findQuery.sort({ likesCount: -1 });
+    } else if (sort === 'count') {
+      findQuery = findQuery.sort({ count: -1 });
+    }
+
     const totalCount = await this.bookModel.countDocuments(query).exec();
     const books = await findQuery
       .populate('userId', 'username')
-      .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
       .exec();
@@ -173,6 +184,8 @@ export class BookMongoRepository {
       }
       if (!book.likes.includes(new Types.ObjectId(userId))) {
         book.likes.push(new Types.ObjectId(userId));
+        book.likesCount = book.likes.length;
+
         return await this.updateBookLike(bookId, book);
       } else {
         throw new BadRequestException('You already liked this book');
@@ -192,6 +205,7 @@ export class BookMongoRepository {
       const index = book.likes.indexOf(new Types.ObjectId(userId));
       if (index > -1) {
         book.likes.splice(index, 1);
+        book.likesCount = book.likes.length;
         return await this.updateBookLike(bookId, book);
       } else {
         throw new BadRequestException('You did not like this book before');
@@ -232,6 +246,7 @@ export class BookMongoRepository {
       }
       if (!book.dislikes.includes(new Types.ObjectId(userId))) {
         book.dislikes.push(new Types.ObjectId(userId));
+        book.dislikesCount = book.dislikes.length;
         return await this.updateBookLike(bookId, book);
       } else {
         throw new BadRequestException('You already disliked this book');
@@ -251,6 +266,7 @@ export class BookMongoRepository {
       const index = book.dislikes.indexOf(new Types.ObjectId(userId));
       if (index > -1) {
         book.dislikes.splice(index, 1);
+        book.dislikesCount = book.dislikes.length;
         return await this.updateBookLike(bookId, book);
       } else {
         throw new BadRequestException('You did not dislike this book before');

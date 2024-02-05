@@ -82,18 +82,26 @@ export class BooksController {
     type: 'number',
     description: '기본 값: 10',
   })
+  @ApiQuery({
+    name: 'sort',
+    required: false,
+    type: 'string',
+    description: '최신순: recent(기본값), 좋아요순: like, 조회순: count',
+  })
   @Get()
   async findAllBooks(
     @Query('title') title: string,
     @Query('userId') userId: string,
     @Query('page') pageStr: string,
     @Query('limit') limitStr: string,
+    @Query('sort') sort: string = 'recent',
   ): Promise<{ total: number; books: Book[] }> {
     const query: any = {};
     if (title) query.title = title;
     if (userId) query.userId = userId;
+    if (sort) query.sort = sort;
 
-    const validQuery = ['title', 'userId', 'page', 'limit'];
+    const validQuery = ['title', 'userId', 'page', 'limit', 'sort'];
     Object.keys(query).forEach((key) => {
       if (!validQuery.includes(key)) {
         delete query[key];
