@@ -14,6 +14,7 @@ import { MailModule } from './mail/mail.module';
 import { FriendReqsModule } from './friendReqs/friendReqs.module';
 import { FriendsModule } from './friends/friends.module';
 import { NotiModule } from './noti/noti.module';
+import { TelegramModule } from './telegram/telegram.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { NotiModule } from './noti/noti.module';
     FriendReqsModule,
     FriendsModule,
     NotiModule,
+    TelegramModule,
   ],
   controllers: [AppController],
   providers: [AppService],
