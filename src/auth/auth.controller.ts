@@ -10,8 +10,10 @@ import {
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { AuthDto } from './dto/auth.dto';
-import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
-import { RefreshTokenGuard } from 'src/common/guards/refreshToken.guard';
+import { AccessTokenGuard } from 'src/auth/guards/accessToken.guard';
+import { RefreshTokenGuard } from 'src/auth/guards/refreshToken.guard';
+import { GoogleAuthGuard } from './guards/google.guard';
+import { KakaoAuthGuard } from './guards/kakao.guard';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 
@@ -26,8 +28,32 @@ export class AuthController {
   }
 
   @Post('login')
-  signin(@Body() data: AuthDto) {
+  logIn(@Body() data: AuthDto) {
     return this.authService.logIn(data);
+  }
+
+  @Get('google')
+  @UseGuards(GoogleAuthGuard)
+  async googleAuth() {}
+
+  @Get('google/callback')
+  @UseGuards(GoogleAuthGuard)
+  async googleAuthRedirect(@Req() req: any) {
+    const user = req.user;
+    const result = await this.authService.socialLogIn(user);
+    return result;
+  }
+
+  @Get('kakao')
+  @UseGuards(KakaoAuthGuard)
+  async kakaoAuth() {}
+
+  @Get('kakao/callback')
+  @UseGuards(KakaoAuthGuard)
+  async kakaoAuthRedirect(@Req() req: any) {
+    const user = req.user;
+    const result = await this.authService.socialLogIn(user);
+    return result;
   }
 
   @UseGuards(AccessTokenGuard)

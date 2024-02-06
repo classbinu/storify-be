@@ -31,13 +31,13 @@ export class AuthService {
 
   // 회원가입
   async register(createUserDto: CreateUserDto): Promise<any> {
-    // Check if username and email exists
-    if (!createUserDto.username) {
-      throw new BadRequestException('username is required');
+    // Check if userId and email exists
+    if (!createUserDto.userId) {
+      throw new BadRequestException('userId is required');
     }
 
-    const userExists = await this.userMongoRepository.findByUsername(
-      createUserDto.username,
+    const userExists = await this.userMongoRepository.findByUserId(
+      createUserDto.userId,
     );
     if (userExists) {
       throw new BadRequestException('User already exists');
@@ -47,8 +47,8 @@ export class AuthService {
     const newUser = await this.userMongoRepository.createUser(createUserDto);
 
     // 저장된 비밀번호 확인
-    const savedUser = await this.userMongoRepository.findByUsername(
-      newUser.username,
+    const savedUser = await this.userMongoRepository.findByUserId(
+      newUser.userId,
     );
     console.log('Saved hashed password:', savedUser.password);
     const tokens = await this.getTokens(newUser._id);
@@ -61,14 +61,14 @@ export class AuthService {
     });
 
     // 회원가입 이메일 발송
-    // await this.mailService.sendWelcomeMail(newUser.email, newUser.username);
+    // await this.mailService.sendWelcomeMail(newUser.email, newUser.userId);
     return tokens;
   }
 
   // 로그인
   async logIn(data: AuthDto) {
     // Check if user exists
-    const user = await this.userMongoRepository.findByUsername(data.username);
+    const user = await this.userMongoRepository.findByUserId(data.userId);
     if (!user) throw new BadRequestException('User does not exist');
     const passwordMatches = await argon2.verify(user.password, data.password);
     if (!passwordMatches)
@@ -80,7 +80,28 @@ export class AuthService {
 
     return {
       ...tokens,
-      username: user.username,
+      userId: user.userId,
+      id: user._id,
+    };
+  }
+
+  async socialLogIn(userData: any) {
+    let user = await this.userMongoRepository.findByUserId(userData.userId);
+    if (!user) {
+      user = await this.userMongoRepository.createSocialUser(userData);
+      await this.friendsMongoRrpository.createFriend({
+        user: user._id,
+        friends: [],
+      });
+    }
+
+    const tokens = await this.getTokens(user._id);
+
+    await this.updateRefreshToken(user._id, tokens.refreshToken);
+
+    return {
+      ...tokens,
+      userId: user.userId,
       id: user._id,
     };
   }
@@ -213,7 +234,7 @@ export class AuthService {
 
   async forgotPassword(email: string) {
     const user = await this.userMongoRepository.findByEmail(email);
-    const username = user.username;
+    const userId = user.userId;
     if (!user) {
       throw new BadRequestException('User does not exist');
     }
@@ -228,7 +249,7 @@ export class AuthService {
       },
     );
 
-    await this.mailService.sendResetPasswordMail(email, username, token);
+    await this.mailService.sendResetPasswordMail(email, userId, token);
     return { message: 'Reset password email sent' };
   }
 

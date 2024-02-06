@@ -14,7 +14,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdateUserProfileDto } from './dto/update-user-profile.dto';
 import { User } from './schema/user.schema';
-import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
+import { AccessTokenGuard } from 'src/auth/guards/accessToken.guard';
 import { ApiTags } from '@nestjs/swagger';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
@@ -41,9 +41,9 @@ export class UsersController {
     return this.usersService.getUserProfile(userId);
   }
 
-  @Get('profile/:username')
-  async viewOtherProfile(@Param('username') username: string): Promise<any> {
-    return this.usersService.viewOtherUserProfile(username);
+  @Get('profile/:userId')
+  async viewOtherProfile(@Param('userId') userId: string): Promise<any> {
+    return this.usersService.viewOtherUserProfile(userId);
   }
 
   @UseGuards(AccessTokenGuard)

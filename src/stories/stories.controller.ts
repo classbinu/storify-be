@@ -14,7 +14,7 @@ import { CreateStoryDto } from './dto/create-story.dto';
 import { UpdateStoryDto } from './dto/update-story.dto';
 import { Story } from './schema/story.schema';
 import { ApiOperation, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
-import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
+import { AccessTokenGuard } from 'src/auth/guards/accessToken.guard';
 
 @ApiTags('Stories')
 @Controller('stories')

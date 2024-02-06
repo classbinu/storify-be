@@ -11,7 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CreateAiStoryDto } from './dto/create-ai-story.dto';
-import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
+import { AccessTokenGuard } from 'src/auth/guards/accessToken.guard';
 import { UpdateAiBookDto } from './dto/update-ai-book.dto';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { CreateTtsDto } from './dto/create-tts.dto';

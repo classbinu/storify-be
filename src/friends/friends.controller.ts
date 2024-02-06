@@ -11,7 +11,7 @@ import { ApiTags, ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 import { CreateFriendDto } from './dto/create-friend.dto';
 import { Friend } from './schema/friend.schema';
 import { FriendsService } from './friends.service';
-import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
+import { AccessTokenGuard } from 'src/auth/guards/accessToken.guard';
 
 @ApiTags('Friends')
 @Controller('friends')
@@ -41,12 +41,12 @@ export class FriendsController {
   @UseGuards(AccessTokenGuard)
   @ApiBearerAuth()
   @Delete(':id')
-  @ApiBody({ schema: { example: { friendUsername: 'exampleUsername' } } })
+  @ApiBody({ schema: { example: { friendUserId: 'exampleUserId' } } })
   async deleteFriend(
     @Req() req,
-    @Body('friendUsername') friendUsername: string,
+    @Body('friendUserId') friendUserId: string,
   ): Promise<Friend> {
     const userId = req.user.sub;
-    return this.friendsService.deleteFriend(userId, friendUsername);
+    return this.friendsService.deleteFriend(userId, friendUserId);
   }
 }

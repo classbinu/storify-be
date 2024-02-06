@@ -110,7 +110,7 @@ export class BookMongoRepository {
 
     const totalCount = await this.bookModel.countDocuments(query).exec();
     const books = await findQuery
-      .populate('userId', 'username')
+      .populate('userId', 'userId')
       .skip((page - 1) * limit)
       .limit(limit)
       .exec();

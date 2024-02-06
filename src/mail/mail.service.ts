@@ -36,11 +36,11 @@ export class MailService {
     }
   }
 
-  async sendWelcomeMail(to: string, username: string) {
-    const subject = `[스토리파이] ${username}님, 환영합니다!`;
+  async sendWelcomeMail(to: string, userId: string) {
+    const subject = `[스토리파이] ${userId}님, 환영합니다!`;
     const html = `
       <div>
-        <h1>${username}님, 환영합니다!</h1>
+        <h1>${userId}님, 환영합니다!</h1>
         <p>스토리파이에 가입해 주셔서 고맙습니다.</p>
       </div>
     `;
@@ -52,8 +52,8 @@ export class MailService {
     }
   }
 
-  async sendResetPasswordMail(to: string, username: string, token: string) {
-    const subject = `[스토리파이] ${username}님, 비밀번호를 재설정하세요`;
+  async sendResetPasswordMail(to: string, userId: string, token: string) {
+    const subject = `[스토리파이] ${userId}님, 비밀번호를 재설정하세요`;
     const html = `
       <div>
         <h1>비밀번호 재설정</h1>

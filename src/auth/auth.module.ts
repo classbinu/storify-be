@@ -9,6 +9,8 @@ import { Global, Module } from '@nestjs/common';
 import { RefreshTokenStrategy } from './strategies/refreshToken.strategy';
 import { UsersModule } from 'src/users/users.module';
 import { NotiModule } from 'src/noti/noti.module';
+import { GoogleStrategy } from './strategies/google.strategy';
+import { KakaoStrategy } from './strategies/kakao.strategy';
 
 @Global()
 @Module({
@@ -27,7 +29,13 @@ import { NotiModule } from 'src/noti/noti.module';
     NotiModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, AccessTokenStrategy, RefreshTokenStrategy],
+  providers: [
+    AuthService,
+    AccessTokenStrategy,
+    RefreshTokenStrategy,
+    GoogleStrategy,
+    KakaoStrategy,
+  ],
   exports: [AuthService, JwtModule],
 })
 export class AuthModule {}

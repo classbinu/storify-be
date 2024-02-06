@@ -3,7 +3,7 @@ POST http://localhost:3000/users/create
 Content-Type: application/json
 
 {
-    "username": "REAL MAN2000",
+    "userId": "REAL MAN2000",
     "password": "1",
     "email": "REALMAN2000@test.com"
 }
@@ -17,7 +17,7 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NWE3MzEwYmRhNGUxOWI2OTQxY2RkNDgiLCJlbWFpbCI6InRlc3QxQHRlc3QxLmNvbSIsImlhdCI6MTcwNTQ1NjI0OCwiZXhwIjoxNzA1NTQyNjQ4fQ.Wa0VxJj0NaShwMn4v8ZVVbvW0sD5cydjNrqRypJnI94
 
 {
-    "username": "jinhwan",
+    "userId": "jinhwan",
     "password": "qwer",
     "email": "test2@test1.com"
 }
