@@ -18,6 +18,7 @@ export class UserMongoRepository {
   async createUser(user: CreateUserDto): Promise<User> {
     try {
       const newUser = new this.userModel(user);
+      newUser.nickname = newUser.userId;
       return await newUser.save();
     } catch (error) {
       Logger.error(`createUser 실패: ${error.message}`);
