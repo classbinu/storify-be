@@ -25,7 +25,6 @@ async function bootstrap() {
 
   app.enableCors(corsOptions);
   app.useWebSocketAdapter(new IoAdapter(app));
-  app.setGlobalPrefix('api');
   app.useGlobalFilters(new GlobalExceptionFilter());
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('/docs', app, document);
