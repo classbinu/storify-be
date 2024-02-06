@@ -124,4 +124,4 @@ GPT-4-Turbo 모델은 응답 시간이 길어 빠른 동화책 생성을 목표�
 classbinu@gmail.com
 
 ## Memo
-1
+2
