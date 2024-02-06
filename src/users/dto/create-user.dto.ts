@@ -3,8 +3,8 @@ import { IsNotEmpty, IsString, Matches } from 'class-validator';
 export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
-  @Matches(/^[^\s]*$/, {
-    message: 'userId should not contain spaces',
+  @Matches(/^[A-Za-z0-9]*$/, {
+    message: 'userId should not contain spaces or special characters',
   })
   userId: string;
 
