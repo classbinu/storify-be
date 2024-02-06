@@ -6,17 +6,18 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Types } from 'mongoose';
+
 import { AuthDto } from './dto/auth.dto';
 import { ConfigService } from '@nestjs/config';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { FriendsMongoRepository } from 'src/friends/friends.repository';
 import { JwtService } from '@nestjs/jwt';
 import { MailService } from 'src/mail/mail.service';
+import { NotiService } from 'src/noti/noti.service';
+import { Types } from 'mongoose';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { User } from 'src/users/schema/user.schema';
 import { UserMongoRepository } from 'src/users/users.repository';
-import { FriendsMongoRepository } from 'src/friends/friends.repository';
-import { NotiService } from 'src/noti/noti.service';
 
 @Injectable()
 export class AuthService {
@@ -81,6 +82,7 @@ export class AuthService {
     return {
       ...tokens,
       userId: user.userId,
+      nickname: user.nickname,
       id: user._id,
     };
   }
