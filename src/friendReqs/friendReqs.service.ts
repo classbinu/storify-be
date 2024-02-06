@@ -26,7 +26,7 @@ export class FriendReqsService {
   async createFriendReq(
     createFriendDto: CreateFriendReqDto,
   ): Promise<FriendReq> {
-    const receiverUser = await this.userMongoRepository.findByUsername(
+    const receiverUser = await this.userMongoRepository.findByUserId(
       createFriendDto.receiver,
     );
 
@@ -74,15 +74,14 @@ export class FriendReqsService {
     updateFriendReqDto: UpdateFriendReqDto,
     currentUserId: string,
   ): Promise<FriendReq> {
-    const otherUsername =
+    const otherUserId =
       updateFriendReqDto.receiver || updateFriendReqDto.sender;
 
-    if (!otherUsername) {
+    if (!otherUserId) {
       throw new BadRequestException('Receiver or sender must be provided');
     }
 
-    const otherUser =
-      await this.userMongoRepository.findByUsername(otherUsername);
+    const otherUser = await this.userMongoRepository.findByUserId(otherUserId);
 
     if (!otherUser) {
       throw new NotFoundException('Other user not found');

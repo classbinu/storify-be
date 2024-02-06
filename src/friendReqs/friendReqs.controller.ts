@@ -14,7 +14,7 @@ import { CreateFriendReqDto } from './dto/create-friendReq.dto';
 import { UpdateFriendReqDto } from './dto/update-friendReq.dto';
 import { FriendReqsService } from './friendReqs.service';
 import { FriendReq } from './schema/friendReq.schema';
-import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
+import { AccessTokenGuard } from 'src/auth/guards/accessToken.guard';
 
 @ApiTags('FriendsReqs')
 @Controller('friendsReqs')

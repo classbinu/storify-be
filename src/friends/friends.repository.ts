@@ -44,7 +44,7 @@ export class FriendsMongoRepository {
       );
 
       // 반환값을 사용자의 이름으로 변환합니다.
-      return friends.map((friend) => friend.username);
+      return friends.map((friend) => friend.userId);
     } catch (error) {
       Logger.error(`getFriendsByUserId 실패: ${error.message}`);
       throw new Error(`친구 목록 불러오기 실패했습니다. 다시 시도해 주세요.`);

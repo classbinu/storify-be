@@ -11,9 +11,9 @@ export class User {
   _id: Types.ObjectId;
 
   @Prop({ required: true, unique: true })
-  username: string;
+  userId: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   password: string;
 
   @Prop({ required: false })
@@ -40,6 +40,9 @@ export class User {
 
   @Prop()
   refreshToken: string;
+
+  @Prop()
+  socialProvider: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

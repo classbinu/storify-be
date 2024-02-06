@@ -25,8 +25,8 @@ export class UsersService {
     return this.userRepository.getUserProfile(userId);
   }
 
-  async viewOtherUserProfile(username: string): Promise<User> {
-    return this.userRepository.getOtherUserProfile(username);
+  async viewOtherUserProfile(userId: string): Promise<User> {
+    return this.userRepository.getOtherUserProfile(userId);
   }
 
   async updateUser(

@@ -17,7 +17,7 @@ import { BookHistory } from './schema/book-history.schema';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { CreateBookHistoryDto } from './dto/create-book-history.dto';
-import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
+import { AccessTokenGuard } from 'src/auth/guards/accessToken.guard';
 import { ApiTags } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 

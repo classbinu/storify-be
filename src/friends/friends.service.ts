@@ -23,9 +23,9 @@ export class FriendsService {
     return this.friendsMongoRepository.getFriendsByUserId(userId);
   }
 
-  async deleteFriend(userId: string, friendUsername: string): Promise<Friend> {
+  async deleteFriend(userId: string, friendUserId: string): Promise<Friend> {
     const friendId = (
-      await this.userMongoRepository.findByUsername(friendUsername)
+      await this.userMongoRepository.findByUserId(friendUserId)
     )._id.toString();
     return await this.friendsMongoRepository.deleteFriend(userId, friendId);
   }

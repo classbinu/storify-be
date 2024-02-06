@@ -5,6 +5,7 @@ import { User, UserDocument } from './schema/user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdateUserProfileDto } from './dto/update-user-profile.dto';
+import { CreateSocialUserDto } from './dto/create-social-user.dto';
 import { BookMongoRepository } from 'src/books/books.repository';
 
 @Injectable()
@@ -24,6 +25,21 @@ export class UserMongoRepository {
     }
   }
 
+  async createSocialUser(user: CreateSocialUserDto): Promise<User> {
+    try {
+      const newUser = new this.userModel({
+        userId: user.userId,
+        nickname: user.nickname,
+        avatar: user.avatar,
+        socialProvider: user.socialProvider,
+      });
+      return await newUser.save();
+    } catch (error) {
+      Logger.error(`createSocialUser 실패: ${error.message}`);
+      throw new Error('소셜 유저 생성 실패했습니다. 다시 시도해주세요.');
+    }
+  }
+
   async findById(id: string): Promise<User> {
     try {
       const userId = new Types.ObjectId(id);
@@ -33,11 +49,11 @@ export class UserMongoRepository {
     }
   }
 
-  async findByUsername(username: string): Promise<User> {
+  async findByUserId(userId: string): Promise<User> {
     try {
-      return await this.userModel.findOne({ username }).exec();
+      return await this.userModel.findOne({ userId }).exec();
     } catch (error) {
-      throw new Error(`Error finding user by username: ${error.message}`);
+      throw new Error(`Error finding user by userId: ${error.message}`);
     }
   }
 
@@ -74,9 +90,9 @@ export class UserMongoRepository {
     }
   }
 
-  async getOtherUserProfile(username: string): Promise<User> {
+  async getOtherUserProfile(userId: string): Promise<User> {
     try {
-      const otherUserId = await this.findByUsername(username);
+      const otherUserId = await this.findByUserId(userId);
       const otherUserProfile = await this.userModel
         .findById(otherUserId)
         .select('-_id -status -createdAt -password -refreshToken -email');
@@ -156,11 +172,11 @@ export class UserMongoRepository {
     }
   }
 
-  async save(email: string, username: string, password: string): Promise<User> {
+  async save(email: string, userId: string, password: string): Promise<User> {
     try {
       const newUser = new this.userModel({
         email,
-        username,
+        userId,
         password,
       });
 
