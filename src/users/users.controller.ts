@@ -8,15 +8,23 @@ import {
   UseGuards,
   Patch,
   Req,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdateUserProfileDto } from './dto/update-user-profile.dto';
 import { User } from './schema/user.schema';
 import { AccessTokenGuard } from 'src/auth/guards/accessToken.guard';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiBody, ApiProperty, ApiConsumes } from '@nestjs/swagger';
 import { ApiBearerAuth } from '@nestjs/swagger';
+
+class FileUploadDto extends UpdateUserProfileDto {
+  @ApiProperty({ type: 'string', format: 'binary' })
+  avatar: any;
+}
 
 @ApiTags('Users')
 @Controller('users')
@@ -46,15 +54,29 @@ export class UsersController {
     return this.usersService.viewOtherUserProfile(userId);
   }
 
-  @UseGuards(AccessTokenGuard)
   @ApiBearerAuth()
+  @UseGuards(AccessTokenGuard)
   @Patch('profile')
-  async updateProfile(
-    @Req() req,
-    @Body() updateUserInfo: UpdateUserProfileDto,
-  ): Promise<User> {
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'User Profile and Avatar Data',
+    type: FileUploadDto,
+  })
+  @UseInterceptors(
+    FileInterceptor('avatar', {
+      limits: { fileSize: 2000000 }, // 2MB
+      fileFilter: (req, file, callback) => {
+        if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+          return callback(new Error('Only image files are allowed!'), false);
+        }
+        callback(null, true);
+      },
+    }),
+  )
+  async updateProfile(@Req() req, @UploadedFile() avatar): Promise<User> {
     const userId = req.user.sub;
-    return this.usersService.updateUserProfile(userId, updateUserInfo);
+    const updateUserInfo: UpdateUserProfileDto = req.body;
+    return this.usersService.updateUserProfile(userId, updateUserInfo, avatar);
   }
 
   @UseGuards(AccessTokenGuard)
