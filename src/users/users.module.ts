@@ -13,6 +13,7 @@ import { FriendsMongoRepository } from 'src/friends/friends.repository';
 import { Friend, FriendSchema } from 'src/friends/schema/friend.schema';
 import { NotiModule } from 'src/noti/noti.module';
 import { BooksModule } from 'src/books/books.module';
+import { StoragesModule } from 'src/storages/storages.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { BooksModule } from 'src/books/books.module';
     // FriendsModule,
     forwardRef(() => BooksModule),
     forwardRef(() => NotiModule),
+    StoragesModule,
   ],
   controllers: [UsersController],
   providers: [

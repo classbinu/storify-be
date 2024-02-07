@@ -149,7 +149,7 @@ export class UserMongoRepository {
 
       const user = await this.userModel
         .findByIdAndUpdate(userId, updateUserInfo, { new: true })
-        .select('profileImage nickname introduction')
+        .select('avatar nickname introduction')
         .exec();
 
       if (!user) {
