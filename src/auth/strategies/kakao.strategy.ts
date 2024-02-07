@@ -34,7 +34,7 @@ export class KakaoStrategy extends PassportStrategy(Strategy) {
 
       const userData = {
         userId: data.id,
-        nickname: nickname,
+        nickname,
         avatar,
         socialProvider: 'kakao',
       };
