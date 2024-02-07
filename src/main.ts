@@ -10,7 +10,6 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule } from '@nestjs/swagger';
 import { swaggerConfig } from './swagger.config';
 import { EnvFilterMiddleware } from './middlewares/envFilter.middleware';
-import { NotFoundMiddleware } from './middlewares/notFound.middleware';
 import helmet from 'helmet';
 
 dotenv.config();
@@ -37,7 +36,6 @@ async function bootstrap() {
   // Increase JSON limit to 1MB
   app.use(bodyParser.json({ limit: '1mb' }));
   app.use(new EnvFilterMiddleware().use);
-  app.use(new NotFoundMiddleware().use);
   await app.listen(3000);
 }
 bootstrap();
