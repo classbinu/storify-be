@@ -7,14 +7,13 @@ import { BooksModule } from './books/books.module';
 import { FriendReqsModule } from './friendReqs/friendReqs.module';
 import { FriendsModule } from './friends/friends.module';
 import { MailModule } from './mail/mail.module';
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { NotiModule } from './noti/noti.module';
 import { StoragesModule } from './storages/storages.module';
 import { StoriesModule } from './stories/stories.module';
 import { TelegramModule } from './telegram/telegram.module';
 import { UsersModule } from './users/users.module';
-import { EnvFilterMiddleware } from './middlewares/envFilter.middleware';
 
 @Module({
   imports: [
@@ -43,8 +42,4 @@ import { EnvFilterMiddleware } from './middlewares/envFilter.middleware';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(EnvFilterMiddleware).forRoutes('*');
-  }
-}
+export class AppModule {}
