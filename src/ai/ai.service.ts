@@ -278,10 +278,10 @@ export class AiService {
     };
 
     console.log(createBookDto);
-    const userNickname = this.userRepository.findById(userId);
+    const user = await this.userRepository.findById(userId);
 
     this.telegramService.sendMessage({
-      message: `[AI 동화 생성]\ntitle: ${title}\nuserNickname: ${userNickname}`,
+      message: `[AI 동화 생성]\ntitle: ${title}\nuserNickname: ${user.nickname}`,
     });
 
     // book 데이터 생성 코드 필요
