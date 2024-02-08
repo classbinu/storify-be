@@ -226,7 +226,6 @@ export class AiService {
       const createdImagePromptsArray = JSON.parse(createdImagePromptsSubstring);
       return createdImagePromptsArray;
     } catch (error) {
-      console.error('Error parsing JSON:', error);
       return null;
     }
   }
@@ -363,7 +362,6 @@ export class AiService {
       const base64Audio = audioBuffer.toString('base64');
       return base64Audio;
     } catch (error) {
-      console.error(error);
       return null;
     }
   }

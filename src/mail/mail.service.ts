@@ -31,7 +31,6 @@ export class MailService {
     try {
       await this.trnaspoter.sendMail(mailOptions);
     } catch (error) {
-      console.error(error);
       throw new Error('Error sendMail');
     }
   }
@@ -47,7 +46,6 @@ export class MailService {
     try {
       await this.sendMail(to, subject, html);
     } catch (error) {
-      console.error(error);
       throw new Error('Error sendWelcomeMail');
     }
   }
@@ -58,13 +56,12 @@ export class MailService {
       <div>
         <h1>비밀번호 재설정</h1>
         <p>아래 링크를 클릭해서 비밀번호를 재설정하세요.(링크 유효 시간: 24시간)</p>
-        <a href="http://127.0.0.1:3000/reset-password/${token}">Reset password</a>
+        <a href="https://storifyai.vercel.app/reset-password/${token}">Reset password</a>
       </div>
     `;
     try {
       await this.sendMail(to, subject, html);
     } catch (error) {
-      console.error(error);
       throw new Error('Error sendResetPasswordMail');
     }
   }
@@ -80,7 +77,6 @@ export class MailService {
     try {
       await this.sendMail(to, subject, html);
     } catch (error) {
-      console.error(error);
       throw new Error('Error sendWelcomeMail');
     }
   }
