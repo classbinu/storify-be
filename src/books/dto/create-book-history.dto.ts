@@ -9,11 +9,11 @@ export class CreateBookHistoryDto {
   bookId: Types.ObjectId;
 
   @IsOptional()
-  lastPage: number;
+  lastPage?: number;
 
   @IsOptional()
-  rate: number;
+  rate?: number;
 
   @IsOptional()
-  count: number;
+  count?: number;
 }

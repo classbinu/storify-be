@@ -3,7 +3,7 @@ import { Types } from 'mongoose';
 
 export class CreateFriendReqDto {
   @IsOptional()
-  sender: Types.ObjectId;
+  sender?: Types.ObjectId;
 
   @IsNotEmpty()
   receiver: string;
