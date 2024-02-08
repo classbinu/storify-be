@@ -107,6 +107,14 @@ export class BookMongoRepository {
     };
     findQuery = findQuery.sort(queryCondtion[sort]);
 
+    // if (sort === 'recent') {
+    //   findQuery = findQuery.sort({ createdAt: -1 });
+    // } else if (sort === 'like') {
+    //   findQuery = findQuery.sort({ likesCount: -1 });
+    // } else if (sort === 'count') {
+    //   findQuery = findQuery.sort({ count: -1 });
+    // }
+
     const totalCount = await this.bookModel.countDocuments(query).exec();
     const books = await findQuery
       .populate('userId', 'userId')

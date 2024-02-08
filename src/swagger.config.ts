@@ -4,5 +4,5 @@ export const swaggerConfig = new DocumentBuilder()
   .setTitle('Storify API')
   .setDescription('Storify API description')
   .setVersion('1.0')
-  .addBearerAuth({ type: 'http', scheme: 'basic' })
+  .addBearerAuth()
   .build();
