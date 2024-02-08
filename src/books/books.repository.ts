@@ -100,13 +100,12 @@ export class BookMongoRepository {
       findQuery = this.bookModel.find({ title: { $regex: regex } });
     }
 
-    if (sort === 'recent') {
-      findQuery = findQuery.sort({ createdAt: -1 });
-    } else if (sort === 'like') {
-      findQuery = findQuery.sort({ likesCount: -1 });
-    } else if (sort === 'count') {
-      findQuery = findQuery.sort({ count: -1 });
-    }
+    const queryCondtion = {
+      recent: { createdAt: -1 },
+      like: { likesCount: -1 },
+      count: { count: -1 },
+    };
+    findQuery = findQuery.sort(queryCondtion[sort]);
 
     const totalCount = await this.bookModel.countDocuments(query).exec();
     const books = await findQuery
@@ -145,6 +144,7 @@ export class BookMongoRepository {
       if (!book) {
         throw new NotFoundException('Book not found');
       }
+
       if (book.userId.toString() !== writerId) {
         throw new UnauthorizedException('You are not the writer of this book');
       }
@@ -161,6 +161,7 @@ export class BookMongoRepository {
     if (!book) {
       throw new NotFoundException('Book not found');
     }
+
     if (book.userId.toString() !== writerId) {
       throw new UnauthorizedException('You are not the writer of this book');
     }
@@ -182,14 +183,15 @@ export class BookMongoRepository {
       if (!book) {
         throw new NotFoundException('Book not found');
       }
-      if (!book.likes.includes(new Types.ObjectId(userId))) {
-        book.likes.push(new Types.ObjectId(userId));
-        book.likesCount = book.likes.length;
 
-        return await this.updateBookLike(bookId, book);
-      } else {
+      if (book.likes.includes(new Types.ObjectId(userId))) {
         throw new BadRequestException('You already liked this book');
       }
+
+      book.likes.push(new Types.ObjectId(userId));
+      book.likesCount = book.likes.length;
+
+      return await this.updateBookLike(bookId, book);
     } catch (error) {
       Logger.error(`addLike 실패: ${error.message}`);
       throw new Error(`좋아요 실패했습니다. 다시 시도해 주세요.`);
