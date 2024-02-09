@@ -97,7 +97,7 @@ export class AiService {
   async generateAiText(
     systemMessage: string,
     userMessage: string,
-    modelName: string = 'gpt-3.5-turbo-1106',
+    modelName: string = 'gpt-3.5-turbo-0125',
   ) {
     const chatModel = new ChatOpenAI({
       openAIApiKey: this.configService.get<string>('OPENAI_API_KEY'),
