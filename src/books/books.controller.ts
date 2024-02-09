@@ -96,6 +96,11 @@ export class BooksController {
     @Query('limit') limitStr: string,
     @Query('sort') sort: string = 'recent',
   ): Promise<{ total: number; books: Book[] }> {
+    const validSort = ['recent', 'like', 'count'];
+    if (sort && !validSort.includes(sort)) {
+      throw new Error(`Invalid sort value: ${sort}`);
+    }
+
     const query: any = {};
     if (title) query.title = title;
     if (userId) query.userId = userId;

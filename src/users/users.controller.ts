@@ -36,10 +36,11 @@ export class UsersController {
     return this.usersService.createUser(createUserDto);
   }
 
-  @Get()
-  findAll(): Promise<User[]> {
-    return this.usersService.findAll();
-  }
+  // 권한있어야 조회 가능하게 수정 필요
+  // @Get()
+  // findAll(): Promise<User[]> {
+  //   return this.usersService.findAll();
+  // }
 
   @UseGuards(AccessTokenGuard)
   @ApiBearerAuth()

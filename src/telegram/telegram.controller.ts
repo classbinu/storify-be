@@ -11,6 +11,9 @@ export class TelegramController {
 
   @Post()
   async sendMessage(@Body() sendTelegramDto: SendTelegramDto): Promise<void> {
+    if (!sendTelegramDto.message) {
+      throw new Error('Required message field is missing.');
+    }
     return this.telegramService.sendMessage(sendTelegramDto);
   }
 }

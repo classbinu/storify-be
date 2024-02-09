@@ -9,10 +9,14 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule } from '@nestjs/swagger';
 import { swaggerConfig } from './swagger.config';
+import * as swaggerUi from 'swagger-ui-express';
 import { EnvFilterMiddleware } from './middlewares/envFilter.middleware';
 import helmet from 'helmet';
+import * as basicAuth from 'express-basic-auth';
 
 dotenv.config();
+const authId = process.env.ADMIN;
+const password = process.env.PASSWORD;
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -29,7 +33,17 @@ async function bootstrap() {
   app.useWebSocketAdapter(new IoAdapter(app));
   app.useGlobalFilters(new GlobalExceptionFilter());
   const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('/docs', app, document);
+
+  app.use(
+    '/docs',
+    basicAuth({
+      users: { [authId]: password },
+      challenge: true,
+      unauthorizedResponse: 'Unauthorized',
+    }),
+    swaggerUi.serve,
+    swaggerUi.setup(document),
+  );
 
   app.use(helmet());
 
