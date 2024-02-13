@@ -98,14 +98,15 @@ export class AuthService {
     }
 
     const tokens = await this.getTokens(user._id);
-
     await this.updateRefreshToken(user._id, tokens.refreshToken);
 
-    return {
+    const payload = {
       ...tokens,
-      userId: user.userId,
+      userNickname: user.nickname,
       id: user._id,
     };
+
+    return payload;
   }
 
   async findUserById(id: string): Promise<User> {

@@ -6,7 +6,9 @@ import {
   Req,
   UseGuards,
   Patch,
+  Res,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { AuthDto } from './dto/auth.dto';
@@ -50,10 +52,25 @@ export class AuthController {
 
   @Get('kakao/callback')
   @UseGuards(KakaoAuthGuard)
-  async kakaoAuthRedirect(@Req() req: any) {
+  async kakaoAuthRedirect(@Req() req: any, @Res() res: Response) {
     const user = req.user;
-    const result = await this.authService.socialLogIn(user);
-    return result;
+    const tokens = await this.authService.socialLogIn(user);
+
+    res.cookie('accessToken', tokens.accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+    });
+    res.cookie('refreshToken', tokens.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+    });
+
+    // 클라이언트에게 리다이렉트 URL에 사용자 별명을 포함시킵니다.
+    res.redirect(
+      `${process.env.FRONT_URL}?userNickname=${encodeURIComponent(user.nickname)}`,
+    );
   }
 
   @UseGuards(AccessTokenGuard)
