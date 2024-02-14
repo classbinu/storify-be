@@ -128,11 +128,10 @@ export class AuthService {
   }
 
   async changePassword(id: string, updateAuthDto: UpdateAuthDto) {
-    console.log(id);
     const user = await this.userMongoRepository.findById(id);
 
     if (!user) {
-      throw new UnauthorizedException('User not found');
+      return { message: 'User not found' };
     }
 
     const checkOldpassword = await argon2.verify(
@@ -140,7 +139,7 @@ export class AuthService {
       updateAuthDto.oldPassword,
     );
     if (!checkOldpassword) {
-      throw new UnauthorizedException('현재 비밀번호가 맞지 않습니다.');
+      return { message: 'Password wrong.' };
     }
 
     const hashedPassword = await this.hashData(updateAuthDto.newPassword);
