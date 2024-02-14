@@ -58,8 +58,6 @@ export class AuthController {
 
     req.session.userId = tokens.id;
     req.session.userNickname = tokens.userNickname;
-    req.session.user = user;
-    req.session.user = tokens.userNickname;
     req.session.accessToken = tokens.accessToken;
     req.session.refreshToken = tokens.refreshToken;
 
