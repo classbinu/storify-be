@@ -271,13 +271,16 @@ export class AiService {
 
     const createBookDto: CreateBookDto = {
       title,
-      coverUrl: bookBody[1].imageUrl,
+      coverUrl: bookBody[1].imageUrl.replace(
+        'storify/',
+        'storify-resized/resized-',
+      ),
       body: bookBody,
       storyId: storyId,
       userId: userId,
     };
 
-    console.log(createBookDto);
+    console.log(`[Create Book] ${createBookDto.title}`);
     const user = await this.userRepository.findById(userId);
 
     this.telegramService.sendMessage({
@@ -301,7 +304,6 @@ export class AiService {
 
     const imageStyle = book.imageStyle;
     const bookBody = book.body;
-    console.log(bookBody.get(page));
     const imagePrompt = bookBody.get(page).imagePrompt;
 
     const buffer = await this.stableDiffusion(imagePrompt, imageStyle);
@@ -313,9 +315,9 @@ export class AiService {
 
     bookBody.get(page).imageUrl = s3Url;
 
-    // 1페이지면 표지도 연동(임시)
+    // 변경한 이미지가 1페이지면 표지도 변경
     if (page === '1') {
-      book.coverUrl = s3Url;
+      book.coverUrl = s3Url.replace('storify/', 'storify-resized/resized-');
     }
 
     const updateBookDto: UpdateBookDto = {
