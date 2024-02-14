@@ -48,15 +48,23 @@ export class NotiGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async handleConnection(client: Socket) {
-    const userId: string = await this.verifyToken(client);
-    const existingUser = this.users.get(userId);
-    if (existingUser) {
-      client.emit('message', 'You are already connected.');
-    } else {
-      this.users.set(userId, client.id);
-      this.users.set(client.id, userId);
-      client.emit('message', 'You have successfully connected.');
-    }
+    client.on('auth', async (token) => {
+      try {
+        const { sub } = await this.jwtService.decode(token);
+        const existingUser = this.users.get(sub);
+
+        if (existingUser) {
+          client.emit('message', 'You are already connected.');
+        } else {
+          this.users.set(sub, client.id);
+          this.users.set(client.id, sub);
+          client.emit('message', 'You have successfully connected.');
+        }
+      } catch (error) {
+        client.emit('error', 'Invalid token. Connection refused.');
+        client.disconnect();
+      }
+    });
   }
 
   async handleDisconnect(client: Socket) {
