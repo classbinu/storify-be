@@ -61,7 +61,7 @@ export class AuthController {
     req.session.accessToken = tokens.accessToken;
     req.session.refreshToken = tokens.refreshToken;
 
-    res.redirect(`${process.env.FRONT_URL}`);
+    res.redirect(process.env.FRONT_URL);
   }
 
   @UseGuards(AccessTokenGuard)
