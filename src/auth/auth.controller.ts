@@ -57,6 +57,7 @@ export class AuthController {
     const tokens = await this.authService.socialLogIn(user);
 
     req.session.user = user;
+    req.session.user = tokens.userNickname;
     req.session.accessToken = tokens.accessToken;
     req.session.refreshToken = tokens.refreshToken;
 
