@@ -1,8 +1,11 @@
+import * as basicAuth from 'express-basic-auth';
 import * as bodyParser from 'body-parser';
 import * as dotenv from 'dotenv';
+import * as swaggerUi from 'swagger-ui-express';
 
 import { AppModule } from './app.module';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
+import { EnvFilterMiddleware } from './middlewares/envFilter.middleware';
 import { GlobalExceptionFilter } from './filter/GlobalExceptionFilter';
 import { IoAdapter } from '@nestjs/platform-socket.io';
 import { NestExpressApplication } from '@nestjs/platform-express';
@@ -13,7 +16,7 @@ import * as swaggerUi from 'swagger-ui-express';
 import * as session from 'express-session';
 import { EnvFilterMiddleware } from './middlewares/envFilter.middleware';
 import helmet from 'helmet';
-import * as basicAuth from 'express-basic-auth';
+import { swaggerConfig } from './swagger.config';
 
 dotenv.config();
 const authId = process.env.ADMIN;
@@ -24,9 +27,8 @@ async function bootstrap() {
     cors: true,
   });
   const corsOptions: CorsOptions = {
-    origin: '*',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
+    origin: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     exposedHeaders: ['Authorization'],
   };
 
