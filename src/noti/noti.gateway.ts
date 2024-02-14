@@ -60,9 +60,11 @@ export class NotiGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // }
 
   async handleConnection(client: Socket) {
+    console.log('ws-noti connected');
     client.on('auth', async (token) => {
       try {
         const { sub } = await this.jwtService.decode(token);
+        console.log(`sub: ${sub}`);
         const existingUser = this.users.get(sub);
 
         if (existingUser) {
