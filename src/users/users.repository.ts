@@ -183,7 +183,8 @@ export class UserMongoRepository {
 
       return await newUser.save();
     } catch (error) {
-      throw new Error(`Error saving user: ${error.message}`);
+      Logger.error(`save 실패: ${error.message}`);
+      throw new Error(`저장 실패했습니다. 다시 시도해주세요.`);
     }
   }
 }

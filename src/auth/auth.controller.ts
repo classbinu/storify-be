@@ -67,10 +67,15 @@ export class AuthController {
       sameSite: 'lax',
     });
 
-    // 클라이언트에게 리다이렉트 URL에 사용자 별명을 포함시킵니다.
-    res.redirect(
-      `${process.env.FRONT_URL}?userNickname=${encodeURIComponent(user.nickname)}`,
-    );
+    res.redirect(`${process.env.FRONT_URL}`);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
+  @Get('login-check')
+  async loginCheck(@Req() req: any) {
+    const userObjectId = req.user.sub;
+    return this.authService.loginCheck(userObjectId);
   }
 
   @UseGuards(AccessTokenGuard)

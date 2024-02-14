@@ -109,6 +109,17 @@ export class AuthService {
     return payload;
   }
 
+  async loginCheck(userObjectId: string) {
+    const user = await this.userMongoRepository.findById(userObjectId);
+    const tokens = await this.getTokens(user._id);
+    return {
+      ...tokens,
+      userId: user.userId,
+      nickname: user.nickname,
+      id: user._id,
+    };
+  }
+
   async findUserById(id: string): Promise<User> {
     try {
       return await this.userMongoRepository.findById(id);
