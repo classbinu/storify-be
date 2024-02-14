@@ -17,6 +17,7 @@ import { NotiService } from './noti.service';
     origin: '*',
     allowedHeaders: ['authorization', 'Authorization'],
     credentials: true,
+    trnsports: ['websocket'],
   },
   namespace: 'ws-noti',
 })
