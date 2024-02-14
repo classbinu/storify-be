@@ -1,6 +1,6 @@
 # STORIFY
 당신의 이야기, 요정의 마법  
-[https://storify-fe.vercel.app/](https://storify-fe.vercel.app/)
+[https://storifyai.vercel.app/](https://storifyai.vercel.app/)
 
 ## 개발 정보  
 개발팀: 크래프톤 정글 3기-101호-3팀  
@@ -124,4 +124,4 @@ GPT-4-Turbo 모델은 응답 시간이 길어 빠른 동화책 생성을 목표�
 classbinu@gmail.com
 
 ## Memo
-1
+2
