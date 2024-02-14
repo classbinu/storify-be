@@ -56,16 +56,9 @@ export class AuthController {
     const user = req.user;
     const tokens = await this.authService.socialLogIn(user);
 
-    res.cookie('accessToken', tokens.accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-    });
-    res.cookie('refreshToken', tokens.refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-    });
+    req.session.user = user;
+    req.session.accessToken = tokens.accessToken;
+    req.session.refreshToken = tokens.refreshToken;
 
     res.redirect(`${process.env.FRONT_URL}`);
   }

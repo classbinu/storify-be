@@ -10,6 +10,7 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule } from '@nestjs/swagger';
 import { swaggerConfig } from './swagger.config';
 import * as swaggerUi from 'swagger-ui-express';
+import * as session from 'express-session';
 import { EnvFilterMiddleware } from './middlewares/envFilter.middleware';
 import helmet from 'helmet';
 import * as basicAuth from 'express-basic-auth';
@@ -33,7 +34,14 @@ async function bootstrap() {
   app.useWebSocketAdapter(new IoAdapter(app));
   app.useGlobalFilters(new GlobalExceptionFilter());
   const document = SwaggerModule.createDocument(app, swaggerConfig);
-
+  app.use(
+    session({
+      secret: process.env.SESSION_SECRET,
+      resave: false,
+      saveUninitialized: true,
+      cookie: { secure: process.env.NODE_ENV === 'production' },
+    }),
+  );
   app.use(
     '/docs',
     basicAuth({
