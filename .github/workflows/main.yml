@@ -23,12 +23,12 @@ jobs:
           node-version: '20' # 프로젝트에 맞는 Node.js 버전으로 설정
       - name: Install dependencies
         run: npm install
-      # - name: Run Jest tests
-      #   run: npx jest users.controller.spec.ts
+      - name: Run Jest tests
+        run: npm test
   # 빌드 Job
   build:
     name: Build
-    # needs: test
+    needs: test
     runs-on: ubuntu-latest
     steps:
       # github repository에서 checkout
