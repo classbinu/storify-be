@@ -4,7 +4,6 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
-  UnauthorizedException,
 } from '@nestjs/common';
 
 import { AuthDto } from './dto/auth.dto';
