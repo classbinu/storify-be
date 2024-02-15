@@ -13,7 +13,6 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
-import { swaggerConfig } from './swagger.config';
 
 dotenv.config();
 const authId = process.env.ADMIN;
