@@ -31,16 +31,15 @@ export class AuthService {
 
   // 회원가입
   async register(createUserDto: CreateUserDto): Promise<any> {
-    // Check if userId and email exists
     if (!createUserDto.userId) {
-      throw new BadRequestException('userId is required');
+      throw new BadRequestException('아이디를 입력해 주세요.');
     }
 
     const userExists = await this.userMongoRepository.findByUserId(
       createUserDto.userId,
     );
     if (userExists) {
-      throw new BadRequestException('User already exists');
+      throw new BadRequestException('존재하는 아이디입니다.');
     }
 
     // Hash password
@@ -69,10 +68,10 @@ export class AuthService {
   async logIn(data: AuthDto) {
     // Check if user exists
     const user = await this.userMongoRepository.findByUserId(data.userId);
-    if (!user) throw new BadRequestException('User does not exist');
+    if (!user) throw new BadRequestException('존재하지 않는 아이디입니다.');
     const passwordMatches = await argon2.verify(user.password, data.password);
     if (!passwordMatches)
-      throw new BadRequestException('Password is incorrect');
+      throw new BadRequestException('비밀번호를 확인해 주세요.');
     const tokens = await this.getTokens(user._id);
     await this.updateRefreshToken(user._id, tokens.refreshToken);
 
@@ -141,7 +140,7 @@ export class AuthService {
     const user = await this.userMongoRepository.findById(id);
 
     if (!user) {
-      return { message: 'User not found' };
+      return { message: '존재하지 않는 아이디입니다.' };
     }
 
     const checkOldpassword = await argon2.verify(
@@ -149,14 +148,14 @@ export class AuthService {
       updateAuthDto.oldPassword,
     );
     if (!checkOldpassword) {
-      return { message: 'Password wrong.' };
+      return { message: '비밀번호를 확인해주세요.' };
     }
 
     const hashedPassword = await this.hashData(updateAuthDto.newPassword);
     await this.userMongoRepository.updateUser(id, {
       password: hashedPassword,
     });
-    return { message: 'Password changed successfully' };
+    return { message: '비밀번호 변경 완료!' };
   }
 
   async updateRefreshToken(id: Types.ObjectId, refreshToken: string) {
@@ -248,7 +247,7 @@ export class AuthService {
     const user = await this.userMongoRepository.findByEmail(email);
     const userId = user.userId;
     if (!user) {
-      throw new BadRequestException('User does not exist');
+      throw new BadRequestException('존재하지 않는 아이디입니다.');
     }
 
     const token = await this.jwtService.signAsync(
