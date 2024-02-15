@@ -14,10 +14,10 @@ import { NotiService } from './noti.service';
 
 @WebSocketGateway({
   cors: {
-    origin: '*',
+    origin: 'http://localhost:3000',
     allowedHeaders: ['authorization', 'Authorization'],
     credentials: true,
-    trnsports: ['websocket'],
+    transports: ['websocket'],
   },
   namespace: 'ws-noti',
 })

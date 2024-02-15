@@ -1,6 +1,7 @@
 import * as basicAuth from 'express-basic-auth';
 import * as bodyParser from 'body-parser';
 import * as dotenv from 'dotenv';
+import * as session from 'express-session';
 import * as swaggerUi from 'swagger-ui-express';
 
 import { AppModule } from './app.module';
@@ -11,10 +12,6 @@ import { IoAdapter } from '@nestjs/platform-socket.io';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule } from '@nestjs/swagger';
-import { swaggerConfig } from './swagger.config';
-import * as swaggerUi from 'swagger-ui-express';
-import * as session from 'express-session';
-import { EnvFilterMiddleware } from './middlewares/envFilter.middleware';
 import helmet from 'helmet';
 import { swaggerConfig } from './swagger.config';
 
