@@ -129,7 +129,7 @@ export class BookMongoRepository {
     try {
       const book = await this.bookModel
         .findByIdAndUpdate(id, { $inc: { count: 1 } }, { new: true })
-        .populate('userId')
+        .populate('userId', 'nickname')
         .exec();
       if (!book) {
         throw new NotFoundException('Book not found');
