@@ -14,6 +14,7 @@ import { StoragesModule } from './storages/storages.module';
 import { StoriesModule } from './stories/stories.module';
 import { TelegramModule } from './telegram/telegram.module';
 import { UsersModule } from './users/users.module';
+// import { SessionModule } from './session/session.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { UsersModule } from './users/users.module';
     FriendsModule,
     NotiModule,
     TelegramModule,
+    // SessionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

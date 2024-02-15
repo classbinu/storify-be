@@ -1,7 +1,6 @@
 import * as basicAuth from 'express-basic-auth';
 import * as bodyParser from 'body-parser';
 import * as dotenv from 'dotenv';
-import * as session from 'express-session';
 import * as swaggerUi from 'swagger-ui-express';
 
 import { AppModule } from './app.module';
@@ -33,14 +32,7 @@ async function bootstrap() {
   app.useWebSocketAdapter(new IoAdapter(app));
   app.useGlobalFilters(new GlobalExceptionFilter());
   const document = SwaggerModule.createDocument(app, swaggerConfig);
-  app.use(
-    session({
-      secret: process.env.SESSION_SECRET,
-      resave: false,
-      saveUninitialized: true,
-      cookie: { secure: process.env.NODE_ENV === 'production' },
-    }),
-  );
+
   app.use(
     '/docs',
     basicAuth({
