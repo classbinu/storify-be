@@ -119,7 +119,11 @@ export class UserMongoRepository {
         }
       }
 
-      if (updateUserDto.refreshToken === null) {
+      if (!updateUserDto.password) {
+        delete updateUserDto.password;
+      }
+
+      if (!updateUserDto.refreshToken) {
         delete updateUserDto.refreshToken;
       }
 
