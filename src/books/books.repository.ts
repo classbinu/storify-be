@@ -149,16 +149,21 @@ export class BookMongoRepository {
     writerId: string,
   ): Promise<Book> {
     try {
-      const book = await this.bookModel.findById(id).exec();
+      const bookId = new Types.ObjectId(id);
+      const book = await this.bookModel.findById(bookId).exec();
       if (!book) {
-        throw new NotFoundException('Book not found');
+        throw new NotFoundException('책이 없습니다.');
       }
 
       if (book.userId.toString() !== writerId) {
-        throw new UnauthorizedException('You are not the writer of this book');
+        throw new UnauthorizedException('작성자만 수정할 수 있어요!');
       }
-      Object.assign(book, updateBookDto);
-      return await book.save();
+
+      const updatedBook = await this.bookModel
+        .findByIdAndUpdate(bookId, updateBookDto, { new: true })
+        .exec();
+
+      return updatedBook;
     } catch (error) {
       Logger.error(`updateBook 실패: ${error.message}`);
       throw new Error(`책 업데이트 실패했습니다. 다시 시도해 주세요.`);
@@ -166,15 +171,16 @@ export class BookMongoRepository {
   }
 
   async deleteBook(id: string, writerId: string): Promise<Book> {
-    const book = await this.bookModel.findById(id).exec();
+    const bookId = new Types.ObjectId(id);
+    const book = await this.bookModel.findById(bookId).exec();
     if (!book) {
-      throw new NotFoundException('Book not found');
+      throw new NotFoundException('책이 없습니다.');
     }
 
     if (book.userId.toString() !== writerId) {
-      throw new UnauthorizedException('You are not the writer of this book');
+      throw new UnauthorizedException('작성자만 삭제할 수 있어요!');
     }
-    return this.bookModel.findByIdAndDelete(id).exec();
+    return this.bookModel.findByIdAndDelete(bookId).exec();
   }
 
   async updateBookLike(id: string, book: Book) {

@@ -100,12 +100,13 @@ export class AiService {
     systemMessage: string,
     userMessage: string,
     modelName: string = 'gpt-3.5-turbo-0125',
+    temperature: number = 0.9,
   ) {
     const chatModel = new ChatOpenAI({
       openAIApiKey: this.configService.get<string>('OPENAI_API_KEY'),
       modelName: modelName,
       // modelName: 'gpt-4-1106-preview',
-      temperature: 0.9,
+      temperature: temperature,
     });
 
     const prompt = ChatPromptTemplate.fromMessages([
@@ -123,34 +124,37 @@ export class AiService {
 
   // LLM으로 이야기를 쓸 수 있는 질문을 유도하는 함수
   async createQuestion(createQuestionDto: CreateQuestionDto) {
-    const systemMessage = `
-    # role
-    You are a teacher who asks good questions to help children write better.
+    // const systemMessage = `
+    // # role
+    // You are a teacher who asks good questions to help children write better.
 
-    # directive
-    1. Create a question that encourages the user to write a more specific story about the story they entered.
-    1. The user will not be asked again.
-    1. You don't respond to users, you only create ONE question.
-    1. Use simple expressions that children can understand.
+    // # directive
+    // 1. Create a question that encourages the user to write a more specific story about the story they entered.
+    // 1. The user will not be asked again.
+    // 1. You don't respond to users, you only create ONE question.
+    // 1. Use simple expressions that children can understand.
 
-    # Constraints
-    1. In Korean.
-    1. 예시의 질문을 그대로 하지 않고, 사용자의 입력에 어울리는 후속 질문을 한다.
-    1. 인물, 사건, 시간적 배경, 공간적 배경을 묻는 질문을 한다.
-    1. 이미 사용자가 대답한 내용에 관해서는 질문하지 않는다.
+    // # Constraints
+    // 1. In Korean.
+    // 1. 예시의 질문을 그대로 하지 않고, 사용자의 입력에 어울리는 후속 질문을 한다.
+    // 1. 인물, 사건, 시간적 배경, 공간적 배경을 묻는 질문을 한다.
+    // 1. 이미 사용자가 대답한 내용에 관해서는 질문하지 않는다.
 
-    # 예시
-    1. 친구와 놀았다니 재미있었겠다! 친구와 무슨 놀이를 했는지 자세히 알려 줄래?
-    1. 정말 맛있었겠다! 음식의 맛, 냄새가 어땠어?
-    1. 사탕은 정말 달콤하지! 누구와 사탕을 먹었어?
-    1. 친구는 소중하지. 친구의 이름과 모습을 설명해 줄래?
-    1. 여행은 정말 좋지! 여행지의 이름과 모습을 설명해 줄래?
-    `;
+    // # 예시
+    // 1. 친구와 놀았다니 재미있었겠다! 친구와 무슨 놀이를 했는지 자세히 알려 줄래?
+    // 1. 정말 맛있었겠다! 음식의 맛, 냄새가 어땠어?
+    // 1. 사탕은 정말 달콤하지! 누구와 사탕을 먹었어?
+    // 1. 친구는 소중하지. 친구의 이름과 모습을 설명해 줄래?
+    // 1. 여행은 정말 좋지! 여행지의 이름과 모습을 설명해 줄래?
+    // `;
+    const systemMessage =
+      '사용자의 입력 중 마지막 문장에 대해 더 자세한 내용을 유도하는 짧은 질문을 한다.';
     const userMessage = createQuestionDto.message;
     const createdQuestion = await this.generateAiText(
       systemMessage,
       userMessage,
-      // 'ft:gpt-3.5-turbo-1106:personal::8mZuEDOU',
+      'ft:gpt-3.5-turbo-1106:personal::8smTWBNU',
+      0,
     );
 
     return createdQuestion;
@@ -196,38 +200,80 @@ export class AiService {
     return { content: createdAiStory, story: createdStory };
   }
 
-  // LLM으로 삽화 프롬프트를 생성하는 함수
+  // // LLM으로 삽화 프롬프트를 생성하는 함수
+  // async createImagePrompts(storyText: string) {
+  //   const storyArray = storyText.split('\n\n');
+
+  //   const systemMessage = `
+  //   # directive
+  //   1. In English
+  //   1. Create ${storyArray.length - 1} image prompts about people and landscapes creation to go with this story.
+  //   1. Each prompt consists of at least 3 words. Like "[lovely_girl, orange_hair, cozy, warm, happy, under_the_tree, sunshie]"
+  //   1. Each prompt is returned in the form of an array, and the array has ${storyArray.length - 1} elements.
+  //   1. Return the prompts as a JSON array, with each prompt consisting of descriptive elements in a sub-array.
+  //   1. People's names are not used and only objective situations are described.
+  //   1. Each prompt must start with '[' and end with ']'.
+  //   `;
+  //   const userMessage = storyText;
+  //   const createdImagePrompts = await this.generateAiText(
+  //     systemMessage,
+  //     userMessage,
+  //   );
+
+  //   const createdImagePromptsString = createdImagePrompts.toString();
+  //   const startIndex = createdImagePromptsString.indexOf('[');
+  //   const endIndex = createdImagePromptsString.lastIndexOf(']');
+  //   const createdImagePromptsSubstring = createdImagePromptsString.substring(
+  //     startIndex,
+  //     endIndex + 1,
+  //   );
+
+  //   try {
+  //     const createdImagePromptsArray = JSON.parse(createdImagePromptsSubstring);
+  //     return createdImagePromptsArray;
+  //   } catch (error) {
+  //     return null;
+  //   }
+  // }
+
   async createImagePrompts(storyText: string) {
-    const storyArray = storyText.split('\n\n');
+    const storyArray = storyText
+      .split('\n\n')
+      .filter((paragraph) => paragraph.trim() !== '')
+      .slice(1);
 
-    const systemMessage = `
-    # directive
-    1. In English
-    1. Create ${storyArray.length - 1} image prompts about people and landscapes creation to go with this story. 
-    1. Each prompt consists of at least 3 words. Like "[lovely_girl, orange_hair, cozy, warm, happy, under_the_tree, sunshie]"
-    1. Each prompt is returned in the form of an array, and the array has ${storyArray.length - 1} elements.
-    1. Return the prompts as a JSON array, with each prompt consisting of descriptive elements in a sub-array.
-    1. People's names are not used and only objective situations are described.
-    1. Each prompt must start with '[' and end with ']'.
-    `;
-    const userMessage = storyText;
-    const createdImagePrompts = await this.generateAiText(
-      systemMessage,
-      userMessage,
-    );
+    // 문단별로 프롬프트를 생성하는 비동기 작업 배열 생성
+    const promptPromises = storyArray.map((paragraph, index) => {
+      const systemMessage = `
+        # directive
+        1. In English
+        1. Create 1 image prompt about people and landscapes creation to go with this paragraph. 
+        1. The prompt consists of at least 5 words. Like "lovely_girl, orange_hair, cozy, warm, happy, under_the_tree, sunshine"
+        1. People's names are not used and only objective situations are described.
+        1. Prompts are returned as a list of words separated by commas.
+      `;
+      const userMessage = paragraph;
+      return this.generateAiText(systemMessage, userMessage).then(
+        (createdImagePrompt) => {
+          try {
+            return createdImagePrompt;
+          } catch (error) {
+            console.error(
+              `Error parsing prompt for paragraph ${index}:`,
+              error,
+            );
+            return null; // 파싱 실패시 null 반환
+          }
+        },
+      );
+    });
 
-    const createdImagePromptsString = createdImagePrompts.toString();
-    const startIndex = createdImagePromptsString.indexOf('[');
-    const endIndex = createdImagePromptsString.lastIndexOf(']');
-    const createdImagePromptsSubstring = createdImagePromptsString.substring(
-      startIndex,
-      endIndex + 1,
-    );
-
+    // 모든 프롬프트 생성 작업이 완료될 때까지 기다림
     try {
-      const createdImagePromptsArray = JSON.parse(createdImagePromptsSubstring);
-      return createdImagePromptsArray;
+      const createdImagePromptsArray = await Promise.all(promptPromises);
+      return createdImagePromptsArray.filter((prompt) => prompt !== null); // null이 아닌 프롬프트만 반환
     } catch (error) {
+      console.error('Error generating image prompts:', error);
       return null;
     }
   }
@@ -264,7 +310,7 @@ export class AiService {
       bookBody[index + 1] = {
         imageUrl: url,
         text: storyArray[index],
-        imagePrompt: imagePrompts[index].join(', '),
+        imagePrompt: imagePrompts[index],
         ttsUrl: '',
       };
     });

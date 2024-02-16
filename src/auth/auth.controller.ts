@@ -59,10 +59,11 @@ export class AuthController {
     req.session.userNickname = tokens.userNickname;
     req.session.accessToken = tokens.accessToken;
     req.session.refreshToken = tokens.refreshToken;
+    console.log(req.session);
     res.redirect(process.env.FRONT_URL);
   }
 
-  @Get('kakao/userInfo')
+  @Get('kakao/user-info')
   async getKakaoInfo(@Req() req: any) {
     const userId = req.session.userId;
     const userNickname = req.session.userNickname;
