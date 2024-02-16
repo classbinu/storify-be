@@ -1,8 +1,9 @@
-import axios from 'axios';
 import { Injectable, Logger } from '@nestjs/common';
+
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-kakao';
+import axios from 'axios';
 
 @Injectable()
 export class KakaoStrategy extends PassportStrategy(Strategy) {
@@ -27,14 +28,13 @@ export class KakaoStrategy extends PassportStrategy(Strategy) {
       const { data } = response;
       const { properties } = data;
 
-      const nickname = properties.nickname;
       const avatar = properties.profile_image;
 
       // this.logger.verbose(JSON.stringify({ nickname, avatar }));
 
       const userData = {
         userId: data.id,
-        nickname,
+        nickname: data.id,
         avatar,
         socialProvider: 'kakao',
       };
