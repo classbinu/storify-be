@@ -149,7 +149,8 @@ export class BookMongoRepository {
     writerId: string,
   ): Promise<Book> {
     try {
-      const book = await this.bookModel.findById(id).exec();
+      const bookId = new Types.ObjectId(id);
+      const book = await this.bookModel.findById(bookId).exec();
       if (!book) {
         throw new NotFoundException('Book not found');
       }
@@ -166,7 +167,8 @@ export class BookMongoRepository {
   }
 
   async deleteBook(id: string, writerId: string): Promise<Book> {
-    const book = await this.bookModel.findById(id).exec();
+    const bookId = new Types.ObjectId(id);
+    const book = await this.bookModel.findById(bookId).exec();
     if (!book) {
       throw new NotFoundException('Book not found');
     }
@@ -174,7 +176,7 @@ export class BookMongoRepository {
     if (book.userId.toString() !== writerId) {
       throw new UnauthorizedException('You are not the writer of this book');
     }
-    return this.bookModel.findByIdAndDelete(id).exec();
+    return this.bookModel.findByIdAndDelete(bookId).exec();
   }
 
   async updateBookLike(id: string, book: Book) {
