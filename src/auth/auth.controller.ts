@@ -55,17 +55,15 @@ export class AuthController {
   async kakaoAuthRedirect(@Req() req: any, @Res() res: Response) {
     const user = req.user;
     const tokens = await this.authService.socialLogIn(user);
-    console.log(tokens);
     req.session.userId = tokens.id;
     req.session.userNickname = tokens.userNickname;
     req.session.accessToken = tokens.accessToken;
     req.session.refreshToken = tokens.refreshToken;
-    console.log(req.session);
-    res.redirect('https://www.naver.com');
+    res.redirect(process.env.FRONT_URL);
   }
 
   @Get('kakao/userInfo')
-  async getMe(@Req() req: any) {
+  async getKakaoInfo(@Req() req: any) {
     const userId = req.session.userId;
     const userNickname = req.session.userNickname;
     const accessToken = req.session.accessToken;
