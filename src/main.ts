@@ -2,6 +2,7 @@ import * as basicAuth from 'express-basic-auth';
 import * as bodyParser from 'body-parser';
 import * as dotenv from 'dotenv';
 import * as swaggerUi from 'swagger-ui-express';
+import * as session from 'express-session';
 
 import { AppModule } from './app.module';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
@@ -32,6 +33,18 @@ async function bootstrap() {
   app.useWebSocketAdapter(new IoAdapter(app));
   app.useGlobalFilters(new GlobalExceptionFilter());
   const document = SwaggerModule.createDocument(app, swaggerConfig);
+
+  app.use(
+    session({
+      secret: process.env.SESSION_SECRET,
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        // https는 true
+        secure: false,
+      },
+    }),
+  );
 
   app.use(
     '/docs',
