@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { Book } from './schema/book.schema';
 import { BookHistory } from './schema/book-history.schema';
@@ -87,26 +87,10 @@ export class BooksService {
     updateBookDto: UpdateBookDto,
     writerId: string,
   ): Promise<Book> {
-    try {
-      const book = await this.bookRepository.findBookById(id);
-
-      if (book.userId.toString() !== writerId) {
-        throw new UnauthorizedException();
-      }
-
-      return this.bookRepository.updateBook(id, updateBookDto, writerId);
-    } catch (error) {
-      throw new Error(`책 업데이트 실패: ${error.message}`);
-    }
+    return this.bookRepository.updateBook(id, updateBookDto, writerId);
   }
 
   async deleteBook(id: string, writerId: string): Promise<Book> {
-    const book = await this.bookRepository.findBookById(id);
-
-    if (book.userId.toString() !== writerId) {
-      throw new UnauthorizedException();
-    }
-
     return this.bookRepository.deleteBook(id, writerId);
   }
 
