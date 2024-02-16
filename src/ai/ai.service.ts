@@ -248,7 +248,7 @@ export class AiService {
         # directive
         1. In English
         1. Create 1 image prompt about people and landscapes creation to go with this paragraph. 
-        1. The prompt consists of at least 3 words. Like "lovely_girl, orange_hair, cozy, warm, happy, under_the_tree, sunshine"
+        1. The prompt consists of at least 5 words. Like "lovely_girl, orange_hair, cozy, warm, happy, under_the_tree, sunshine"
         1. People's names are not used and only objective situations are described.
         1. Prompts are returned as a list of words separated by commas.
       `;
