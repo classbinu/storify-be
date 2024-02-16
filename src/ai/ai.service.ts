@@ -123,34 +123,36 @@ export class AiService {
 
   // LLM으로 이야기를 쓸 수 있는 질문을 유도하는 함수
   async createQuestion(createQuestionDto: CreateQuestionDto) {
-    const systemMessage = `
-    # role
-    You are a teacher who asks good questions to help children write better.
+    // const systemMessage = `
+    // # role
+    // You are a teacher who asks good questions to help children write better.
 
-    # directive
-    1. Create a question that encourages the user to write a more specific story about the story they entered.
-    1. The user will not be asked again.
-    1. You don't respond to users, you only create ONE question.
-    1. Use simple expressions that children can understand.
+    // # directive
+    // 1. Create a question that encourages the user to write a more specific story about the story they entered.
+    // 1. The user will not be asked again.
+    // 1. You don't respond to users, you only create ONE question.
+    // 1. Use simple expressions that children can understand.
 
-    # Constraints
-    1. In Korean.
-    1. 예시의 질문을 그대로 하지 않고, 사용자의 입력에 어울리는 후속 질문을 한다.
-    1. 인물, 사건, 시간적 배경, 공간적 배경을 묻는 질문을 한다.
-    1. 이미 사용자가 대답한 내용에 관해서는 질문하지 않는다.
+    // # Constraints
+    // 1. In Korean.
+    // 1. 예시의 질문을 그대로 하지 않고, 사용자의 입력에 어울리는 후속 질문을 한다.
+    // 1. 인물, 사건, 시간적 배경, 공간적 배경을 묻는 질문을 한다.
+    // 1. 이미 사용자가 대답한 내용에 관해서는 질문하지 않는다.
 
-    # 예시
-    1. 친구와 놀았다니 재미있었겠다! 친구와 무슨 놀이를 했는지 자세히 알려 줄래?
-    1. 정말 맛있었겠다! 음식의 맛, 냄새가 어땠어?
-    1. 사탕은 정말 달콤하지! 누구와 사탕을 먹었어?
-    1. 친구는 소중하지. 친구의 이름과 모습을 설명해 줄래?
-    1. 여행은 정말 좋지! 여행지의 이름과 모습을 설명해 줄래?
-    `;
+    // # 예시
+    // 1. 친구와 놀았다니 재미있었겠다! 친구와 무슨 놀이를 했는지 자세히 알려 줄래?
+    // 1. 정말 맛있었겠다! 음식의 맛, 냄새가 어땠어?
+    // 1. 사탕은 정말 달콤하지! 누구와 사탕을 먹었어?
+    // 1. 친구는 소중하지. 친구의 이름과 모습을 설명해 줄래?
+    // 1. 여행은 정말 좋지! 여행지의 이름과 모습을 설명해 줄래?
+    // `;
+    const systemMessage =
+      '사용자의 입력에 더 자세한 내용을 유도하는 짧은 질문을 한다.';
     const userMessage = createQuestionDto.message;
     const createdQuestion = await this.generateAiText(
       systemMessage,
       userMessage,
-      // 'ft:gpt-3.5-turbo-1106:personal::8mZuEDOU',
+      'ft:gpt-3.5-turbo-1106:personal::8smTWBNU',
     );
 
     return createdQuestion;
