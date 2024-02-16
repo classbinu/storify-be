@@ -1,11 +1,11 @@
 import {
+  OnGatewayInit,
   OnGatewayConnection,
   OnGatewayDisconnect,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
   MessageBody,
-  // WsResponse,
 } from '@nestjs/websockets';
 import { forwardRef, Inject } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
@@ -21,7 +21,9 @@ import { NotiService } from './noti.service';
   },
   namespace: 'ws-noti',
 })
-export class NotiGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class NotiGateway
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer()
   server: Server;
 
@@ -37,31 +39,13 @@ export class NotiGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private readonly notiService: NotiService,
   ) {}
 
-  async verifyToken(client: Socket): Promise<string> {
-    const token = client.handshake.headers.authorization?.split(' ')[1];
-    try {
-      const { sub } = await this.jwtService.decode(token);
-      return sub;
-    } catch (error) {
-      client.emit('error', 'Invalid token. Connection refused.');
-      client.disconnect();
-    }
+  afterInit() {
+    console.log('Server initialized');
   }
-
-  // async handleConnection(client: Socket) {
-  //   const userId: string = await this.verifyToken(client);
-  //   const existingUser = this.users.get(userId);
-  //   if (existingUser) {
-  //     client.emit('message', 'You are already connected.');
-  //   } else {
-  //     this.users.set(userId, client.id);
-  //     this.users.set(client.id, userId);
-  //     client.emit('message', 'You have successfully connected.');
-  //   }
-  // }
 
   async handleConnection(client: Socket) {
     console.log('ws-noti connected');
+    console.log(`Client connected: ${client.id}`);
     client.on('auth', async (token) => {
       try {
         const { sub } = await this.jwtService.decode(token);
@@ -88,23 +72,10 @@ export class NotiGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (userId) {
       this.users.delete(client.id);
       this.users.delete(userId);
-      client.emit('message', 'You have successfully disconnected.');
+      console.log('Client disconnected: ' + client.id);
     }
     client.disconnect();
   }
-
-  // 테스트용 코드
-  // @SubscribeMessage('friendRequest')
-  // handleFriendRequest(@MessageBody() payload: any): WsResponse<any> {
-  //   const { senderId, receiverId } = payload;
-  //   const receiverSocketId = this.users.get(receiverId);
-
-  //   if (receiverSocketId) {
-  //     this.server.to(receiverSocketId).emit('friendRequest', { senderId });
-  //   }
-
-  //   return { event: 'friendRequest', data: 'completed' };
-  // }
 
   @SubscribeMessage('readNotification')
   async handleReadNotification(
