@@ -147,7 +147,7 @@ export class AiService {
     // 1. 여행은 정말 좋지! 여행지의 이름과 모습을 설명해 줄래?
     // `;
     const systemMessage =
-      '사용자의 입력에 더 자세한 내용을 유도하는 짧은 질문을 한다.';
+      '사용자의 입력에 더 자세한 내용을 유도하는 짧은 질문을 한다. 마지막 문장에 대한 질문만 한다.';
     const userMessage = createQuestionDto.message;
     const createdQuestion = await this.generateAiText(
       systemMessage,
