@@ -100,12 +100,13 @@ export class AiService {
     systemMessage: string,
     userMessage: string,
     modelName: string = 'gpt-3.5-turbo-0125',
+    temperature: number = 0.9,
   ) {
     const chatModel = new ChatOpenAI({
       openAIApiKey: this.configService.get<string>('OPENAI_API_KEY'),
       modelName: modelName,
       // modelName: 'gpt-4-1106-preview',
-      temperature: 0.9,
+      temperature: temperature,
     });
 
     const prompt = ChatPromptTemplate.fromMessages([
@@ -147,12 +148,13 @@ export class AiService {
     // 1. 여행은 정말 좋지! 여행지의 이름과 모습을 설명해 줄래?
     // `;
     const systemMessage =
-      '사용자의 입력에 더 자세한 내용을 유도하는 짧은 질문을 한다. 마지막 문장에 대한 질문만 한다.';
+      '사용자의 입력에 더 자세한 내용을 유도하는 짧은 질문을 한다.';
     const userMessage = createQuestionDto.message;
     const createdQuestion = await this.generateAiText(
       systemMessage,
       userMessage,
       'ft:gpt-3.5-turbo-1106:personal::8smTWBNU',
+      0,
     );
 
     return createdQuestion;
