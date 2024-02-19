@@ -40,7 +40,7 @@ export class StoragesService {
       return `https://s3.${region}.amazonaws.com/${bucket}/${fileName}`;
     } catch (error) {
       Logger.error(`imageUploadToS3 실패: ${error.message}`);
-      throw new Error('이미지 저장 실패했습니다. 다시 시도해주세요.');
+      throw new Error('이미지 저장 실패했어요. 다시 시도해주세요.');
     }
   }
 
@@ -61,7 +61,7 @@ export class StoragesService {
       return `https://s3.${region}.amazonaws.com/${bucket}/${fileName}`;
     } catch (error) {
       Logger.error(`bufferUploadToS3 실패: ${error.message}`);
-      throw new Error('Buffer 업로드 실패했습니다.');
+      throw new Error('Buffer 업로드 실패했어요.');
     }
   }
 
@@ -91,7 +91,7 @@ export class StoragesService {
       return `https://s3.${region}.amazonaws.com/${bucket}/public/${key}`;
     } catch (error) {
       Logger.error(`bufferUploadToS3 실패: ${error.message}`);
-      throw new Error('Buffer 업로드 실패했습니다.');
+      throw new Error('Buffer 업로드 실패했어요.');
     }
   }
 
@@ -117,7 +117,7 @@ export class StoragesService {
       return `https://s3.${region}.amazonaws.com/${bucket}/${fileName}`;
     } catch (error) {
       Logger.error(`fileUploadToS3ByBase64 실패: ${error.message}`);
-      throw new Error('Base64 이미지 업로드 실패했습니다.');
+      throw new Error('Base64 이미지 업로드 실패했어요.');
     }
   }
 }

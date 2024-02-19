@@ -11,8 +11,8 @@ export class CreateUserDto {
   @IsNotEmpty()
   @MinLength(3, { message: '아이디를 3글자 이상 입력해 주세요.' })
   @MaxLength(10, { message: '아이디를 10글자 이내로 입력해 주세요.' })
-  @Matches(/^[A-Za-z0-9]*$/, {
-    message: 'userId should not contain spaces or special characters',
+  @Matches(/^[a-z0-9]*$/, {
+    message: '아이디는 소문자와 숫자만 입력해 주세요.',
   })
   userId: string;
 

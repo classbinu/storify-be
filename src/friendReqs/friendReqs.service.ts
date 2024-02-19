@@ -52,7 +52,7 @@ export class FriendReqsService {
       await this.notiService.create({
         senderId: createFriendDto.sender.toString(),
         receiverId: receiverUser._id.toString(),
-        message: `${createFriendDto.sender}가 당신에게 친구 요청을 보냈습니다.`,
+        message: `${createFriendDto.sender}님이 친구 요청을 보냈어요.`,
         service: 'FriendRequests',
       });
     }
@@ -78,13 +78,13 @@ export class FriendReqsService {
       updateFriendReqDto.receiver || updateFriendReqDto.sender;
 
     if (!otherUserId) {
-      throw new BadRequestException('Receiver or sender must be provided');
+      throw new BadRequestException('수신자 또는 발신자가 필요해요.');
     }
 
     const otherUser = await this.userMongoRepository.findByUserId(otherUserId);
 
     if (!otherUser) {
-      throw new NotFoundException('Other user not found');
+      throw new NotFoundException('유저를 찾을 수 없어요.');
     }
 
     const { sent, received } =
@@ -99,7 +99,7 @@ export class FriendReqsService {
     );
 
     if (!existingReq) {
-      throw new NotFoundException('Friend request not found');
+      throw new NotFoundException('친구 요청을 찾을 수 없어요.');
     }
 
     if (existingReq.status !== updateFriendReqDto.status) {
@@ -118,13 +118,13 @@ export class FriendReqsService {
 
       return this.friendReqMongoRepository.updateFriendReq(updatedFriendReqDto);
     } else {
-      throw new Error('New status is the same as the current status');
+      throw new Error('이전 신청과 동일해요. 다시 시도해 주세요.');
     }
   }
 
   deleteFriendReq(id: string): Promise<FriendReq> {
     if (!Types.ObjectId.isValid(id)) {
-      throw new BadRequestException('Invalid ID');
+      throw new BadRequestException('유저를 찾을 수 없어요.');
     }
     return this.friendReqMongoRepository.deleteFriendReq(id);
   }
