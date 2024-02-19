@@ -112,6 +112,8 @@ export class BooksService {
             bookId: bookId,
             message: `${userInfo.nickname}님이 (${authorBook.title})책을 좋아해요.`,
           });
+          console.log('좋아요 누른 유저 :', userInfo.nickname);
+          console.log('authorSocketId : ', authorSocketId);
         }
       } catch (error) {
         // 알림 실패한 경우만 알림 저장
@@ -121,6 +123,7 @@ export class BooksService {
           message: `${userInfo.nickname}님이 (${authorBook.title})책을 좋아해요.`,
           service: 'Books',
         });
+        console.log('소켓 통신 실패! 좋아요 누른 유저 :', userInfo.nickname);
       }
       return result;
     } catch (error) {
