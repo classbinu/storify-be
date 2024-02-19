@@ -80,8 +80,8 @@ export class BooksService {
     return this.bookRepository.findAllBooks(query, page, limit);
   }
 
-  async findBookById(id: string): Promise<Book> {
-    return this.bookRepository.findBookById(id);
+  async findBookByBookId(id: string): Promise<Book> {
+    return this.bookRepository.findBookByBookId(id);
   }
 
   async updateBook(
@@ -96,16 +96,16 @@ export class BooksService {
     return this.bookRepository.deleteBook(id, writerId);
   }
 
-  async addLike(userId: string, bookId: string) {
+  async addLike(userObjectId: string, bookId: string) {
     try {
-      const result = await this.bookRepository.addLike(userId, bookId);
+      const result = await this.bookRepository.addLike(userObjectId, bookId);
 
       // 책을 쓴 유저의 아이디를 가져옵니다.
-      const authorBook = await this.bookRepository.findBookById(bookId);
+      const authorBook = await this.bookRepository.findBookByBookId(bookId);
       const authorInfo = await this.usersService.findById(
         authorBook.userId.toString(),
       );
-      const userInfo = await this.usersService.findById(userId);
+      const userInfo = await this.usersService.findById(userObjectId);
       // 알림 보내기
       const authorSocketId = this.notiGateway.getUserSocketId(
         authorInfo._id.toString(),
