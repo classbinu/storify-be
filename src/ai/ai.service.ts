@@ -340,7 +340,7 @@ export class AiService {
 
   // 기존 삽화를 재생성하는 함수
   async updateAiBooksImages(id: string, page: string, userId: string) {
-    const book = await this.booksService.findBookById(id);
+    const book = await this.booksService.findBookByBookId(id);
     if (!book) {
       throw new Error('Book not found');
     }
@@ -419,7 +419,7 @@ export class AiService {
   }
 
   async generateNewBookImages(id: string, page: string): Promise<string[]> {
-    const book = await this.booksService.findBookById(id);
+    const book = await this.booksService.findBookByBookId(id);
     const prompt = book.body.get(page).imagePrompt;
     const imageStyle = book.imageStyle || 'cartoon';
 
@@ -440,7 +440,7 @@ export class AiService {
     userId: string,
     base64Dto: Base64Dto,
   ) {
-    const book = await this.booksService.findBookById(id);
+    const book = await this.booksService.findBookByBookId(id);
     if (!book) {
       throw new Error('Book not found');
     }

@@ -134,7 +134,7 @@ export class BookMongoRepository {
       }
       return book;
     } catch (error) {
-      Logger.error(`findBookById 실패: ${error.message}`);
+      Logger.error(`findBookByBookId 실패: ${error.message}`);
       throw new NotFoundException(
         `책 불러오기 실패했어요. 다시 시도해 주세요.`,
       );
