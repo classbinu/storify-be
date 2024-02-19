@@ -107,12 +107,12 @@ export class BooksService {
       );
       const userInfo = await this.usersService.findById(userId);
       // 알림 보내기
-      const userSocketId = this.notiGateway.getUserSocketId(
+      const authorSocketId = this.notiGateway.getUserSocketId(
         authorInfo._id.toString(),
       );
       try {
-        if (userSocketId) {
-          this.notiGateway.server.to(userSocketId).emit('like', {
+        if (authorSocketId) {
+          this.notiGateway.server.to(authorSocketId).emit('like', {
             bookId: bookId,
             message: `${userInfo.nickname}님이 (${authorBook.title})책을 좋아해요.`,
           });
