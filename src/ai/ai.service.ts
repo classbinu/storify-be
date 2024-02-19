@@ -153,8 +153,9 @@ export class AiService {
     const createdQuestion = await this.generateAiText(
       systemMessage,
       userMessage,
-      'ft:gpt-3.5-turbo-1106:personal::8smTWBNU',
-      0.2,
+      // 'ft:gpt-3.5-turbo-1106:personal::8smTWBNU',
+      'ft:gpt-3.5-turbo-1106:personal::8tppcEV0',
+      0,
     );
 
     return createdQuestion;
