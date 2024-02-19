@@ -100,7 +100,7 @@ export class AiService {
     systemMessage: string,
     userMessage: string,
     modelName: string = 'gpt-3.5-turbo-0125',
-    temperature: number = 0.9,
+    temperature: number = 0.2,
   ) {
     const chatModel = new ChatOpenAI({
       openAIApiKey: this.configService.get<string>('OPENAI_API_KEY'),
@@ -153,8 +153,9 @@ export class AiService {
     const createdQuestion = await this.generateAiText(
       systemMessage,
       userMessage,
-      'ft:gpt-3.5-turbo-1106:personal::8smTWBNU',
-      0.2,
+      // 'ft:gpt-3.5-turbo-1106:personal::8smTWBNU',
+      'ft:gpt-3.5-turbo-1106:personal::8tppcEV0',
+      0,
     );
 
     return createdQuestion;
