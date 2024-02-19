@@ -21,7 +21,13 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
     if (exception instanceof HttpException) {
       status = exception.getStatus();
-      userMessage = 'A request error occurred';
+      const exceptionResponse = exception.getResponse();
+      userMessage =
+        typeof exceptionResponse === 'string'
+          ? exceptionResponse
+          : Array.isArray((exceptionResponse as any).message)
+            ? (exceptionResponse as any).message[0]
+            : (exceptionResponse as any).message || 'A request error occurred';
     } else if (exception.name === 'CastError') {
       status = HttpStatus.BAD_REQUEST;
       this.logger.error(`CastError: ${exception.message}`);

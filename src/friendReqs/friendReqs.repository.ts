@@ -33,7 +33,7 @@ export class FriendReqMongoRepository {
       });
 
       if (existingFriendReq) {
-        throw new Error('이미 존재하는 친구 신청입니다.');
+        throw new Error('이미 존재하는 친구 신청이에요.');
       }
 
       // 5회 이상 거절한 이력이 있는지 확인
@@ -44,14 +44,14 @@ export class FriendReqMongoRepository {
       });
 
       if (rejectedFriendReqCount >= 5) {
-        throw new Error('5번 이상 거절 기록이 존재합니다.');
+        throw new Error('5번 이상 거절 기록이 존재해요.');
       }
 
       const newFriendReq = new this.friendReqModel(createFrienReqdDto);
       return await newFriendReq.save();
     } catch (error) {
       Logger.error(`createFriendReq 실패: ${error.message}`);
-      throw new Error(`친구 신청 실패했습니다. 다시 시도해 주세요.`);
+      throw new Error(`친구 신청 실패했어요. 다시 시도해 주세요.`);
     }
   }
 
@@ -69,7 +69,7 @@ export class FriendReqMongoRepository {
     } catch (error) {
       Logger.error(`findByUserId 실패: ${error.message}`);
       throw new Error(
-        `친구 신청 목록 불러오기 실패했습니다. 다시 시도해 주세요.`,
+        `친구 신청 목록 불러오기 실패했어요. 다시 시도해 주세요.`,
       );
     }
   }
@@ -92,14 +92,14 @@ export class FriendReqMongoRepository {
       });
 
       if (!friendReq) {
-        throw new NotFoundException('친구 요청이 존재하지 않습니다.');
+        throw new NotFoundException('친구 요청이 없어요.');
       }
 
       friendReq.status = status;
       return await friendReq.save();
     } catch (error) {
       Logger.error(`updateFriendReq 실패: ${error.message}`);
-      throw new Error(`친구 신청 업데이트 실패했습니다. 다시 시도해 주세요.`);
+      throw new Error(`친구 신청 업데이트 실패했어요. 다시 시도해 주세요.`);
     }
   }
 

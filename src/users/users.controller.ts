@@ -10,6 +10,7 @@ import {
   Req,
   UseInterceptors,
   UploadedFile,
+  ValidationPipe,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UsersService } from './users.service';
@@ -32,7 +33,9 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
+  createUser(
+    @Body(new ValidationPipe()) createUserDto: CreateUserDto,
+  ): Promise<User> {
     return this.usersService.createUser(createUserDto);
   }
 
@@ -68,7 +71,7 @@ export class UsersController {
       limits: { fileSize: 4000000 }, // 4MB
       fileFilter: (req, file, callback) => {
         if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-          return callback(new Error('Only image files are allowed!'), false);
+          return callback(new Error('이미지 파일만 올려주세요.'), false);
         }
         callback(null, true);
       },

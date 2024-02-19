@@ -11,12 +11,14 @@ import { StoragesService } from 'src/storages/storages.service';
 // import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { UtilsService } from 'src/utils/utils.service';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class BooksService {
   constructor(
     private readonly bookRepository: BookMongoRepository,
     private readonly utilsService: UtilsService,
+    private readonly usersService: UsersService,
     private readonly storagesService: StoragesService,
     private readonly notiGateway: NotiGateway,
     private readonly notiService: NotiService,
@@ -105,18 +107,20 @@ export class BooksService {
       const userSocketId = this.notiGateway.getUserSocketId(
         authorId.toString(),
       );
+      const userNickname = (await this.usersService.findById(userId)).nickname;
       try {
         if (userSocketId) {
           this.notiGateway.server.to(userSocketId).emit('like', {
             bookId: bookId,
+            message: `${userNickname}님이 당신의 책을 좋아해요.`,
           });
         }
       } catch (error) {
         // 알림 실패한 경우만 알림 저장
         await this.notiService.create({
-          senderId: userId,
+          senderId: userNickname,
           receiverId: authorId.toString(),
-          message: `${userId}가 당신의 책(${bookId})에 좋아요를 추가했습니다.`,
+          message: `${userNickname}님이 당신의 책(${bookId})을 좋아해요.`,
           service: 'Books',
         });
       }

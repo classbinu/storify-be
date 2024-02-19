@@ -42,7 +42,7 @@ export class BookMongoRepository {
       return await createdBookHistory.save();
     } catch (error) {
       Logger.error(`createBookHistory 실패: ${error.message}`);
-      throw new Error(`읽은 책 목록 조회 실패했습니다. 다시 시도해 주세요.`);
+      throw new Error(`읽은 책 목록 조회 실패했어요. 다시 시도해 주세요.`);
     }
   }
 
@@ -55,7 +55,7 @@ export class BookMongoRepository {
     } catch (error) {
       Logger.error(`findBookHistoryByBookIdAndUserId 실패: ${error.message}`);
       throw new Error(
-        `읽은 책 목록 조회 및 업데이트 실패했습니다. 다시 시도해 주세요.`,
+        `읽은 책 목록 조회 및 업데이트 실패했어요. 다시 시도해 주세요.`,
       );
     }
   }
@@ -80,9 +80,7 @@ export class BookMongoRepository {
         .exec();
     } catch (error) {
       Logger.error(`updateBookHistory 실패: ${error.message}`);
-      throw new Error(
-        `읽은 책 목록 업데이트 실패했습니다. 다시 시도해 주세요.`,
-      );
+      throw new Error(`읽은 책 목록 업데이트 실패했어요. 다시 시도해 주세요.`);
     }
   }
 
@@ -132,13 +130,13 @@ export class BookMongoRepository {
         .populate('userId', 'nickname')
         .exec();
       if (!book) {
-        throw new NotFoundException('Book not found');
+        throw new NotFoundException('책을 찾지 못했어요.');
       }
       return book;
     } catch (error) {
       Logger.error(`findBookById 실패: ${error.message}`);
       throw new NotFoundException(
-        `책 불러오기 실패했습니다. 다시 시도해 주세요.`,
+        `책 불러오기 실패했어요. 다시 시도해 주세요.`,
       );
     }
   }
@@ -152,7 +150,7 @@ export class BookMongoRepository {
       const bookId = new Types.ObjectId(id);
       const book = await this.bookModel.findById(bookId).exec();
       if (!book) {
-        throw new NotFoundException('책이 없습니다.');
+        throw new NotFoundException('책이 없어요.');
       }
 
       if (book.userId.toString() !== writerId) {
@@ -166,7 +164,7 @@ export class BookMongoRepository {
       return updatedBook;
     } catch (error) {
       Logger.error(`updateBook 실패: ${error.message}`);
-      throw new Error(`책 업데이트 실패했습니다. 다시 시도해 주세요.`);
+      throw new Error(`책 업데이트 실패했어요. 다시 시도해 주세요.`);
     }
   }
 
@@ -174,7 +172,7 @@ export class BookMongoRepository {
     const bookId = new Types.ObjectId(id);
     const book = await this.bookModel.findById(bookId).exec();
     if (!book) {
-      throw new NotFoundException('책이 없습니다.');
+      throw new NotFoundException('책이 없어요.');
     }
 
     if (book.userId.toString() !== writerId) {
@@ -188,7 +186,7 @@ export class BookMongoRepository {
       return await this.bookModel.findByIdAndUpdate(id, book, { new: true });
     } catch (error) {
       Logger.error(`updateBookLike 실패: ${error.message}`);
-      throw new Error(`좋아요 추가 실패했습니다. 다시 시도해 주세요.`);
+      throw new Error(`좋아요 추가 실패했어요. 다시 시도해 주세요.`);
     }
   }
 
@@ -196,11 +194,11 @@ export class BookMongoRepository {
     try {
       const book = await this.findBookById(bookId);
       if (!book) {
-        throw new NotFoundException('Book not found');
+        throw new NotFoundException('책이 없어요.');
       }
 
       if (book.likes.includes(new Types.ObjectId(userId))) {
-        throw new BadRequestException('You already liked this book');
+        throw new BadRequestException('이미 좋아요를 누르셨어요.');
       }
 
       book.likes.push(new Types.ObjectId(userId));
@@ -209,7 +207,7 @@ export class BookMongoRepository {
       return await this.updateBookLike(bookId, book);
     } catch (error) {
       Logger.error(`addLike 실패: ${error.message}`);
-      throw new Error(`좋아요 실패했습니다. 다시 시도해 주세요.`);
+      throw new Error(`좋아요 실패했어요. 다시 시도해 주세요.`);
     }
   }
 
@@ -217,7 +215,7 @@ export class BookMongoRepository {
     try {
       const book = await this.findBookById(bookId);
       if (!book) {
-        throw new NotFoundException('Book not found');
+        throw new NotFoundException('책이 없어요.');
       }
       const index = book.likes.indexOf(new Types.ObjectId(userId));
       if (index > -1) {
@@ -225,18 +223,18 @@ export class BookMongoRepository {
         book.likesCount = book.likes.length;
         return await this.updateBookLike(bookId, book);
       } else {
-        throw new BadRequestException('You did not like this book before');
+        throw new BadRequestException('아직 좋아요를 누르지 않았어요.');
       }
     } catch (error) {
       Logger.error(`removeLike 실패: ${error.message}`);
-      throw new Error(`좋아요 삭제 실패했습니다. 다시 시도해 주세요.`);
+      throw new Error(`좋아요 삭제 실패했어요. 다시 시도해 주세요.`);
     }
   }
 
   async getLikedBooks(userId: string) {
     try {
       if (!Types.ObjectId.isValid(userId)) {
-        throw new BadRequestException('Invalid user ID');
+        throw new BadRequestException('유효하지 않은 아이디예요.');
       }
 
       const userObjectId = new Types.ObjectId(userId);
@@ -245,13 +243,13 @@ export class BookMongoRepository {
       });
 
       if (!books) {
-        throw new NotFoundException('No liked books found');
+        throw new NotFoundException('좋아요 누른 책이 없어요.');
       }
 
       return await books;
     } catch (error) {
       Logger.error(`getLikedBooks 실패: ${error.message}`);
-      throw new Error(`좋아요 책 목록 조회 실패했습니다. 다시 시도해 주세요.`);
+      throw new Error(`좋아요 책 목록 조회 실패했어요. 다시 시도해 주세요.`);
     }
   }
 
@@ -259,18 +257,18 @@ export class BookMongoRepository {
     try {
       const book = await this.findBookById(bookId);
       if (!book) {
-        throw new NotFoundException('Book not found');
+        throw new NotFoundException('책이 없어요.');
       }
       if (!book.dislikes.includes(new Types.ObjectId(userId))) {
         book.dislikes.push(new Types.ObjectId(userId));
         book.dislikesCount = book.dislikes.length;
         return await this.updateBookLike(bookId, book);
       } else {
-        throw new BadRequestException('You already disliked this book');
+        throw new BadRequestException('이미 싫어요를 누르셨어요.');
       }
     } catch (error) {
       Logger.error(`addDislike 실패: ${error.message}`);
-      throw new Error(`싫어요 실패했습니다. 다시 시도해 주세요.`);
+      throw new Error(`싫어요 실패했어요. 다시 시도해 주세요.`);
     }
   }
 
@@ -278,7 +276,7 @@ export class BookMongoRepository {
     try {
       const book = await this.findBookById(bookId);
       if (!book) {
-        throw new NotFoundException('Book not found');
+        throw new NotFoundException('책이 없어요.');
       }
       const index = book.dislikes.indexOf(new Types.ObjectId(userId));
       if (index > -1) {
@@ -286,11 +284,11 @@ export class BookMongoRepository {
         book.dislikesCount = book.dislikes.length;
         return await this.updateBookLike(bookId, book);
       } else {
-        throw new BadRequestException('You did not dislike this book before');
+        throw new BadRequestException('아직 싫어요를 누르지 않았어요.');
       }
     } catch (error) {
       Logger.error(`removeDislike 실패: ${error.message}`);
-      throw new Error(`싫어요 삭제 실패했습니다. 다시 시도해 주세요.`);
+      throw new Error(`싫어요 삭제 실패했어요. 다시 시도해 주세요.`);
     }
   }
 }
