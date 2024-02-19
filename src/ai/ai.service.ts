@@ -444,7 +444,7 @@ export class AiService {
       throw new Error('Book not found');
     }
 
-    if (book.userId.toString() !== userId) {
+    if (book.userId._id.toString() !== userId) {
       throw new Error('User not authorized');
     }
 
