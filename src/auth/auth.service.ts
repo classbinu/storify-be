@@ -39,7 +39,7 @@ export class AuthService {
       createUserDto.userId,
     );
     if (userExists) {
-      throw new BadRequestException('존재하는 아이디입니다.');
+      throw new BadRequestException('다른 유저가 사용하고 있는 아이디예요.');
     }
 
     // Hash password
@@ -68,7 +68,7 @@ export class AuthService {
   async logIn(data: AuthDto) {
     // Check if user exists
     const user = await this.userMongoRepository.findByUserId(data.userId);
-    if (!user) throw new BadRequestException('존재하지 않는 아이디입니다.');
+    if (!user) throw new BadRequestException('아이디를 확인해 주세요.');
     const passwordMatches = await argon2.verify(user.password, data.password);
     if (!passwordMatches)
       throw new BadRequestException('비밀번호를 확인해 주세요.');
@@ -140,7 +140,7 @@ export class AuthService {
     const user = await this.userMongoRepository.findById(id);
 
     if (!user) {
-      return { message: '존재하지 않는 아이디입니다.' };
+      return { message: '아이디를 확인해 주세요.' };
     }
 
     const checkOldpassword = await argon2.verify(
@@ -247,7 +247,7 @@ export class AuthService {
     const user = await this.userMongoRepository.findByEmail(email);
     const userId = user.userId;
     if (!user) {
-      throw new BadRequestException('존재하지 않는 아이디입니다.');
+      throw new BadRequestException('아이디를 확인해 주세요.');
     }
 
     const token = await this.jwtService.signAsync(
@@ -273,7 +273,7 @@ export class AuthService {
     await this.userMongoRepository.updateUser(decoded.sub, {
       password: hashedPassword,
     });
-    return { message: 'Password reset successfully' };
+    return { message: '비밀번호 변경 완료!' };
   }
 
   async verifyJwt(jwt: string): Promise<any> {

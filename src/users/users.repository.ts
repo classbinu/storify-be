@@ -22,7 +22,7 @@ export class UserMongoRepository {
       return await newUser.save();
     } catch (error) {
       Logger.error(`createUser 실패: ${error.message}`);
-      throw new Error('유저 생성 실패했습니다. 다시 시도해주세요.');
+      throw new Error('유저 생성 실패했어요. 다시 시도해주세요.');
     }
   }
 
@@ -37,7 +37,7 @@ export class UserMongoRepository {
       return await newUser.save();
     } catch (error) {
       Logger.error(`createSocialUser 실패: ${error.message}`);
-      throw new Error('소셜 유저 생성 실패했습니다. 다시 시도해주세요.');
+      throw new Error('소셜 유저 생성 실패했어요. 다시 시도해주세요.');
     }
   }
 
@@ -87,7 +87,7 @@ export class UserMongoRepository {
       return user;
     } catch (error) {
       Logger.error(`getUserProfile 실패: ${error.message}`);
-      throw new Error(`유저 프로필 불러오기 실패했습니다. 다시 시도해주세요.`);
+      throw new Error(`유저 프로필 불러오기 실패했어요. 다시 시도해주세요.`);
     }
   }
 
@@ -104,7 +104,7 @@ export class UserMongoRepository {
       return otherUserProfile;
     } catch (error) {
       Logger.error(`getOtherUserProfile 실패: ${error.message}`);
-      throw new Error(`유저 프로필 불러오기 실패했습니다. 다시 시도해주세요.`);
+      throw new Error(`유저 프로필 불러오기 실패했어요. 다시 시도해주세요.`);
     }
   }
 
@@ -115,7 +115,7 @@ export class UserMongoRepository {
           .findOne({ email: updateUserDto.email })
           .exec();
         if (existingUser && existingUser._id.toString() !== id) {
-          throw new Error('이미 사용중인 이메일입니다.');
+          throw new Error('이미 사용 중인 이메일이에요.');
         }
       }
 
@@ -133,7 +133,7 @@ export class UserMongoRepository {
         .exec();
     } catch (error) {
       Logger.error(`updateUser 실패: ${error.message}`);
-      throw new Error('유저 정보 업데이트 실패했습니다. 다시 시도해주세요.');
+      throw new Error('유저 정보 업데이트 실패했어요. 다시 시도해주세요.');
     }
   }
 
@@ -147,7 +147,7 @@ export class UserMongoRepository {
           .findOne({ nickname: updateUserInfo.nickname })
           .exec();
         if (existingNickname && existingNickname._id.toString() !== userId) {
-          throw new Error('이미 사용중인 닉네임입니다.');
+          throw new Error('이미 사용 중인 닉네임이에요.');
         }
       }
 
@@ -157,13 +157,13 @@ export class UserMongoRepository {
         .exec();
 
       if (!user) {
-        throw new Error('User not found');
+        throw new Error('유저를 찾을 수 없어요.');
       }
 
       return user;
     } catch (error) {
       Logger.error(`updateUserProfile 실패: ${error.message}`);
-      throw new Error('유저 프로필 업데이트 실패했습니다. 다시 시도해주세요.');
+      throw new Error('유저 프로필 업데이트 실패했어요. 다시 시도해주세요.');
     }
   }
 
@@ -173,7 +173,7 @@ export class UserMongoRepository {
       return await this.userModel.findByIdAndDelete(userId).exec();
     } catch (error) {
       Logger.error(`deleteUser 실패: ${error.message}`);
-      throw new Error('유저 삭제 실패했습니다. 다시 시도해주세요.');
+      throw new Error('유저 삭제 실패했어요. 다시 시도해주세요.');
     }
   }
 
@@ -188,7 +188,7 @@ export class UserMongoRepository {
       return await newUser.save();
     } catch (error) {
       Logger.error(`save 실패: ${error.message}`);
-      throw new Error(`저장 실패했습니다. 다시 시도해주세요.`);
+      throw new Error(`저장 실패했어요. 다시 시도해주세요.`);
     }
   }
 }

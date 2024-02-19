@@ -71,7 +71,7 @@ export class UsersController {
       limits: { fileSize: 4000000 }, // 4MB
       fileFilter: (req, file, callback) => {
         if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-          return callback(new Error('Only image files are allowed!'), false);
+          return callback(new Error('이미지 파일만 올려주세요.'), false);
         }
         callback(null, true);
       },
