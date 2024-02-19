@@ -162,7 +162,10 @@ export class AiService {
   }
 
   // LLM으로 이야기를 생성하는 함수
-  async createAiStory(createAiStoryDto: CreateAiStoryDto, userId: string) {
+  async createAiStory(
+    createAiStoryDto: CreateAiStoryDto,
+    userId: string,
+  ): Promise<any> {
     const systemMessage = `
     # role
     You are a children's story writer.
