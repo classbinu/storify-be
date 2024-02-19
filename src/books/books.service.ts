@@ -103,7 +103,7 @@ export class BooksService {
       const userInfo = await this.usersService.findById(userObjectId);
 
       // 알림 보내기
-      const authorSocketId = this.notiGateway.getUserSocketId(
+      const authorSocketId = await this.notiGateway.getUserSocketId(
         authorBook.userId.toString(),
       );
       try {
