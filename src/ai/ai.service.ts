@@ -154,7 +154,7 @@ export class AiService {
       systemMessage,
       userMessage,
       'ft:gpt-3.5-turbo-1106:personal::8smTWBNU',
-      0,
+      0.2,
     );
 
     return createdQuestion;
