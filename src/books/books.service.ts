@@ -100,15 +100,14 @@ export class BooksService {
     try {
       const result = await this.bookRepository.addLike(userObjectId, bookId);
 
-      // 책을 쓴 유저의 아이디를 가져옵니다.
       const authorBook = await this.bookRepository.findBookByBookId(bookId);
-      const authorInfo = await this.usersService.findById(
-        authorBook.userId.toString(),
-      );
+
+      console.log('authorBook :', authorBook);
       const userInfo = await this.usersService.findById(userObjectId);
+      console.log('userInfo :', userInfo);
       // 알림 보내기
       const authorSocketId = this.notiGateway.getUserSocketId(
-        authorInfo._id.toString(),
+        authorBook.userId.toString(),
       );
       try {
         if (authorSocketId) {
@@ -121,7 +120,7 @@ export class BooksService {
         // 알림 실패한 경우만 알림 저장
         await this.notiService.create({
           senderId: userInfo.nickname,
-          receiverId: authorInfo._id.toString(),
+          receiverId: authorBook.userId.toString(),
           message: `${userInfo.nickname}님이 (${authorBook.title})책을 좋아해요.`,
           service: 'Books',
         });
@@ -132,9 +131,9 @@ export class BooksService {
     }
   }
 
-  async removeLike(userId: string, bookId: string) {
+  async removeLike(userObjectId: string, bookId: string) {
     try {
-      return await this.bookRepository.removeLike(userId, bookId);
+      return await this.bookRepository.removeLike(userObjectId, bookId);
     } catch (error) {
       throw new Error(`Like 제거 실패: ${error.message}`);
     }
