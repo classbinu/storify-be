@@ -99,12 +99,9 @@ export class BooksService {
   async addLike(userObjectId: string, bookId: string) {
     try {
       const result = await this.bookRepository.addLike(userObjectId, bookId);
-
       const authorBook = await this.bookRepository.findBookByBookId(bookId);
-
-      console.log('authorBook :', authorBook);
       const userInfo = await this.usersService.findById(userObjectId);
-      console.log('userInfo :', userInfo);
+
       // 알림 보내기
       const authorSocketId = this.notiGateway.getUserSocketId(
         authorBook.userId.toString(),
