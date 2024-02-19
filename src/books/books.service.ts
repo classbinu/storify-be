@@ -101,25 +101,28 @@ export class BooksService {
       const result = await this.bookRepository.addLike(userId, bookId);
 
       // 책을 쓴 유저의 아이디를 가져옵니다.
-      const authorId = await this.bookRepository.findBookById(bookId);
+      const authorBook = await this.bookRepository.findBookById(bookId);
+      const authorInfo = await this.usersService.findById(
+        authorBook.userId.toString(),
+      );
       const userInfo = await this.usersService.findById(userId);
       // 알림 보내기
-      const userSocketId = this.notiGateway.getUserSocketId(
-        userInfo._id.toString(),
+      const authorSocketId = this.notiGateway.getUserSocketId(
+        authorInfo._id.toString(),
       );
       try {
-        if (userSocketId) {
-          this.notiGateway.server.to(userSocketId).emit('like', {
+        if (authorSocketId) {
+          this.notiGateway.server.to(authorSocketId).emit('like', {
             bookId: bookId,
-            message: `${userInfo.nickname}님이 당신의 책을 좋아해요.`,
+            message: `${userInfo.nickname}님이 (${authorBook.title})책을 좋아해요.`,
           });
         }
       } catch (error) {
         // 알림 실패한 경우만 알림 저장
         await this.notiService.create({
           senderId: userInfo.nickname,
-          receiverId: authorId.toString(),
-          message: `${userInfo.nickname}님이 당신의 책(${bookId})을 좋아해요.`,
+          receiverId: authorInfo._id.toString(),
+          message: `${userInfo.nickname}님이 (${authorBook.title})책을 좋아해요.`,
           service: 'Books',
         });
       }
