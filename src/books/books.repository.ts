@@ -211,13 +211,13 @@ export class BookMongoRepository {
     }
   }
 
-  async removeLike(userId: string, bookId: string) {
+  async removeLike(userObjectId: string, bookId: string) {
     try {
       const book = await this.findBookByBookId(bookId);
       if (!book) {
         throw new NotFoundException('책이 없어요.');
       }
-      const index = book.likes.indexOf(new Types.ObjectId(userId));
+      const index = book.likes.indexOf(new Types.ObjectId(userObjectId));
       if (index > -1) {
         book.likes.splice(index, 1);
         book.likesCount = book.likes.length;
