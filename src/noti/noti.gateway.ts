@@ -50,6 +50,8 @@ export class NotiGateway
       try {
         const { sub } = await this.jwtService.decode(token);
         console.log(`sub: ${sub}`);
+        this.users.set(sub, client.id);
+        this.users.set(client.id, sub);
         const existingUser = this.users.get(sub);
 
         if (existingUser) {
@@ -57,6 +59,7 @@ export class NotiGateway
         } else {
           this.users.set(sub, client.id);
           this.users.set(client.id, sub);
+          console.log(this.users);
           client.emit('message', 'You have successfully connected.');
         }
       } catch (error) {
