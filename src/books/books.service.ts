@@ -103,10 +103,12 @@ export class BooksService {
       const userInfo = await this.usersService.findById(userObjectId);
 
       // 알림 보내기
-      const authorSocketId = this.notiGateway.getUserSocketId(
+      const authorSocketId = await this.notiGateway.getUserSocketId(
         authorBook.userId.toString(),
       );
+      console.log('소켓 통신 시작 전');
       try {
+        console.log('authorSocketId 문제임');
         if (authorSocketId) {
           this.notiGateway.server.to(authorSocketId).emit('like', {
             bookId: bookId,
@@ -125,6 +127,7 @@ export class BooksService {
         });
         console.log('소켓 통신 실패! 좋아요 누른 유저 :', userInfo.nickname);
       }
+      console.log('소켓 통신 끝');
       return result;
     } catch (error) {
       throw new Error(`Like 추가 실패: ${error.message}`);
