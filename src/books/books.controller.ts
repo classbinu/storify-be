@@ -122,8 +122,8 @@ export class BooksController {
   // 모든책들 가져오는 함수 추가해야함.
 
   @Get(':id')
-  async findBookById(@Param('id') id: string): Promise<Book> {
-    return this.booksService.findBookById(id);
+  async findBookByBookId(@Param('id') id: string): Promise<Book> {
+    return this.booksService.findBookByBookId(id);
   }
 
   @UseGuards(AccessTokenGuard)
@@ -150,31 +150,31 @@ export class BooksController {
   @ApiBearerAuth()
   @Post(':bookId/likes')
   async addLike(@Param('bookId') bookId: string, @Req() req) {
-    const userId = req.user.sub;
-    return await this.booksService.addLike(userId, bookId);
+    const userObjectId = req.user.sub;
+    return await this.booksService.addLike(userObjectId, bookId);
   }
 
   @UseGuards(AccessTokenGuard)
   @ApiBearerAuth()
   @Delete(':bookId/likes')
   async removeLike(@Param('bookId') bookId: string, @Req() req) {
-    const userId = req.user.sub;
-    return await this.booksService.removeLike(userId, bookId);
+    const userObjectId = req.user.sub;
+    return await this.booksService.removeLike(userObjectId, bookId);
   }
 
   @UseGuards(AccessTokenGuard)
   @ApiBearerAuth()
   @Post(':bookId/dislikes')
   async addDislike(@Param('bookId') bookId: string, @Req() req) {
-    const userId = req.user.sub;
-    return await this.booksService.addDislike(userId, bookId);
+    const userObjectId = req.user.sub;
+    return await this.booksService.addDislike(userObjectId, bookId);
   }
 
   @UseGuards(AccessTokenGuard)
   @ApiBearerAuth()
   @Delete(':bookId/dislikes')
   async removeDislike(@Param('bookId') bookId: string, @Req() req) {
-    const userId = req.user.sub;
-    return await this.booksService.removeDislike(userId, bookId);
+    const userObjectId = req.user.sub;
+    return await this.booksService.removeDislike(userObjectId, bookId);
   }
 }

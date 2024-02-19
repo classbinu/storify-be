@@ -123,7 +123,7 @@ export class BookMongoRepository {
     return { total: totalCount, books };
   }
 
-  async findBookById(id: string): Promise<Book> {
+  async findBookByBookId(id: string): Promise<Book> {
     try {
       const book = await this.bookModel
         .findByIdAndUpdate(id, { $inc: { count: 1 } }, { new: true })
@@ -190,18 +190,18 @@ export class BookMongoRepository {
     }
   }
 
-  async addLike(userId: string, bookId: string) {
+  async addLike(userObjectId: string, bookId: string) {
     try {
-      const book = await this.findBookById(bookId);
+      const book = await this.findBookByBookId(bookId);
       if (!book) {
         throw new NotFoundException('책이 없어요.');
       }
 
-      if (book.likes.includes(new Types.ObjectId(userId))) {
+      if (book.likes.includes(new Types.ObjectId(userObjectId))) {
         throw new BadRequestException('이미 좋아요를 누르셨어요.');
       }
 
-      book.likes.push(new Types.ObjectId(userId));
+      book.likes.push(new Types.ObjectId(userObjectId));
       book.likesCount = book.likes.length;
 
       return await this.updateBookLike(bookId, book);
@@ -213,7 +213,7 @@ export class BookMongoRepository {
 
   async removeLike(userId: string, bookId: string) {
     try {
-      const book = await this.findBookById(bookId);
+      const book = await this.findBookByBookId(bookId);
       if (!book) {
         throw new NotFoundException('책이 없어요.');
       }
@@ -255,7 +255,7 @@ export class BookMongoRepository {
 
   async addDislike(userId: string, bookId: string) {
     try {
-      const book = await this.findBookById(bookId);
+      const book = await this.findBookByBookId(bookId);
       if (!book) {
         throw new NotFoundException('책이 없어요.');
       }
@@ -274,7 +274,7 @@ export class BookMongoRepository {
 
   async removeDislike(userId: string, bookId: string) {
     try {
-      const book = await this.findBookById(bookId);
+      const book = await this.findBookByBookId(bookId);
       if (!book) {
         throw new NotFoundException('책이 없어요.');
       }
