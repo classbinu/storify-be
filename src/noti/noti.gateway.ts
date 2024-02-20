@@ -5,7 +5,6 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
-  MessageBody,
 } from '@nestjs/websockets';
 import { forwardRef, Inject } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
@@ -89,11 +88,7 @@ export class NotiGateway
   }
 
   @SubscribeMessage('readNotification')
-  async handleReadNotification(
-    client: ExtendedSocket,
-    @MessageBody() data: { notiId: string },
-  ): Promise<void> {
-    const { notiId } = data;
+  async handleReadNotification(client: ExtendedSocket): Promise<void> {
     if (client.timer) {
       clearTimeout(client.timer);
       client.timer = setTimeout(
@@ -103,6 +98,5 @@ export class NotiGateway
         10 * 60 * 1000,
       );
     }
-    await this.notiService.updateNotificationStatus(notiId, 'read');
   }
 }
