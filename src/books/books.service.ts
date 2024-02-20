@@ -116,18 +116,18 @@ export class BooksService {
           });
           console.log('좋아요 누른 유저 :', userInfo.nickname);
           console.log('authorSocketId : ', authorSocketId);
+        } else {
+          await this.notiService.create({
+            senderId: userInfo.nickname,
+            receiverId: authorBook.userId.toString(),
+            message: `${userInfo.nickname}님이 (${authorBook.title})책을 좋아해요.`,
+            service: 'Books',
+          });
+          console.log('소켓 통신 실패! 좋아요 누른 유저 :', userInfo.nickname);
         }
       } catch (error) {
-        // 알림 실패한 경우만 알림 저장
-        await this.notiService.create({
-          senderId: userInfo.nickname,
-          receiverId: authorBook.userId.toString(),
-          message: `${userInfo.nickname}님이 (${authorBook.title})책을 좋아해요.`,
-          service: 'Books',
-        });
-        console.log('소켓 통신 실패! 좋아요 누른 유저 :', userInfo.nickname);
+        throw new Error(`좋아요 소켓 실패: ${error.message}`);
       }
-      console.log('소켓 통신 끝');
       return result;
     } catch (error) {
       throw new Error(`Like 추가 실패: ${error.message}`);
