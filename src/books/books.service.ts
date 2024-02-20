@@ -104,7 +104,7 @@ export class BooksService {
 
       // 알림 보내기
       const authorSocketId = await this.notiGateway.getUserSocketId(
-        authorBook.userId.toString(),
+        authorBook.userId._id.toString(),
       );
       console.log('소켓 통신 시작 전');
       try {

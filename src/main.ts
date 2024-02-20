@@ -20,6 +20,7 @@ const authId = process.env.ADMIN;
 const password = process.env.PASSWORD;
 
 async function bootstrap() {
+  console.log('Memory usage at the start:', process.memoryUsage());
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     cors: true,
   });
@@ -62,6 +63,7 @@ async function bootstrap() {
   // Increase JSON limit to 1MB
   app.use(bodyParser.json({ limit: '1mb' }));
   app.use(new EnvFilterMiddleware().use);
+  console.log('Memory usage at the end:', process.memoryUsage());
   await app.listen(3000);
 }
 bootstrap();

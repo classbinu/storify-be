@@ -12,6 +12,10 @@ import { Server, Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
 import { NotiService } from './noti.service';
 
+interface ExtendedSocket extends Socket {
+  timer?: NodeJS.Timeout;
+}
+
 @WebSocketGateway({
   cors: {
     origin: 'http://localhost:3000',
@@ -43,7 +47,7 @@ export class NotiGateway
     console.log('Server initialized');
   }
 
-  async handleConnection(client: Socket) {
+  async handleConnection(client: ExtendedSocket) {
     console.log('ws-noti connected');
     console.log(`Client connected: ${client.id}`);
     client.on('auth', async (token) => {
@@ -67,9 +71,15 @@ export class NotiGateway
         client.disconnect();
       }
     });
+    client.timer = setTimeout(
+      () => {
+        client.disconnect();
+      },
+      10 * 60 * 1000,
+    );
   }
 
-  async handleDisconnect(client: Socket) {
+  async handleDisconnect(client: ExtendedSocket) {
     const userId = this.users.get(client.id);
 
     if (userId) {
@@ -82,9 +92,16 @@ export class NotiGateway
 
   @SubscribeMessage('readNotification')
   async handleReadNotification(
+    client: ExtendedSocket,
     @MessageBody() data: { notiId: string },
   ): Promise<void> {
     const { notiId } = data;
+    client.timer = setTimeout(
+      () => {
+        client.disconnect();
+      },
+      10 * 60 * 1000,
+    );
     await this.notiService.updateNotificationStatus(notiId, 'read');
   }
 }
