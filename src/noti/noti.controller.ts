@@ -1,4 +1,4 @@
-import { Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { NotiService } from './noti.service';
 import { AccessTokenGuard } from 'src/auth/guards/accessToken.guard';
@@ -10,7 +10,7 @@ export class NotiController {
 
   @UseGuards(AccessTokenGuard)
   @ApiBearerAuth()
-  @Post('sendMissedNotifications')
+  @Get('sendMissedNotifications')
   async sendMissedNotifications(@Req() req: any) {
     const userObjectId = req.user.sub;
     return await this.notiService.sendMissedNotifications(userObjectId);
