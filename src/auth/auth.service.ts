@@ -75,8 +75,6 @@ export class AuthService {
     const tokens = await this.getTokens(user._id);
     await this.updateRefreshToken(user._id, tokens.refreshToken);
 
-    this.notiService.sendMissedNotifications(user._id.toString());
-
     return {
       ...tokens,
       userId: user.userId,
