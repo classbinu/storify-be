@@ -112,15 +112,15 @@ export class BooksService {
         if (authorSocketId) {
           this.notiGateway.server.to(authorSocketId).emit('like', {
             bookId: bookId,
-            message: `${userInfo.nickname}님이 (${authorBook.title})책을 좋아해요.`,
+            message: `${userInfo.nickname}님이 ${authorBook.title}책을 좋아해요.`,
           });
           console.log('좋아요 누른 유저 :', userInfo.nickname);
           console.log('authorSocketId : ', authorSocketId);
         } else {
           await this.notiService.create({
             senderId: userInfo.nickname,
-            receiverId: authorBook.userId.toString(),
-            message: `${userInfo.nickname}님이 (${authorBook.title})책을 좋아해요.`,
+            receiverId: authorBook.userId._id.toString(),
+            message: `${userInfo.nickname}님이 ${authorBook.title}책을 좋아해요.`,
             service: 'Books',
           });
           console.log('소켓 통신 실패! 좋아요 누른 유저 :', userInfo.nickname);
