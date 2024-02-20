@@ -26,7 +26,6 @@ import { Types } from 'mongoose';
 // @UseGuards(AuthGuard())
 export class BooksController {
   constructor(private readonly booksService: BooksService) {}
-
   @Post()
   async createBook(@Body() createBookDto: CreateBookDto): Promise<Book> {
     return this.booksService.createBook(createBookDto);
