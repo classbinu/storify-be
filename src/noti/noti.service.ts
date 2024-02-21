@@ -32,16 +32,11 @@ export class NotiService {
     }
   }
 
-  async sendMissedNotifications(userObjectId: string) {
-    const userSocketId = this.notiGateway.getUserSocketId(userObjectId);
-    if (userSocketId) {
-      const missedNotifications =
-        await this.findMissedNotifications(userObjectId);
-      this.notiGateway.server
-        .to(userSocketId)
-        .emit('missedNotifications', missedNotifications);
-      await this.markAsRead(missedNotifications);
-    }
+  async sendMissedNotifications(userObjectId: string): Promise<NotiDocument[]> {
+    const missedNotifications =
+      await this.findMissedNotifications(userObjectId);
+    await this.markAsRead(missedNotifications);
+    return missedNotifications;
   }
 
   async updateNotificationStatus(
