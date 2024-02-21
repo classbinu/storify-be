@@ -54,12 +54,15 @@ export class NotiGateway
         const { sub } = await this.jwtService.decode(token);
         console.log(`sub: ${sub}`);
 
+        this.users.set(sub, client.id);
+        this.users.set(client.id, sub);
         client.userId = sub;
         const existingUser = this.users.get(sub);
         if (existingUser) {
           client.emit('message', 'You are already connected.');
         } else {
           this.users.set(sub, client.id);
+          this.users.set(client.id, sub);
           console.log(this.users);
           client.emit('message', 'You have successfully connected.');
         }
@@ -82,9 +85,9 @@ export class NotiGateway
     }
     const clientId = this.users.get(client.userId);
     if (clientId === client.id) {
+      console.log('Client disconnected: ' + client.id);
       this.users.delete(client.userId);
     }
-    console.log('Client disconnected: ' + client.id);
   }
 
   @SubscribeMessage('readNotification')
