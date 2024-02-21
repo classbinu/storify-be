@@ -18,7 +18,7 @@ interface ExtendedSocket extends Socket {
 
 @WebSocketGateway({
   cors: {
-    origin: 'http://localhost:3000',
+    origin: ['http://localhost:3000', 'https://storifyai.site'],
     allowedHeaders: ['authorization', 'Authorization'],
     credentials: true,
     transports: ['websocket'],
