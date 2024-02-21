@@ -135,7 +135,7 @@ export class AiService {
     // 1. 어린이들이 이해할 수 있는 간단한 표현을 사용해라..
 
     // # Constraints
-    // 1. 한국어로 대답한다..
+    // 1. 한국어로 대답한다.
     // 1. 예시의 질문을 그대로 하지 않고, 사용자의 입력에 어울리는 후속 질문을 한다.
     // 1. 인물, 사건, 시간적 배경, 공간적 배경을 묻는 질문을 한다.
     // 1. 이미 사용자가 대답한 내용에 관해서는 질문하지 않는다.
@@ -162,7 +162,10 @@ export class AiService {
   }
 
   // LLM으로 이야기를 생성하는 함수
-  async createAiStory(createAiStoryDto: CreateAiStoryDto, userId: string) {
+  async createAiStory(
+    createAiStoryDto: CreateAiStoryDto,
+    userId: string,
+  ): Promise<any> {
     const systemMessage = `
     # role
     You are a children's story writer.
