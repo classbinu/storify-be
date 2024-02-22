@@ -106,16 +106,16 @@ export class BooksService {
       const authorSocketId = await this.notiGateway.getUserSocketId(
         authorBook.userId._id.toString(),
       );
-      console.log('소켓 통신 시작 전');
+      // console.log('소켓 통신 시작 전');
       try {
-        console.log('authorSocketId 문제임');
+        // console.log('authorSocketId 문제임');
         if (authorSocketId) {
           this.notiGateway.server.to(authorSocketId).emit('like', {
             bookId: bookId,
             message: `${userInfo.nickname}님이 ${authorBook.title}책을 좋아해요.`,
           });
-          console.log('좋아요 누른 유저 :', userInfo.nickname);
-          console.log('authorSocketId : ', authorSocketId);
+          // console.log('좋아요 누른 유저 :', userInfo.nickname);
+          // console.log('authorSocketId : ', authorSocketId);
         } else {
           await this.notiService.create({
             senderId: userInfo.nickname,
@@ -123,7 +123,7 @@ export class BooksService {
             message: `${userInfo.nickname}님이 ${authorBook.title}책을 좋아해요.`,
             service: 'Books',
           });
-          console.log('소켓 통신 실패! 좋아요 누른 유저 :', userInfo.nickname);
+          // console.log('소켓 통신 실패! 좋아요 누른 유저 :', userInfo.nickname);
         }
       } catch (error) {
         throw new Error(`좋아요 소켓 실패: ${error.message}`);

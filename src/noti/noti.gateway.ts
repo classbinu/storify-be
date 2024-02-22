@@ -49,13 +49,13 @@ export class NotiGateway
   ) {}
 
   afterInit() {
-    console.log('Server initialized');
+    // console.log('Server initialized');
   }
 
   async handleConnection(client: ExtendedSocket) {
     client.on('auth', async (token) => {
       try {
-        console.log(`Client connected: ${client.id}`);
+        // console.log(`Client connected: ${client.id}`);
         const { sub } = await this.jwtService.decode(token);
         this.users.set(sub, client.id);
         this.users.set(client.id, sub);
@@ -63,7 +63,7 @@ export class NotiGateway
         if (existingUser) {
           client.emit('message', 'You are already connected.');
         } else {
-          console.log(this.users);
+          // console.log(this.users);
           client.emit('message', 'You have successfully connected.');
         }
       } catch (error) {
@@ -84,7 +84,7 @@ export class NotiGateway
     }
     const clientId = this.users.get(client.id);
     this.users.delete(clientId);
-    console.log('Client disconnected: ' + client.id);
+    // console.log('Client disconnected: ' + client.id);
     this.users.delete(client.id);
   }
 
