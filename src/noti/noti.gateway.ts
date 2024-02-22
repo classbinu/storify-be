@@ -53,22 +53,24 @@ export class NotiGateway
         console.log(`Client connected: ${client.id}`);
         const { sub } = await this.jwtService.decode(token);
         console.log(`sub: ${sub}`);
-
+        console.log('여까지 연결됨 1');
         this.users.set(sub, client.id);
         this.users.set(client.id, sub);
-        client.userId = sub;
+        console.log('여기까지 연결됨2');
+        console.log(this.users);
         const existingUser = this.users.get(sub);
+        console.log('existingUser', existingUser);
         if (existingUser) {
           client.emit('message', 'You are already connected.');
         } else {
-          this.users.set(sub, client.id);
-          this.users.set(client.id, sub);
+          // this.users.set(sub, client.id);
+          // this.users.set(client.id, sub);
           console.log(this.users);
           client.emit('message', 'You have successfully connected.');
         }
       } catch (error) {
         client.emit('error', 'Invalid token. Connection refused.');
-        client.disconnect();
+        // client.disconnect();
       }
     });
     client.timer = setTimeout(
@@ -83,11 +85,16 @@ export class NotiGateway
     if (client.timer) {
       clearTimeout(client.timer);
     }
-    const clientId = this.users.get(client.userId);
-    if (clientId === client.id) {
-      console.log('Client disconnected: ' + client.id);
-      this.users.delete(client.userId);
-    }
+    const clientId = this.users.get(client.id);
+    console.log(clientId + '여기 찍혔다 clientId');
+    console.log(client.id + '여기는 client.id');
+    // if (clientId === client.id) {
+    // console.log(cleint)
+    this.users.delete(clientId);
+    this.users.delete(client.id);
+    // this.users.delete(sub);
+
+    console.log('Client disconnected: ' + client.id);
   }
 
   @SubscribeMessage('readNotification')
