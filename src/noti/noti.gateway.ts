@@ -61,8 +61,6 @@ export class NotiGateway
         if (existingUser) {
           client.emit('message', 'You are already connected.');
         } else {
-          this.users.set(sub, client.id);
-          this.users.set(client.id, sub);
           console.log(this.users);
           client.emit('message', 'You have successfully connected.');
         }
@@ -83,11 +81,9 @@ export class NotiGateway
     if (client.timer) {
       clearTimeout(client.timer);
     }
-    const clientId = this.users.get(client.userId);
-    if (clientId === client.id) {
-      console.log('Client disconnected: ' + client.id);
-      this.users.delete(client.userId);
-    }
+    const clientId = this.users.get(client.id);
+    this.users.delete(clientId);
+    this.users.delete(client.id);
   }
 
   @SubscribeMessage('readNotification')
