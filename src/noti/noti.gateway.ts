@@ -18,7 +18,12 @@ interface ExtendedSocket extends Socket {
 
 @WebSocketGateway({
   cors: {
-    origin: ['http://localhost:3000', 'https://storifyai.site'],
+    origin: [
+      'http://localhost:3000',
+      'https://storifyai.site',
+      'https://storifyai-dev.vercel.app',
+      'https://storifyai.vercel.app',
+    ],
     allowedHeaders: ['authorization', 'Authorization'],
     credentials: true,
     transports: ['websocket'],
