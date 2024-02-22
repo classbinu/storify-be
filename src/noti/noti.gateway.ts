@@ -18,7 +18,12 @@ interface ExtendedSocket extends Socket {
 
 @WebSocketGateway({
   cors: {
-    origin: ['http://localhost:3000', 'https://storifyai.site'],
+    origin: [
+      'http://localhost:3000',
+      'https://storifyai.site',
+      'https://storifyai-dev.vercel.app',
+      'https://storifyai.vercel.app',
+    ],
     allowedHeaders: ['authorization', 'Authorization'],
     credentials: true,
     transports: ['websocket'],
@@ -52,11 +57,8 @@ export class NotiGateway
       try {
         console.log(`Client connected: ${client.id}`);
         const { sub } = await this.jwtService.decode(token);
-        console.log(`sub: ${sub}`);
-
         this.users.set(sub, client.id);
         this.users.set(client.id, sub);
-        client.userId = sub;
         const existingUser = this.users.get(sub);
         if (existingUser) {
           client.emit('message', 'You are already connected.');
@@ -66,7 +68,6 @@ export class NotiGateway
         }
       } catch (error) {
         client.emit('error', 'Invalid token. Connection refused.');
-        client.disconnect();
       }
     });
     client.timer = setTimeout(
@@ -83,6 +84,7 @@ export class NotiGateway
     }
     const clientId = this.users.get(client.id);
     this.users.delete(clientId);
+    console.log('Client disconnected: ' + client.id);
     this.users.delete(client.id);
   }
 
