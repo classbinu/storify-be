@@ -332,7 +332,7 @@ export class AiService {
         const timeoutPromise = new Promise((resolve) =>
           setTimeout(
             () => resolve(fallbackImageUrl[i % fallbackImageUrl.length]),
-            15000,
+            18000,
           ),
         );
 
@@ -479,7 +479,7 @@ export class AiService {
 
       // 15초 후에 타임아웃 처리하는 프로미스
       const timeoutPromise = new Promise((resolve) =>
-        setTimeout(() => resolve(fallbackBuffers[i]), 15000),
+        setTimeout(() => resolve(fallbackBuffers[i]), 18000),
       );
 
       imagePromises.push(Promise.race([bufferPromise, timeoutPromise]));
