@@ -18,6 +18,7 @@ import { StoriesService } from 'src/stories/stories.service';
 import { TelegramService } from 'src/telegram/telegram.service';
 import { UpdateBookDto } from 'src/books/dto/update-book.dto';
 import { UserMongoRepository } from 'src/users/users.repository';
+import fallbackImages from './fallbackImages';
 
 @Injectable()
 export class AiService {
@@ -291,18 +292,52 @@ export class AiService {
 
     const imagePrompts = await this.createImagePrompts(storyText);
     const imageStyle = createAiBookDto.imageStyle;
-    // 삽화 생성 병렬 요청
+    // 삽화 생성 병렬 요청(Promise 경쟁 없음)
+    // const uploadPromises = imagePrompts.map(
+    //   async (prompt: string, i: number) => {
+    //     const buffer = await this.stableDiffusion(prompt, imageStyle);
+
+    //     const s3Url = await this.storagesService.bufferUploadToS3(
+    //       `${storyId}-${Date.now()}-${i + 1}.png`,
+    //       buffer,
+    //       'png',
+    //     );
+
+    //     return s3Url;
+    //   },
+    // );
+
+    // 삽화 생성 병렬 요청(Promise 경쟁 있음)
+    const fallbackImageUrl = [
+      'https://s3.ap-northeast-2.amazonaws.com/storify/65d2e2fc2268651774976ed6-1708319502322-1.png',
+      'https://s3.ap-northeast-2.amazonaws.com/storify/65d2e2fc2268651774976ed6-1708319498224-2.png',
+      'https://s3.ap-northeast-2.amazonaws.com/storify/65d2e2fc2268651774976ed6-1708319503849-3.png',
+      'https://s3.ap-northeast-2.amazonaws.com/storify/65d2e2fc2268651774976ed6-1708319497013-4.png',
+    ];
+
     const uploadPromises = imagePrompts.map(
       async (prompt: string, i: number) => {
-        const buffer = await this.stableDiffusion(prompt, imageStyle);
-
-        const s3Url = await this.storagesService.bufferUploadToS3(
-          `${storyId}-${Date.now()}-${i + 1}.png`,
-          buffer,
-          'png',
+        // 이미지 생성 요청과 타임아웃 프로미스를 경쟁시킴
+        const bufferPromise = this.stableDiffusion(prompt, imageStyle).then(
+          (buffer) => {
+            return this.storagesService.bufferUploadToS3(
+              `${storyId}-${Date.now()}-${i + 1}.png`,
+              buffer,
+              'png',
+            );
+          },
         );
 
-        return s3Url;
+        // 15초 후에 거부되는 프로미스 생성
+        const timeoutPromise = new Promise((resolve) =>
+          setTimeout(
+            () => resolve(fallbackImageUrl[i % fallbackImageUrl.length]),
+            15000,
+          ),
+        );
+
+        // 두 프로미스 중 하나가 먼저 완료되면 해당 결과 사용
+        return Promise.race([bufferPromise, timeoutPromise]);
       },
     );
 
@@ -341,7 +376,7 @@ export class AiService {
     return await this.booksService.createBook(createBookDto);
   }
 
-  // 기존 삽화를 재생성하는 함수
+  // 삽화를 업데이트하는 함수
   async updateAiBooksImages(id: string, page: string, userId: string) {
     const book = await this.booksService.findBookByBookId(id);
     if (!book) {
@@ -421,14 +456,33 @@ export class AiService {
     }
   }
 
+  // 4장의 교제 후보 삽화를 생성하는 함수
   async generateNewBookImages(id: string, page: string): Promise<string[]> {
     const book = await this.booksService.findBookByBookId(id);
     const prompt = book.body.get(page).imagePrompt;
     const imageStyle = book.imageStyle || 'cartoon';
-
     const imagePromises = [];
+
+    // Promise 경쟁 없이 이미지 생성
+    // for (let i = 0; i < 4; i++) {
+    //   imagePromises.push(this.stableDiffusion(prompt, imageStyle));
+    // }
+
+    // const buffers = await Promise.all(imagePromises);
+    // const base64Images = buffers.map((buffer) => buffer.toString('base64'));
+    // return base64Images;
+
+    // Promise 경쟁을 통해 이미지 생성
+    const fallbackBuffers = fallbackImages;
     for (let i = 0; i < 4; i++) {
-      imagePromises.push(this.stableDiffusion(prompt, imageStyle));
+      const bufferPromise = this.stableDiffusion(prompt, imageStyle);
+
+      // 15초 후에 타임아웃 처리하는 프로미스
+      const timeoutPromise = new Promise((resolve) =>
+        setTimeout(() => resolve(fallbackBuffers[i]), 15000),
+      );
+
+      imagePromises.push(Promise.race([bufferPromise, timeoutPromise]));
     }
 
     const buffers = await Promise.all(imagePromises);
