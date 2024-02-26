@@ -70,12 +70,9 @@ export class NotiGateway
         client.emit('error', 'Invalid token. Connection refused.');
       }
     });
-    client.timer = setTimeout(
-      () => {
-        client.disconnect();
-      },
-      30 * 60 * 1000,
-    );
+    client.timer = setTimeout(() => {
+      client.disconnect();
+    }, 6 * 1000);
   }
 
   async handleDisconnect(client: ExtendedSocket) {
@@ -92,12 +89,9 @@ export class NotiGateway
   async handleReadNotification(client: ExtendedSocket): Promise<void> {
     if (client.timer) {
       clearTimeout(client.timer);
-      client.timer = setTimeout(
-        () => {
-          client.disconnect();
-        },
-        10 * 60 * 1000,
-      );
+      client.timer = setTimeout(() => {
+        client.disconnect();
+      }, 6 * 1000);
     }
   }
 }
